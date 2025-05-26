@@ -29,5 +29,5 @@ body {
 }
 
 .button {
-  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit self-end rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C]
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C]
 }
