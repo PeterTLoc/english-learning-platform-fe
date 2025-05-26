@@ -59,47 +59,54 @@ const page = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <form onSubmit={handleSubmit}>
-        <h1 className="text-3xl mb-8">Create a new account</h1>
-        <div className="w-fit flex flex-col">
-          <input
-            className="input"
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <p className="text-red-500 text-[11px] mt-[6px] mb-2">
-            {errors.email || "\u00A0"}
-          </p>
+        <h1 className="text-3xl">Create a new account</h1>
 
-          <input
-            className="input"
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <p className="text-red-500 text-[11px] mt-[6px] mb-2">
-            {errors.password || "\u00A0"}
-          </p>
+        <div className="mt-6 w-fit flex flex-col">
+          <div>
+            <input
+              className="input"
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <p className="text-red-500 text-xs my-[2px]">
+              {errors.email || "\u00A0"}
+            </p>
+          </div>
 
-          <input
-            className="input"
-            placeholder="Confirm Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <p className="text-red-500 text-[11px] mt-[6px] mb-2">
-            {errors.confirmPassword || "\u00A0"}
-          </p>
+          <div>
+            <input
+              className="input"
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <p className="text-red-500 text-xs my-[2px]">
+              {errors.password || "\u00A0"}
+            </p>
+          </div>
 
-          <button className="button self-end" type="submit">
+          <div>
+            <input
+              className="input"
+              placeholder="Confirm Password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <p className="text-red-500 text-xs my-[2px]">
+              {errors.confirmPassword || "\u00A0"}
+            </p>
+          </div>
+
+          <button className="button self-end mt-1" type="submit">
             Register
           </button>
         </div>

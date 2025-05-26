@@ -3,7 +3,7 @@ import React from "react"
 
 const NavBar = () => {
   return (
-    <nav className="h-16">
+    <nav className="sticky top-0 z-50 h-16">
       <div className="flex justify-between items-center h-full px-6">
         <Link href="/">ELS logo</Link>
 

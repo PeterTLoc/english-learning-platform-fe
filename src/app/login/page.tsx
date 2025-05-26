@@ -59,11 +59,11 @@ const page = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
-      <form className="flex flex-col text-sm" onSubmit={handleSubmit}>
-        <h1 className="text-3xl mb-8">Sign in</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <form className="flex flex-col" onSubmit={handleSubmit}>
+        <h1 className="text-3xl">Sign in</h1>
 
-        <div className="mb-1">
+        <div className="mt-6">
           <input
             className="input"
             placeholder="Email"
@@ -72,10 +72,12 @@ const page = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <p className="text-red-500 text-[11px]">{errors.email || "\u00A0"}</p>
+          <p className="text-red-500 text-xs my-[2px]">
+            {errors.email || "\u00A0"}
+          </p>
         </div>
 
-        <div className="mb-1">
+        <div>
           <input
             className="input"
             placeholder="Password"
@@ -84,28 +86,30 @@ const page = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <p className="text-red-500 text-[11px] mt-[6px] mb-2">
+          <p className="text-red-500 text-xs my-[2px]">
             {errors.password || "\u00A0"}
           </p>
         </div>
 
         <button
+          className="min-h-[32px] pt-[5px] pb-[3px] w-full rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C] mt-1"
           type="submit"
-          className="mt-6 w-full min-h-[32px] pt-[5px] pb-[3px] self-end rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C]"
         >
           Log in
         </button>
-        <p className="text-red-500 text-[11px] mt-[6px] mb-2">
-          {loginError || "\u00A0"}
-        </p>
 
-        <div className="flex justify-between mt-1 mb-10 text-gray-300 text-[13px]">
-          <Link href="/register" className="hover:underline hover:text-white">
-            Create a new account
+        {loginError && <p>{loginError}</p>}
+
+        <div className="text-[13px] flex justify-between mt-1">
+          <Link
+            className="text-gray-300 hover:text-white hover:underline"
+            href="/register"
+          >
+            Register now
           </Link>
           <Link
+            className="text-gray-300 hover:text-white hover:underline"
             href="/forgot-password"
-            className="hover:underline hover:text-white"
           >
             Forget password?
           </Link>
