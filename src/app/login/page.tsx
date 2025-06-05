@@ -1,120 +1,161 @@
 "use client"
 
+import { useAuth } from "@/context/AuthContext"
+import { parseAxiosError } from "@/utils/apiErrors"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 
-type User = {
+interface Errors {
+  email?: string
+  password?: string
+}
+
+type FormData = {
   email: string
   password: string
 }
 
-const page = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {}
-  )
-  const [loginError, setLoginError] = useState("")
-  const router = useRouter()
+const initialFormData: FormData = {
+  email: "",
+  password: "",
+}
 
-  const validateEmail = (email: string) => {
-    return /\S+@\S+\.\S+/.test(email)
+const validate = (form: FormData): Errors => {
+  const errors: Errors = {}
+
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+  const isValidPassword = (password: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,50}$/.test(password)
+
+  if (!form.email) {
+    errors.email = "Email is required"
+  } else if (!isValidEmail(form.email)) {
+    errors.email = "Invalid email format"
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  if (!form.password) {
+    errors.password = "Password is required"
+  } else if (!isValidPassword(form.password)) {
+    errors.password =
+      "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-50 characters long"
+  }
+
+  return errors
+}
+
+const page = () => {
+  const [form, setForm] = useState<FormData>(initialFormData)
+  const [errors, setErrors] = useState<Errors>({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [serverError, setServerError] = useState("")
+
+  const router = useRouter()
+  const { login } = useAuth()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoginError("")
-    const newErrors: { email?: string; password?: string } = {}
+    setServerError("")
 
-    if (!email) {
-      newErrors.email = "Email is required"
-    } else if (!validateEmail(email)) {
-      newErrors.email = "Email is invalid"
-    }
+    const validationErrors = validate(form)
 
-    if (!password) {
-      newErrors.password = "Password is required"
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
-    }
-
-    setErrors(newErrors)
-
-    if (Object.keys(newErrors).length > 0) {
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
       return
     }
 
-    setTimeout(() => {
-      const user: User | null = JSON.parse(
-        localStorage.getItem("user") || "null"
-      )
+    setErrors({})
+    setIsLoading(true)
 
-      if (user && email === user.email && password === user.password) {
-        router.push("/")
-      } else {
-        setLoginError("Invalid email or password")
-      }
-    }, 1000)
+    try {
+      await login(form)
+
+      router.push("/")
+    } catch (error: unknown) {
+      const { message } = parseAxiosError(error)
+      setServerError(message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <form className="flex flex-col" onSubmit={handleSubmit}>
-        <h1 className="text-3xl">Sign in</h1>
+      <form
+        className="flex flex-col bg-[#2B2B2B] p-5 pb-[26px] border border-[#1D1D1D] rounded-md"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="text-[28px] font-bold self-center mb-5">Sign in</h1>
 
-        <div className="mt-6">
+        <div className="mb-4">
           <input
             className="input"
             placeholder="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={form.email}
+            onChange={handleChange}
             required
           />
-          <p className="text-red-500 text-xs my-[2px]">
-            {errors.email || "\u00A0"}
-          </p>
+           {errors.email && (
+            <p className="text-red-500 text-xs w-[280px]">
+              {errors.email || "\u00A0"}
+            </p>
+          )}
         </div>
 
-        <div>
+        <div className="mb-[15px]">
           <input
             className="input"
             placeholder="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={form.password}
+            onChange={handleChange}
             required
           />
-          <p className="text-red-500 text-xs my-[2px]">
-            {errors.password || "\u00A0"}
-          </p>
+          {errors.password && (
+            <p className="text-red-500 text-xs w-[280px]">
+              {errors.password || "\u00A0"}
+            </p>
+          )}
         </div>
 
-        <button
-          className="min-h-[32px] pt-[5px] pb-[3px] w-full rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C] mt-1"
-          type="submit"
-        >
-          Log in
-        </button>
-
-        {loginError && <p>{loginError}</p>}
-
-        <div className="text-[13px] flex justify-between mt-1">
+        <div className="text-sm flex justify-between">
           <Link
-            className="text-gray-300 hover:text-white hover:underline"
-            href="/register"
-          >
-            Register now
-          </Link>
-          <Link
-            className="text-gray-300 hover:text-white hover:underline"
+            className="text-[#CFCFCF] hover:text-white hover:underline"
             href="/forgot-password"
           >
             Forget password?
           </Link>
+          <Link
+            className="text-[#CFCFCF] hover:text-white hover:underline"
+            href="/register"
+          >
+            Register now
+          </Link>
         </div>
+
+        <button
+          className="mt-[30px] text-black w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9]"
+          type="submit"
+        >
+          {isLoading ? "Logging in..." : "Login"}
+        </button>
       </form>
+
+      {serverError && (
+        <p className="text-red-500 text-xs width-[280px] mt-2 mx-auto w-[280px] text-center">
+          {serverError}
+        </p>
+      )}
     </div>
   )
 }

@@ -16,18 +16,25 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #202020;
+  @apply font-sans;
 }
 
 .input {
-  @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#2D2D2D] border border-b-[#999999] border-t-[#2D2D2D] border-l-[#2D2D2D] border-r-[#2D2D2D]
+  @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#2D2D2D] border border-b-2 border-b-[#999999] border-t-[#2D2D2D] border-l-[#2D2D2D] border-r-[#2D2D2D]
 }
 
 .input:focus {
-  @apply outline-none border-b-[#4CC2FF] bg-[#1F1F1F]
+  @apply outline-none border-b-[#4CC2FF] bg-[#1F1F1F];
+}
+
+input:-webkit-autofill {
+  @apply bg-white text-black;
+  box-shadow: 0 0 0 1000px #1F1F1F inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #1F1F1F inset !important;
+  -webkit-text-fill-color: white !important;
 }
 
 .button {
-  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C]
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C];
 }
