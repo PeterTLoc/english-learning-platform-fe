@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import NavBar from "./NavBar"
+import Footer from "./Footer"
 
 export default function LayoutWrapper({
   children,
@@ -18,6 +19,7 @@ export default function LayoutWrapper({
     <>
       {!hideNav && <NavBar />}
       {children}
+      <Footer />
     </>
   )
 }

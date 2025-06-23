@@ -1,5 +1,6 @@
 "use client"
 
+import axios from "axios"
 import React, { useState } from "react"
 
 const page = () => {
@@ -7,44 +8,46 @@ const page = () => {
   const [errors, setErrors] = useState<{ email?: string }>({})
   const [successMessage, setSuccessMessage] = useState("")
   const [submitError, setSubmitError] = useState("")
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
-  const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email)
+  if (!apiUrl) {
+    throw new Error(
+      "NEXT_PUBLIC_API_URL must be defined in environment variables."
+    )
+  }
+
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSuccessMessage("")
     setSubmitError("")
 
-    const newErrors: { email?: string } = {}
+    const errors: { email?: string } = {}
 
     if (!email) {
-      newErrors.email = "Email is required"
+      errors.email = "Email is required"
     } else if (!validateEmail(email)) {
-      newErrors.email = "Invalid email address"
+      errors.email = "Invalid email address"
     }
 
-    setErrors(newErrors)
+    setErrors(errors)
 
-    if (Object.keys(newErrors).length > 0) return
+    if (Object.keys(errors).length > 0) return
 
     try {
-      const res = await fetch("", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to send reset email")
-      }
+      const response = await axios.post(
+        `${apiUrl}/api/auth/send-reset-password-pin`,
+        { email },
+        {
+          withCredentials: true,
+        }
+      )
 
       setSuccessMessage("Password reset link sent to your email.")
-    } catch (err: any) {
-      setSubmitError(err.message)
+    } catch (error: any) {
+      setSubmitError(error.message)
     }
   }
 
@@ -73,21 +76,21 @@ const page = () => {
           className="mt-7 self-end min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-black bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9]"
           type="submit"
         >
-          Send reset link
+          Send PIN
         </button>
-
-        {successMessage && (
-          <p className="text-green-500 text-xs mt-2 mx-auto w-[280px]">
-            {successMessage}
-          </p>
-        )}
-
-        {submitError && (
-          <p className="text-red-500 text-xs mt-2 mx-auto w-[280px]">
-            {submitError}
-          </p>
-        )}
       </form>
+
+      {successMessage && (
+        <p className="text-center text-green-500 text-xs mt-2 mx-auto w-[280px]">
+          {successMessage}
+        </p>
+      )}
+
+      {submitError && (
+        <p className="text-center text-red-500 text-xs mt-2 mx-auto w-[280px]">
+          {submitError}
+        </p>
+      )}
     </div>
   )
 }

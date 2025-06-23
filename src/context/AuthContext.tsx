@@ -1,36 +1,17 @@
 "use client"
 
+import api from "@/lib/api"
+import { LoginFormPayload, RegisterFormPayload, User } from "@/types/auth/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
-import axios from "axios"
-import { createContext, useContext, useState } from "react"
-
-interface User {
-  id: number
-  email: string
-  role: string
-  name: string
-}
-
-interface LoginForm {
-  email: string
-  password: string
-}
-
-interface RegisterForm {
-  name: string
-  email: string
-  password: string
-}
+import * as authService from "@/services/authService"
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  login: (formData: { email: string; password: string }) => Promise<void>
-  register: (formData: {
-    name: string
-    email: string
-    password: string
-  }) => Promise<void>
+  login: (formData: LoginFormPayload) => Promise<void>
+  register: (formData: RegisterFormPayload) => Promise<void>
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -50,27 +31,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
-  if (!apiUrl) {
-    throw new Error(
-      "NEXT_PUBLIC_API_URL must be defined in environment variables."
-    )
-  }
-
-  const api = axios.create({
-    baseURL: apiUrl,
-    withCredentials: true,
-  })
-
-  const login = async (formData: LoginForm): Promise<void> => {
+  const login = async (formData: LoginFormPayload): Promise<void> => {
     setLoading(true)
     try {
-      console.log("Login payload:", formData);
+      const user = await authService.login(formData)
 
-      const response = await api.post<User>("/api/auth/login", formData)
-
-      setUser(response.data)
+      setUser(user)
     } catch (error) {
       const parsed = parseAxiosError(error)
 
@@ -81,12 +48,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
-  const register = async (formData: RegisterForm): Promise<void> => {
+  const register = async (formData: RegisterFormPayload): Promise<void> => {
     setLoading(true)
     try {
-      const response = await api.post<User>("/api/auth/signup", formData)
+      const user = await authService.register(formData)
 
-      setUser(response.data)
+      setUser(user)
     } catch (error) {
       const parsed = parseAxiosError(error)
 
@@ -97,8 +64,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
+  const logout = async () => {
+    try {
+      await authService.logout()
+      setUser(null)
+    } catch (error) {
+      console.error("Logout failed: ", error)
+    }
+  }
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await authService.getCurrentUser()
+        setUser(user)
+      } catch (error) {
+        console.log(error)
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

@@ -4,7 +4,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,4 +37,20 @@ input:-webkit-autofill {
 
 .button {
   @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C];
+}
+
+.title {
+  @apply font-bold text-[25px] mt-[9px] mb-5
+}
+
+.subtitle {
+  @apply text-[13px] font-semibold mt-[1px] mb-[6px]
+}
+
+.container {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] p-5 rounded-[5px]
+}
+
+.sidebar-link {
+  @apply h-9 hover:bg-[#2D2D2D] rounded-[5px] pt-[10px] pb-[3px] px-3 text-[13px]
 }

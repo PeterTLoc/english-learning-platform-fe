@@ -2,33 +2,19 @@
 
 import { useAuth } from "@/context/AuthContext"
 import { parseAxiosError } from "@/utils/apiErrors"
-import { register } from "module"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
+import { RegisterErrors, RegisterFormData } from "@/types/auth/auth"
 
-type Errors = {
-  name?: string
-  email?: string
-  password?: string
-  confirmPassword?: string
-}
-
-type FormData = {
-  name: string
-  email: string
-  password: string
-  confirmPassword: string
-}
-
-const initialFormData: FormData = {
+const initialFormData: RegisterFormData = {
   name: "",
   email: "",
   password: "",
   confirmPassword: "",
 }
 
-const validate = (form: FormData): Errors => {
-  const errors: Errors = {}
+const validate = (form: RegisterFormData): RegisterErrors => {
+  const errors: RegisterErrors = {}
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -63,8 +49,8 @@ const validate = (form: FormData): Errors => {
 }
 
 const page = () => {
-  const [form, setForm] = useState<FormData>(initialFormData)
-  const [errors, setErrors] = useState<Errors>({})
+  const [form, setForm] = useState<RegisterFormData>(initialFormData)
+  const [errors, setErrors] = useState<RegisterErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
 

@@ -2,53 +2,16 @@
 
 import { useAuth } from "@/context/AuthContext"
 import { parseAxiosError } from "@/utils/apiErrors"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
-
-interface Errors {
-  email?: string
-  password?: string
-}
-
-type FormData = {
-  email: string
-  password: string
-}
-
-const initialFormData: FormData = {
-  email: "",
-  password: "",
-}
-
-const validate = (form: FormData): Errors => {
-  const errors: Errors = {}
-
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-
-  const isValidPassword = (password: string) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,50}$/.test(password)
-
-  if (!form.email) {
-    errors.email = "Email is required"
-  } else if (!isValidEmail(form.email)) {
-    errors.email = "Invalid email format"
-  }
-
-  if (!form.password) {
-    errors.password = "Password is required"
-  } else if (!isValidPassword(form.password)) {
-    errors.password =
-      "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-50 characters long"
-  }
-
-  return errors
-}
+import { LoginErrors, LoginFormData } from "@/types/auth/auth"
+import LoginForm from "@/components/login/LoginForm"
+import { validateLoginForm } from "@/utils/auth"
+import { initialLoginFormData } from "@/constants/forms"
 
 const page = () => {
-  const [form, setForm] = useState<FormData>(initialFormData)
-  const [errors, setErrors] = useState<Errors>({})
+  const [form, setForm] = useState<LoginFormData>(initialLoginFormData)
+  const [errors, setErrors] = useState<LoginErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
 
@@ -64,7 +27,7 @@ const page = () => {
     e.preventDefault()
     setServerError("")
 
-    const validationErrors = validate(form)
+    const validationErrors = validateLoginForm(form)
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -88,74 +51,14 @@ const page = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <form
-        className="flex flex-col bg-[#2B2B2B] p-5 pb-[26px] border border-[#1D1D1D] rounded-md"
+      <LoginForm
+        form={form}
+        errors={errors}
+        isLoading={isLoading}
+        serverError={serverError}
+        onChange={handleChange}
         onSubmit={handleSubmit}
-      >
-        <h1 className="text-[28px] font-bold self-center mb-5">Sign in</h1>
-
-        <div className="mb-4">
-          <input
-            className="input"
-            placeholder="Email"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-           {errors.email && (
-            <p className="text-red-500 text-xs w-[280px]">
-              {errors.email || "\u00A0"}
-            </p>
-          )}
-        </div>
-
-        <div className="mb-[15px]">
-          <input
-            className="input"
-            placeholder="Password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
-          {errors.password && (
-            <p className="text-red-500 text-xs w-[280px]">
-              {errors.password || "\u00A0"}
-            </p>
-          )}
-        </div>
-
-        <div className="text-sm flex justify-between">
-          <Link
-            className="text-[#CFCFCF] hover:text-white hover:underline"
-            href="/forgot-password"
-          >
-            Forget password?
-          </Link>
-          <Link
-            className="text-[#CFCFCF] hover:text-white hover:underline"
-            href="/register"
-          >
-            Register now
-          </Link>
-        </div>
-
-        <button
-          className="mt-[30px] text-black w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9]"
-          type="submit"
-        >
-          {isLoading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-
-      {serverError && (
-        <p className="text-red-500 text-xs width-[280px] mt-2 mx-auto w-[280px] text-center">
-          {serverError}
-        </p>
-      )}
+      />
     </div>
   )
 }

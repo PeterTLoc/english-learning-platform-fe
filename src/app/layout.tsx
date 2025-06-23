@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono, Mulish } from "next/font/google"
 import "./globals.css"
-import NavBar from "@/components/NavBar"
 import LayoutWrapper from "@/components/LayoutWrapper"
 import { AuthProvider } from "@/context/AuthContext"
 
