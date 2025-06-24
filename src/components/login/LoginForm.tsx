@@ -1,14 +1,14 @@
-import { LoginErrors, LoginFormData } from "@/types/auth/auth"
-import Link from "next/link"
-import React from "react"
+import { LoginErrors, LoginFormData } from "@/types/auth/auth";
+import Link from "next/link";
+import React from "react";
 
 interface Props {
-  form: LoginFormData
-  errors: LoginErrors
-  isLoading: boolean
-  serverError: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  form: LoginFormData;
+  errors: LoginErrors;
+  isLoading: boolean;
+  serverError: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const LoginForm = ({
@@ -22,7 +22,7 @@ const LoginForm = ({
   return (
     <div>
       <form
-        className="flex flex-col bg-[#2B2B2B] p-5 pb-[26px] border border-[#1D1D1D] rounded-md"
+        className="flex flex-col bg-black/50 p-5 pb-[26px] border border-[#1D1D1D] rounded-md"
         onSubmit={onSubmit}
       >
         <h1 className="text-[28px] font-bold self-center mb-5">Sign in</h1>
@@ -90,7 +90,7 @@ const LoginForm = ({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;
