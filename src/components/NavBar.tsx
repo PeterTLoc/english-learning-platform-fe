@@ -1,23 +1,23 @@
-import { useAuth } from "@/context/AuthContext"
-import { CircleUserRound } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import React from "react"
-import UserDropdown from "./UserDropdown"
+import { useAuth } from "@/context/AuthContext";
+import { CircleUserRound } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import UserDropdown from "./UserDropdown";
 
 const NavBar = () => {
-  const pathname = usePathname()
-  const { user, loading } = useAuth()
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
 
   const links = [
     { href: "/", label: "Home" },
     { href: "/courses", label: "Courses" },
     { href: "/membership", label: "Membership" },
     { href: "/achievements", label: "Achievements" },
-  ]
+  ];
 
   return (
-    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] border-b border-b-[#1D1D1D]">
+    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020]  shadow-lg shadow-[#ffffff80] mb-10">
       <div className="flex justify-between items-center h-full px-6">
         <Link href="/">ELS logo</Link>
 
@@ -56,7 +56,7 @@ const NavBar = () => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;

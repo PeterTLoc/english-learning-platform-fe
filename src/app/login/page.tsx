@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/context/AuthContext"
-import { parseAxiosError } from "@/utils/apiErrors"
-import { useRouter } from "next/navigation"
-import React, { useState } from "react"
-import { LoginErrors, LoginFormData } from "@/types/auth/auth"
-import LoginForm from "@/components/login/LoginForm"
-import { validateLoginForm } from "@/utils/auth"
-import { initialLoginFormData } from "@/constants/forms"
+import { useAuth } from "@/context/AuthContext";
+import { parseAxiosError } from "@/utils/apiErrors";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { LoginErrors, LoginFormData } from "@/types/auth/auth";
+import LoginForm from "@/components/login/LoginForm";
+import { validateLoginForm } from "@/utils/auth";
+import { initialLoginFormData } from "@/constants/forms";
 
 const page = () => {
-  const [form, setForm] = useState<LoginFormData>(initialLoginFormData)
-  const [errors, setErrors] = useState<LoginErrors>({})
-  const [isLoading, setIsLoading] = useState(false)
-  const [serverError, setServerError] = useState("")
+  const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
+  const [errors, setErrors] = useState<LoginErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
-  const router = useRouter()
-  const { login } = useAuth()
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setServerError("")
+    e.preventDefault();
+    setServerError("");
 
-    const validationErrors = validateLoginForm(form)
+    const validationErrors = validateLoginForm(form);
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      return
+      setErrors(validationErrors);
+      return;
     }
 
-    setErrors({})
-    setIsLoading(true)
+    setErrors({});
+    setIsLoading(true);
 
     try {
-      await login(form)
+      await login(form);
 
-      router.push("/")
+      router.push("/");
     } catch (error: unknown) {
-      const { message } = parseAxiosError(error)
-      setServerError(message)
+      const { message } = parseAxiosError(error);
+      setServerError(message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="bg-[url(https://wallpapercrafter.com/desktop/269688-knowledge.jpg)] flex flex-col items-center justify-center min-h-screen">
       <LoginForm
         form={form}
         errors={errors}
@@ -60,7 +60,7 @@ const page = () => {
         onSubmit={handleSubmit}
       />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;
