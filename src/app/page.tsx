@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div>
       <div
-        className="flex flex-col justify-center items-center bg-[#1D1D1D]"
+        className="flex flex-col justify-center items-center bg-[#202020]"
         style={{ height: "calc(100vh - 84px)", overflow: "hidden" }}
       >
         <AnimatedTitle />
