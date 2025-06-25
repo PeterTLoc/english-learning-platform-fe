@@ -16,10 +16,12 @@ export default function LayoutWrapper({
     pathname === "/forgot-password"
 
   return (
-    <>
+    <div className="flex flex-col">
       {!hideNav && <NavBar />}
+      <div className="flex-1">
       {children}
+      </div>
       <Footer />
-    </>
+    </div>
   )
 }
