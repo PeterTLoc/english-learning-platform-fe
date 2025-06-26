@@ -1,6 +1,5 @@
-import AnimatedTitle from "@/components/home/AnimatedTitle"
-import Carousel from "@/components/ui/Carousel"
-
+import AnimatedTitle from "@/components/home/AnimatedTitle";
+import Carousel from "@/components/ui/Carousel";
 
 export default function Home() {
   return (
@@ -111,9 +110,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-[#1D1D1D]" style={{ height: "calc(100vh - 84px)" }}>
-        
-      </div>
+      <div
+        className="bg-[#1D1D1D]"
+        style={{ height: "calc(100vh - 84px)" }}
+      ></div>
     </div>
-  )
+  );
 }

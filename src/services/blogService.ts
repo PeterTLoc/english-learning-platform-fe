@@ -5,9 +5,9 @@ class BlogService {
   async getBlogs(
     page?: number,
     size?: number,
+    search?: string,
     order?: string,
-    sortBy?: string,
-    search?: string
+    sortBy?: string
   ): Promise<GetBlogsResponse> {
     let query;
     if (page) {
