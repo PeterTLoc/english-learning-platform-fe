@@ -45,9 +45,11 @@ export default function Carousel<T>({
   if (safeItems.length === 0) return null
 
   return (
-    <section className="relative w-full mx-auto px-5">
+    <section
+      className="relative w-full mx-auto px-9 pt-10 max-w-[1625px]"
+    >
       {/* Header */}
-      <header className="flex justify-between items-center mb-1 px-2">
+      <header className="flex justify-between items-center px-2">
         <div className="px-2 pt-1 pb-2 rounded-[5px] flex items-center gap-1 group cursor-pointer hover:text-[#4CC2FF] hover:bg-[#373737] transition-all">
           <h2 className="text-xl font-bold">{title}</h2>
           <ChevronRight
@@ -76,7 +78,7 @@ export default function Carousel<T>({
           </button>
         </div>
       </header>
-
+      
       {/* Carousel items */}
       <div className="overflow-hidden">
         <div

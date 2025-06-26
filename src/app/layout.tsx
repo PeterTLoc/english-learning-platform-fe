@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext"
 import LayoutWrapper from "@/components/layout/LayoutWrapper"
 import { Suspense } from "react"
 import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import { CourseProvider } from "@/context/CourseContext"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,9 @@ export default function RootLayout({
       <body className={`${mulish.variable} antialiased`}>
         <Suspense fallback={<LoadingSpinner fullScreen size="large" />}>
           <AuthProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
+            <CourseProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </CourseProvider>
           </AuthProvider>
         </Suspense>
       </body>

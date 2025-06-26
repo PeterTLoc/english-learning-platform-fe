@@ -16,18 +16,12 @@ export default function LayoutWrapper({
     pathname === "/forgot-password"
 
   return (
-    <>
-      {!hideNav && (
-        <>
-          <NavBar />
+    <div className="flex flex-col min-h-screen">
+      {!hideNav && <NavBar />}
 
-          {/* Fullscreen gradient below navbar */}
-          {/* <div className="fixed top-[84px] left-0 w-full h-[calc(100vh-84px)] z-0 bg-gradient-to-r from-black/10 via-gray-200/40 to-gray-300 pointer-events-none" /> */}
-        </>
-      )}
+      <main className="flex-1">{children}</main>
 
-      <main>{children}</main>
       <Footer />
-    </>
+    </div>
   )
 }

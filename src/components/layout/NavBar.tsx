@@ -17,7 +17,7 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020]  shadow-lg shadow-[#ffffff80] mb-10">
+    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] shadow-lg shadow-[#ffffff80]">
       <div className="flex justify-between items-center h-full px-6">
         <Link href="/">ELS logo</Link>
 

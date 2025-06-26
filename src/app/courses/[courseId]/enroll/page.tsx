@@ -1,6 +1,7 @@
 import { getCourseById } from "@/services/courseService"
-import { notFound, redirect } from "next/navigation"
-import Link from "next/link"
+import { notFound } from "next/navigation"
+import EnrollButton from "@/components/course/EnrollButton"
+import LessonList from "@/components/course/LessonList"
 
 export default async function page({
   params,
@@ -8,32 +9,45 @@ export default async function page({
   params: { courseId: string }
 }) {
   const course = await getCourseById(params.courseId)
-
   if (!course) notFound()
 
   return (
-    <div className="px-5">
-      <div className="w-[1000px] mx-auto">
-        <h1 className="font-bold text-[25px] mt-[9px] mb-2">{course.name}</h1>
+    <div>
+      {/* Gradient Background Section */}
+      <div className="relative">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0063B1] to-[#202020] z-0" />
 
-        <div className="flex text-sm gap-1 mb-2">
-          <p className="px-2 py-1 bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]">
-            Level {course.level}
-          </p>
-          <p className="px-2 py-1 bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]">
-            Lessons {course.totalLessons}
-          </p>
+        {/* Main Content */}
+        <div className="relative z-20 px-5 pt-[86px] pb-10">
+          <div className="max-w-[1000px] mx-auto">
+            <h1 className="font-bold text-3xl mb-4">{course.name}</h1>
+
+            <div className="flex text-sm gap-1">
+              <p className="px-2 py-1 bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]">
+                Level {course.level}
+              </p>
+              <p className="px-2 py-1 bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]">
+                Lessons {course.totalLessons}
+              </p>
+            </div>
+
+            <p className="text-sm mt-8 mb-[14px]">
+              {course.description}
+            </p>
+
+            <div>
+              <EnrollButton courseId={course._id} />
+            </div>
+          </div>
         </div>
+      </div>
 
-        <p className="subtext text-sm mb-2">{course.description}</p>
-
-        <div>
-          <Link
-            href={`/courses/${course._id}`}
-            className="button-blue font-bold flex items-center text-black"
-          >
-            Enroll
-          </Link>
+      {/* Separate Section Below Gradient */}
+      <div className="px-5">
+        <div className="max-w-[1000px] mx-auto mb-16">
+          <h2 className="subtitle">Lessons</h2>
+          <LessonList courseId={course._id} />
         </div>
       </div>
     </div>

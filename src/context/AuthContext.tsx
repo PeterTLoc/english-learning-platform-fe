@@ -1,6 +1,5 @@
 "use client"
 
-import api from "@/lib/api"
 import { LoginFormPayload, RegisterFormPayload, User } from "@/types/auth/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
 import * as authService from "@/services/authService"
