@@ -2,11 +2,14 @@ export type CourseLevelEnum = "beginner" | "intermediate" | "advanced"
 export type CourseTypeEnum = "foundation" | "work" | "listening"
 
 export interface Course {
-  id: string
+  _id: string
   name: string
-  description?: string
-  level: CourseLevelEnum
-  type: CourseTypeEnum
-  totalLessons?: number
-  coverImage: string
+  description: string
+  level: string
+  type: string
+  totalLessons: number
+  coverImage?: string
+  createdAt: string
+  updatedAt: string
+  isDeleted: boolean
 }

@@ -3,7 +3,7 @@
 import LessonContent from "@/components/course/LessonContent"
 import LessonSidebar from "@/components/course/LessonSideBar"
 import { useState } from "react"
-import { Course } from "@/types/models/course"
+import { Course } from "@/types/course/course"
 
 interface Lesson {
   id: string
@@ -22,7 +22,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
     { id: "lesson-1", title: "Lesson 1: Basics" },
     { id: "lesson-2", title: "Lesson 2: Greetings" },
     { id: "lesson-3", title: "Lesson 3: Numbers" },
-  ] // Fallback hardcoded lessons if needed
+  ] 
 
   return (
     <div className="flex">
@@ -35,7 +35,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
       />
 
       <div className="px-5 flex-1">
-        <div className="w-[1000px] mx-auto">
+        <div className="max-w-[1000px] mx-auto">
           <h1 className="title">{course.name}</h1>
 
           <LessonContent

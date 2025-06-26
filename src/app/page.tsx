@@ -1,6 +1,7 @@
 import AnimatedTitle from "@/components/home/AnimatedTitle"
 import Carousel from "@/components/ui/Carousel"
 
+
 export default function Home() {
   return (
     <div>
@@ -111,7 +112,7 @@ export default function Home() {
       </div>
 
       <div className="bg-[#1D1D1D]" style={{ height: "calc(100vh - 84px)" }}>
-        <Carousel />
+        
       </div>
     </div>
   )
