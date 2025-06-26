@@ -19,17 +19,17 @@ export default async function Page({
   const fetchedData = await membershipService.getMemberships(page, size);
 
   const memberships = fetchedData.data || [];
-  const { total, totalPages, page: currentPage } = fetchedData;
+  const { totalPages, page: currentPage } = fetchedData;
 
   return (
-    <div>
+    <div className="w-[100%]">
       <h1 className="title text-center font-bold [text-shadow:2px_2px_5px_white] underline">
         MEMBERSHIPS
       </h1>
-      <div className="flex justify-center items-center p-5 my-20">
+      <div className="flex justify-center items-center p-2 md:p-5 my-8 md:my-20">
         <MembershipList memberships={memberships} />
       </div>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center px-2 md:px-0">
         <ServerPagination
           currentPage={currentPage}
           totalPages={totalPages}
