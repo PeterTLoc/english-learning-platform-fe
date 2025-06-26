@@ -1,13 +1,13 @@
-import { allCourses } from "../data"
-import CourseDetail from "./CourseDetail"
+import { getCourseById } from "@/services/courseService"
+import CourseDetail from "../../../components/course/CourseDetail"
 import { notFound } from "next/navigation"
 
-export default async function CourseDetailPage({
+export default async function Page({
   params,
 }: {
   params: { courseId: string }
 }) {
-  const course = allCourses.find((c) => c.id === params.courseId)
+  const course = await getCourseById(params.courseId)
 
   if (!course) notFound()
 

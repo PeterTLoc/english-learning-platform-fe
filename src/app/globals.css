@@ -39,12 +39,20 @@ input:-webkit-autofill {
   @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C];
 }
 
+.button-blue {
+  @apply min-w-[130px] min-h-[32px] px-4 pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#4CC2FF] hover:bg-[#48B2E9];
+}
+
 .title {
   @apply font-bold text-[25px] mt-[9px] mb-5
 }
 
 .subtitle {
   @apply text-[13px] font-semibold mt-[1px] mb-[6px]
+}
+
+.subtext {
+  @apply text-[#CFCFCF]
 }
 
 .container {

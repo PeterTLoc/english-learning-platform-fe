@@ -2,7 +2,13 @@
 
 import React, { useEffect, useState } from "react"
 import { ChevronRight } from "lucide-react"
-import { CarouselProps } from "@/types/components/carousel"
+
+export interface CarouselProps<T> {
+  items: T[]
+  renderItem: (item: T) => React.ReactNode
+  title?: string
+  itemKey?: (item: T) => string | number
+}
 
 export default function Carousel<T>({
   items,
@@ -39,7 +45,7 @@ export default function Carousel<T>({
   if (safeItems.length === 0) return null
 
   return (
-    <section className="relative w-full mx-auto py-12 px-4 sm:px-6">
+    <section className="relative w-full mx-auto px-5">
       {/* Header */}
       <header className="flex justify-between items-center mb-1 px-2">
         <div className="px-2 pt-1 pb-2 rounded-[5px] flex items-center gap-1 group cursor-pointer hover:text-[#4CC2FF] hover:bg-[#373737] transition-all">

@@ -1,7 +1,15 @@
 "use client"
 
-import { CourseCardProps } from "@/types/components/courseCard"
 import Link from "next/link"
+
+export interface CourseCardProps {
+  id: string | number
+  title: string
+  description?: string
+  href: string
+  imageUrl: string
+  ctaLabel?: string
+}
 
 export default function CourseCard({
   id,

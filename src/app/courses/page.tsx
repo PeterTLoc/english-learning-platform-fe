@@ -1,42 +1,68 @@
 "use client"
 
+import React, { useEffect, useState } from "react"
 import Carousel from "@/components/ui/Carousel"
-import React from "react"
 import CourseCard from "@/components/ui/CourseCard"
-import { foundationCourses, listeningCourses, workCourses } from "./data"
-import { Course } from "@/types/models/course"
+import { Course } from "@/types/course/course"
+import { getAllCourses } from "@/services/courseService"
 
 const renderCourseCard = (course: Course) => (
   <CourseCard
-    id={course.id}
+    id={course._id}
     title={course.name}
     description={course.description}
-    href={`/courses/${course.id}`}
-    imageUrl={`https://picsum.photos/seed/${course.id}/400/300`}
+    href={`/courses/${course._id}/enroll`}
+    imageUrl={
+      course.coverImage || `https://picsum.photos/seed/${course._id}/400/300`
+    }
     ctaLabel={`${course.totalLessons ?? 0} Lessons`}
   />
 )
 
-const Page = () => {
+const page = () => {
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const data = await getAllCourses()
+        setCourses(data)
+      } catch (error) {
+        console.error("Error fetching courses", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadCourses()
+  }, [])
+
+  if (loading) return <div className="p-6">Loading...</div>
+
+  const coursesByLevel = courses.reduce<Record<string, Course[]>>(
+    (acc, course) => {
+      const level = course.level || "Unknown"
+      if (!acc[level]) acc[level] = []
+      acc[level].push(course)
+      return acc
+    },
+    {}
+  )
+
   return (
-    <div>
-      <Carousel
-        title="Foundations"
-        items={foundationCourses}
-        renderItem={renderCourseCard}
-      />
-      <Carousel
-        title="Work English"
-        items={workCourses}
-        renderItem={renderCourseCard}
-      />
-      <Carousel
-        title="Listening Practice"
-        items={listeningCourses}
-        renderItem={renderCourseCard}
-      />
+    <div className="flex flex-col gap-12">
+      {Object.entries(coursesByLevel).map(([level, levelCourses]) => (
+        <Carousel
+          key={level}
+          title={`Level ${level}`}
+          items={levelCourses}
+          renderItem={renderCourseCard}
+          itemKey={(course) => course._id}
+        />
+      ))}
     </div>
   )
 }
 
-export default Page
+export default page
