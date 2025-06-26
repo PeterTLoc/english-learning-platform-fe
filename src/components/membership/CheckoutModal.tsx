@@ -1,8 +1,9 @@
 "use client";
 import { IMembership } from "@/types/models/IMembership";
-import { baseShadow, membershipColorPalette } from "@/utils/colorUtils";
-import { ObjectId } from "mongoose";
 import React from "react";
+import MembershipCard from "./MembershipCard";
+import { baseShadow, membershipColorPalette, toRGBA } from "@/utils/colorUtils";
+import Image from "next/image";
 
 export default function CheckoutModal({
   isOpen,
@@ -21,20 +22,26 @@ export default function CheckoutModal({
   setPaymentMethod: (value: string) => void;
   checkout: (membershipId: string) => void;
 }) {
-  const { name, description, duration, price } = membership;
+  const { name, price } = membership;
 
   if (!isOpen) return null;
 
   const color = membershipColorPalette[index % membershipColorPalette.length];
-
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300"
-      onClick={onClose} // Close when clicking outside
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 max-w-[100%] max-h-[100%] w-[100%] overflow-y-auto"
+      onClick={onClose}
+      style={{
+        boxShadow: baseShadow(color),
+        border: `1px solid ${toRGBA(color, 0.1)}`,
+      }}
     >
       <div
-        className="flex w-[90%] max-w-4xl bg-transparent relative animate-fade-in"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+        className="flex flex-col md:flex-row w-[98%] max-w-4xl bg-[#f9fafb] relative animate-fade-in scale-95 opacity-0 transition-all duration-300 shadow-2xl border border-gray-200 rounded-2xl overflow-hidden"
+        style={{
+          animation: isOpen ? "fadeInScale 0.3s forwards" : undefined,
+        }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button (Top-Right Corner) */}
         <button
@@ -45,51 +52,26 @@ export default function CheckoutModal({
           &times;
         </button>
 
-        {/* Left Side: Membership Card */}
-        <div
-          className="max-w-sm w-full bg-white rounded-xl shadow-xl p-6"
-          style={{
-            background: `linear-gradient(180deg, ${color}, rgb(255, 255, 255))`,
-            boxShadow: baseShadow(color),
-            border: `${color.replace("1)", "1)")} 0px 9px 24px`,
-          }}
-        >
-          {/* Header with Colored Badge */}
-          <div className="flex justify-center items-center mb-6 mt-2">
-            <div
-              className="text-lg font-bold text-white px-4 py-2 rounded-full flex justify-center"
-              style={{ backgroundColor: "rgba(0,0,0,0.3)" }}
-            >
-              <h2 className="[text-shadow:1px_1px_2.5px_white]">{name}</h2>
-            </div>
-          </div>
-
-          {/* Description */}
-          {description && (
-            <p className="text-white-700 text-sm mb-6 h-[80px] overflow-y-hidden">
-              {description.length > 160
-                ? `${description.slice(0, 160)}...`
-                : description}
-            </p>
-          )}
-
-          {/* Details */}
-          <div className="space-y-4 mb-6">
-            <div className="flex justify-between">
-              <span className="text-white-700 font-medium">Duration:</span>
-              <span className="text-white-900">{duration} months</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white-700 font-medium">Price:</span>
-              <span className="text-white-900 font-semibold">
-                {price.toLocaleString("vn")}₫
-              </span>
-            </div>
-          </div>
+        {/* Left Side: Membership Card (no subscribe button) */}
+        <div className="flex-1 h-full min-w-[250px] min-h-[250px]">
+          <MembershipCard
+            membership={membership}
+            index={index}
+            hideSubscribeButton={true}
+            connectedLayout={true}
+          />
         </div>
-
+        {/* Responsive Divider */}
+        <div
+          className="hidden md:block w-px h-auto mx-2"
+          style={{ backgroundColor: toRGBA(color, 0.15) }}
+        ></div>
+        <div
+          className="block md:hidden h-px w-full my-2"
+          style={{ backgroundColor: toRGBA(color, 0.15) }}
+        ></div>
         {/* Right Side: Payment Options */}
-        <div className="ml-6 flex-1 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+        <div className="flex-1 h-full bg-[#f9fafb] p-4 md:p-8 rounded-none min-w-[250px] min-h-[250px]">
           <h3 className="text-2xl font-bold mb-6 text-gray-900">
             Order Summary
           </h3>
@@ -102,11 +84,11 @@ export default function CheckoutModal({
               <span>Quantity:</span>
               <span className="font-medium">1</span>
             </div>
-            <hr className="border-t border-gray-300 my-3" />
+            <hr className={`border-t border-[${color}] my-3`} />
             <div className="flex justify-between">
               <span className="font-semibold">Total:</span>
               <span className="text-lg font-bold text-gray-900">
-                {price.toLocaleString("vn")}₫
+                {price.toLocaleString("vi-VN")}₫
               </span>
             </div>
           </div>
@@ -123,7 +105,13 @@ export default function CheckoutModal({
                 value="vnpay"
                 className="mr-4 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               />
-              <span className="text-gray-800 font-medium">VNPay</span>
+              <span className="text-gray-800 font-medium mr-4">VNPay</span>{" "}
+              <Image
+                src="/vnpay-removebg-preview.png"
+                width={50}
+                height={50}
+                alt=""
+              />
             </label>
             <label className="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
               <input
@@ -134,17 +122,35 @@ export default function CheckoutModal({
                 value="paypal"
                 className="mr-4 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               />
-              <span className="text-gray-800 font-medium">PayPal</span>
+              <span className="text-gray-800 font-medium mr-4">PayPal</span>{" "}
+              <Image
+                src="/paypal-removebg-preview.png"
+                width={50}
+                height={50}
+                alt=""
+              ></Image>
             </label>
           </div>
           <button
             className="mt-8 w-full px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-            onClick={() => checkout((membership._id as ObjectId).toString())}
+            onClick={() => checkout(membership._id as string)}
           >
             Proceed to Payment
           </button>
         </div>
       </div>
+      <style jsx global>{`
+        @keyframes fadeInScale {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 }
