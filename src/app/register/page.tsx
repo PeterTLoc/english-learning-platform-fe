@@ -5,6 +5,8 @@ import { parseAxiosError } from "@/utils/apiErrors"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { RegisterErrors, RegisterFormData } from "@/types/auth/auth"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import { Eye, EyeOff } from "lucide-react"
 
 const initialFormData: RegisterFormData = {
   name: "",
@@ -53,6 +55,8 @@ const page = () => {
   const [errors, setErrors] = useState<RegisterErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const router = useRouter()
   const { register } = useAuth()
@@ -60,6 +64,14 @@ const page = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -133,16 +145,27 @@ const page = () => {
             )}
           </div>
 
-          <div>
+          <div className="relative">
             <input
-              className="input"
+              className="input pr-10"
               placeholder="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={form.password}
               onChange={handleChange}
               required
             />
+            <button 
+              type="button" 
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
             {errors.password && (
               <p className="text-red-500 text-xs min-width-[280px]">
                 {errors.password || "\u00A0"}
@@ -150,16 +173,27 @@ const page = () => {
             )}
           </div>
 
-          <div>
+          <div className="relative">
             <input
-              className="input"
+              className="input pr-10"
               placeholder="Confirm Password"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
               required
             />
+            <button 
+              type="button" 
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200"
+              onClick={toggleConfirmPasswordVisibility}
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
             {errors.confirmPassword && (
               <p className="text-red-500 text-xs min-width-[280px]">
                 {errors.confirmPassword || "\u00A0"}
@@ -168,10 +202,18 @@ const page = () => {
           </div>
 
           <button
-            className="mt-[30px] self-end min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-black bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9]"
+            className="mt-[30px] self-end min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-black bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9] relative"
             type="submit"
+            disabled={isLoading}
           >
-            {isLoading ? "Registering..." : "Register"}
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <LoadingSpinner size="small" className="mr-2" />
+                Registering...
+              </span>
+            ) : (
+              "Register"
+            )}
           </button>
         </div>
       </form>

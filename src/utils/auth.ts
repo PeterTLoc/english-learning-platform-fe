@@ -24,3 +24,13 @@ export const validateLoginForm = (form: LoginFormData): LoginErrors => {
 
   return errors
 }
+
+/**
+ * Gets the redirect URL from query parameters
+ */
+export function getRedirectUrl(): string | null {
+  if (typeof window === 'undefined') return null
+  
+  const params = new URLSearchParams(window.location.search)
+  return params.get('redirect') || '/'
+}

@@ -5,6 +5,8 @@ import { LoginFormPayload, RegisterFormPayload, User } from "@/types/auth/auth"
 import { parseAxiosError } from "@/utils/apiErrors"
 import * as authService from "@/services/authService"
 import { createContext, useContext, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { AuthGuard } from "@/components/guards"
 
 interface AuthContextType {
   user: User | null
@@ -14,15 +16,19 @@ interface AuthContextType {
   logout: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+// Default context value
+const defaultContextValue: AuthContextType = {
+  user: null,
+  loading: true,
+  login: async () => {},
+  register: async () => {},
+  logout: async () => {}
+}
+
+const AuthContext = createContext<AuthContextType>(defaultContextValue)
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
-
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider")
-  }
-
   return context
 }
 
@@ -31,12 +37,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   const login = async (formData: LoginFormPayload): Promise<void> => {
     setLoading(true)
     try {
       const user = await authService.login(formData)
-
       setUser(user)
     } catch (error) {
       const parsed = parseAxiosError(error)
@@ -52,7 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true)
     try {
       const user = await authService.register(formData)
-
       setUser(user)
     } catch (error) {
       const parsed = parseAxiosError(error)
@@ -68,6 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await authService.logout()
       setUser(null)
+      
+      // Redirect to home page after logout
+      router.push('/')
     } catch (error) {
       console.error("Logout failed: ", error)
     }
@@ -79,9 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const user = await authService.getCurrentUser()
         setUser(user)
       } catch (error) {
-        console.log(error)
+        console.log("Not authenticated:", error)
         setUser(null)
       } finally {
+        // Always set loading to false, even if there's an error
         setLoading(false)
       }
     }
@@ -89,9 +98,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchUser()
   }, [])
 
+  // Always render children, even while loading
   return (
     <AuthContext.Provider value={{ user, loading, login, register, logout }}>
-      {children}
+      <AuthGuard>
+        {children}
+      </AuthGuard>
     </AuthContext.Provider>
   )
 }

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { LoginErrors, LoginFormData } from "@/types/auth/auth";
 import LoginForm from "@/components/login/LoginForm";
-import { validateLoginForm } from "@/utils/auth";
+import { getRedirectUrl, validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 
 const page = () => {
@@ -40,7 +40,9 @@ const page = () => {
     try {
       await login(form);
 
-      router.push("/");
+      // Get redirect URL from query params or default to dashboard
+      const redirectUrl = getRedirectUrl();
+      router.push(redirectUrl || '/');
     } catch (error: unknown) {
       const { message } = parseAxiosError(error);
       setServerError(message);

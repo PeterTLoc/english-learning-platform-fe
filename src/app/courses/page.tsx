@@ -5,6 +5,7 @@ import Carousel from "@/components/ui/Carousel"
 import CourseCard from "@/components/ui/CourseCard"
 import { Course } from "@/types/course/course"
 import { getAllCourses } from "@/services/courseService"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
 
 const renderCourseCard = (course: Course) => (
   <CourseCard
@@ -38,7 +39,7 @@ const page = () => {
     loadCourses()
   }, [])
 
-  if (loading) return <div className="p-6">Loading...</div>
+  if (loading) return <LoadingSpinner fullScreen />
 
   const coursesByLevel = courses.reduce<Record<string, Course[]>>(
     (acc, course) => {
