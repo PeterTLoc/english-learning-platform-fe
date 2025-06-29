@@ -25,7 +25,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
   ] 
 
   return (
-    <div className="flex">
+    <div className="mt-10 flex">
       <LessonSidebar
         lessons={lessons}
         openLessonId={openLessonId}

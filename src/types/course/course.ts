@@ -16,3 +16,17 @@ export interface Course {
   updatedAt: string
   isDeleted: boolean
 }
+
+export interface Lesson {
+  _id: string;
+  courseId: string;
+  name: string;
+  description: string;
+  length: number;
+  order: number;
+  isDeleted: boolean;
+  createdAt: string; 
+  updatedAt: string; 
+  __v: number;
+  course: Course;
+}

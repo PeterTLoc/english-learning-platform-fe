@@ -55,7 +55,7 @@ input:-webkit-autofill {
 }
 
 .title {
-  @apply font-bold text-[25px] mt-[9px] mb-5
+  @apply font-bold text-[25px] mt-4 mb-5
 }
 
 .subtitle {

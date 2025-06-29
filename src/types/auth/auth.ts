@@ -23,6 +23,7 @@ export interface RegisterFormData {
 }
 
 export interface User {
+  _id: string
   username: string
   role: number
   avatar: string

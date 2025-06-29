@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
 import "./globals.css"
-import RootLayoutClient from "@/components/layout/RootLayoutClient"
+import { AuthProvider } from "@/context/AuthContext"
+import LayoutWrapper from "@/components/layout/LayoutWrapper"
+import { Suspense } from "react"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import { CourseProvider } from "@/context/CourseContext"
+
 
 export const metadata: Metadata = {
   title: "English Learning Platform",
@@ -14,7 +19,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <RootLayoutClient>{children}</RootLayoutClient>
+        <body className={`antialiased`}>
+        <Suspense fallback={<LoadingSpinner fullScreen size="large" />}>
+          <AuthProvider>
+            <CourseProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </CourseProvider>
+          </AuthProvider>
+        </Suspense>
+      </body>
     </html>
   )
 }

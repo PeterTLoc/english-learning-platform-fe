@@ -32,7 +32,7 @@ export default function LessonSidebar({
   }
 
   return (
-    <div className="px-5">
+    <div className="p-5">
       {lessons.map((lesson) => {
         const isOpen = openLessonId === lesson.id
         const activeTab = activeTabs[lesson.id] || "Vocabulary"
