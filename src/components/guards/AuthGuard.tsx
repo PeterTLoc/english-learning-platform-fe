@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useAuth } from "@/context/AuthContext"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -46,7 +47,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   // Always render during loading to prevent flash of unauthorized content
   if (loading) {
-    return <LoadingSpinner fullScreen />
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-30">
+        <LoadingSpinner />
+        <p className="mt-3 text-white font-medium">Loading...</p>
+      </div>
+    )
   }
 
   // If it's a public route or user is authorized, render children

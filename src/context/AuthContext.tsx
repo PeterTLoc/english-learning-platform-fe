@@ -7,6 +7,7 @@ import * as authService from "@/services/authService"
 import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AuthGuard } from "@/components/guards"
+import { UserRole } from "@/components/guards/RoleGuard"
 
 interface AuthContextType {
   user: User | null
@@ -40,17 +41,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter()
 
   const login = async (formData: LoginFormPayload): Promise<void> => {
-    setLoading(true)
     try {
-      const user = await authService.login(formData)
-      setUser(user)
+      // Login only returns token, not user data
+      await authService.login(formData)
+      
+      // Fetch user data after successful login
+      const userData = await authService.getCurrentUser()
+      setUser(userData)
     } catch (error) {
       const parsed = parseAxiosError(error)
-
       console.error("Login failed:", parsed.message)
+      // Ensure the error is thrown so it can be caught by the login page
       throw new Error(parsed.message)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -81,13 +83,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
+  // Initial auth check on app load
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await authService.getCurrentUser()
+        const user = await authService.getCurrentUser();
+        if (!user) {
+          throw new Error("User not found")
+        }
         setUser(user)
       } catch (error) {
-        console.log("Not authenticated:", error)
         setUser(null)
       } finally {
         // Always set loading to false, even if there's an error
@@ -97,6 +102,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     fetchUser()
   }, [])
+
+  // Handle redirects based on user role
+  useEffect(() => {
+    if (user && !loading) {
+      // If user is admin, redirect to admin dashboard
+      if (user.role === UserRole.ADMIN) {
+        const pathname = window.location.pathname
+        if (pathname === '/' || pathname === '/login') {
+          router.push('/admin')
+        }
+      }
+    }
+  }, [user, loading, router])
 
   // Always render children, even while loading
   return (

@@ -8,7 +8,6 @@ interface Props {
   form: LoginFormData;
   errors: LoginErrors;
   isLoading: boolean;
-  serverError: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
@@ -17,7 +16,6 @@ const LoginForm = ({
   form,
   errors,
   isLoading,
-  serverError,
   onChange,
   onSubmit,
 }: Props) => {
@@ -30,10 +28,10 @@ const LoginForm = ({
   return (
     <div>
       <form
-        className="flex flex-col bg-black/50 p-5 pb-[26px] border border-[#1D1D1D] rounded-md"
+        className="flex flex-col bg-black/70 p-5 pb-[26px] border border-[#1D1D1D] rounded-md gap-2"
         onSubmit={onSubmit}
       >
-        <h1 className="text-[28px] font-bold self-center mb-5">Sign in</h1>
+        <h1 className="text-[28px] font-bold self-center">Sign in</h1>
 
         <div className="mb-4">
           <input
@@ -45,12 +43,12 @@ const LoginForm = ({
             onChange={onChange}
             required
           />
-          {errors.email && (
-            <p className="text-red-500 text-xs w-[280px]">
-              {errors.email || "\u00A0"}
-            </p>
-          )}
         </div>
+        {errors.email && (
+          <p className="text-red-500 text-sm w-[280px]">
+            {errors.email || "\u00A0"}
+          </p>
+        )}
 
         <div className="mb-[15px] relative">
           <input
@@ -62,8 +60,8 @@ const LoginForm = ({
             onChange={onChange}
             required
           />
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200"
             onClick={togglePasswordVisibility}
           >
@@ -73,12 +71,12 @@ const LoginForm = ({
               <Eye className="h-5 w-5" />
             )}
           </button>
-          {errors.password && (
-            <p className="text-red-500 text-xs w-[280px]">
-              {errors.password || "\u00A0"}
-            </p>
-          )}
         </div>
+        {errors.password && (
+          <p className="text-red-500 text-sm w-[280px]">
+            {errors.password || "\u00A0"}
+          </p>
+        )}
 
         <div className="text-sm flex justify-between">
           <Link
@@ -96,7 +94,7 @@ const LoginForm = ({
         </div>
 
         <button
-          className="mt-[30px] text-black w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9] relative"
+          className="text-black w-full min-h-[33px] pt-[5px] pb-[3px] rounded-[5px] text-[13px] bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9] relative"
           type="submit"
           disabled={isLoading}
         >
@@ -110,12 +108,6 @@ const LoginForm = ({
           )}
         </button>
       </form>
-
-      {serverError && (
-        <p className="text-red-500 text-xs width-[280px] mt-2 mx-auto w-[280px] text-center">
-          {serverError}
-        </p>
-      )}
     </div>
   );
 };

@@ -1,22 +1,23 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { parseAxiosError } from "@/utils/apiErrors";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { LoginErrors, LoginFormData } from "@/types/auth/auth";
 import LoginForm from "@/components/login/LoginForm";
-import { getRedirectUrl, validateLoginForm } from "@/utils/auth";
+import { validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 
 const page = () => {
   const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
 
   const router = useRouter();
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,7 +26,6 @@ const page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setServerError("");
 
     const validationErrors = validateLoginForm(form);
 
@@ -38,15 +38,14 @@ const page = () => {
     setIsLoading(true);
 
     try {
+      // Login will handle redirect based on user role in AuthContext
       await login(form);
-
-      // Get redirect URL from query params or default to dashboard
-      const redirectUrl = getRedirectUrl();
-      router.push(redirectUrl || '/');
-    } catch (error: unknown) {
-      const { message } = parseAxiosError(error);
-      setServerError(message);
-    } finally {
+      showToast("Login successful!", "success");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      // Show error toast
+      showToast(error.message || "Login failed. Please check your credentials and try again.", "error", 5000);
+      // Ensure the isLoading state is set to false on error
       setIsLoading(false);
     }
   };
@@ -57,7 +56,6 @@ const page = () => {
         form={form}
         errors={errors}
         isLoading={isLoading}
-        serverError={serverError}
         onChange={handleChange}
         onSubmit={handleSubmit}
       />

@@ -1,6 +1,7 @@
 "use client"
 
 import { useAuth } from "@/context/AuthContext"
+import { useToast } from "@/context/ToastContext"
 import { parseAxiosError } from "@/utils/apiErrors"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
@@ -54,12 +55,12 @@ const page = () => {
   const [form, setForm] = useState<RegisterFormData>(initialFormData)
   const [errors, setErrors] = useState<RegisterErrors>({})
   const [isLoading, setIsLoading] = useState(false)
-  const [serverError, setServerError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const router = useRouter()
   const { register } = useAuth()
+  const { showToast } = useToast()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -76,7 +77,6 @@ const page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setServerError("")
 
     const validationErrors = validate(form)
 
@@ -90,12 +90,11 @@ const page = () => {
 
     try {
       await register(form)
-
+      showToast("Registration successful! Please log in.", "success")
       router.push("/login")
     } catch (error: unknown) {
       const { message } = parseAxiosError(error)
-      setServerError(message)
-    } finally {
+      showToast(message, "error", 5000)
       setIsLoading(false)
     }
   }
@@ -217,12 +216,6 @@ const page = () => {
           </button>
         </div>
       </form>
-
-      {serverError && (
-        <p className="mt-2 text-red-500 text-xs min-width-[280px] mx-auto w-[280px] text-center">
-          {serverError}
-        </p>
-      )}
     </div>
   )
 }

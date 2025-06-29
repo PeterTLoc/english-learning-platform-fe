@@ -50,8 +50,8 @@ export default function AdminSidebar() {
   ]
 
   return (
-    <aside id="admin-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Admin sidebar">
-      <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+    <aside id="admin-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-[#202020] border-r border-[#1D1D1D] sm:translate-x-0" aria-label="Admin sidebar">
+      <div className="h-full px-3 pb-4 overflow-y-auto bg-[#202020]">
         <ul className="space-y-2 font-medium">
           {sidebarItems.map((item) => (
             <li key={item.path}>
@@ -59,8 +59,8 @@ export default function AdminSidebar() {
                 href={item.path}
                 className={`flex items-center p-3 rounded-lg ${
                   pathname === item.path
-                    ? 'bg-blue-700 text-white'
-                    : 'text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white'
+                    ? 'bg-[#4CC2FF] text-white'
+                    : 'text-white hover:bg-[#2D2D2D]'
                 }`}
               >
                 {item.icon}
@@ -72,7 +72,7 @@ export default function AdminSidebar() {
           <li className="mt-10">
             <Link 
               href="/"
-              className="flex items-center p-3 text-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
+              className="flex items-center p-3 text-white rounded-lg hover:bg-[#2D2D2D]"
             >
               <Home className="w-5 h-5" />
               <span className="ms-3">Back to Site</span>

@@ -6,9 +6,6 @@ export const validateLoginForm = (form: LoginFormData): LoginErrors => {
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-  const isValidPassword = (password: string) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,50}$/.test(password)
-
   if (!form.email) {
     errors.email = "Email is required"
   } else if (!isValidEmail(form.email)) {
@@ -17,10 +14,7 @@ export const validateLoginForm = (form: LoginFormData): LoginErrors => {
 
   if (!form.password) {
     errors.password = "Password is required"
-  } else if (!isValidPassword(form.password)) {
-    errors.password =
-      "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-50 characters long"
-  }
+  }  
 
   return errors
 }

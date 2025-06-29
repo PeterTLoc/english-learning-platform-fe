@@ -20,3 +20,67 @@ export interface IUser extends Document {
   };
   points: number;
 }
+
+export interface UserDetail extends IUser {
+  stats?: {
+    totalPoints: number;
+    completedLessons: number;
+    completedCourses: number;
+    completedTests: number;
+  };
+  courses?: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    list: {
+      _id: string;
+      title: string;
+      progress: number;
+      status: string;
+    }[];
+  };
+  lessons?: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    list: {
+      _id: string;
+      title: string;
+      progress: number;
+      status: string;
+    }[];
+  };
+  tests?: {
+    total: number;
+    completed: number;
+    averageScore: number;
+    highestScore: number;
+    list: {
+      _id: string;
+      title: string;
+      score: number;
+      dateTaken: string;
+    }[];
+  };
+  achievements?: {
+    total: number;
+    list: {
+      _id: string;
+      title: string;
+      description: string;
+      dateAwarded: string;
+    }[];
+  };
+  flashcards?: {
+    total: number;
+    mastered: number;
+    learning: number;
+    studying: number;
+    list: {
+      _id: string;
+      term: string;
+      definition: string;
+      status: string;
+    }[];
+  };
+}

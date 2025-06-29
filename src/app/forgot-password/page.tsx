@@ -2,13 +2,14 @@
 
 import axios from "axios"
 import React, { useState } from "react"
+import { useToast } from "@/context/ToastContext"
 
 const page = () => {
   const [email, setEmail] = useState("")
   const [errors, setErrors] = useState<{ email?: string }>({})
-  const [successMessage, setSuccessMessage] = useState("")
-  const [submitError, setSubmitError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const { showToast } = useToast()
 
   if (!apiUrl) {
     throw new Error(
@@ -21,8 +22,6 @@ const page = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSuccessMessage("")
-    setSubmitError("")
 
     const errors: { email?: string } = {}
 
@@ -36,6 +35,8 @@ const page = () => {
 
     if (Object.keys(errors).length > 0) return
 
+    setIsLoading(true)
+
     try {
       const response = await axios.post(
         `${apiUrl}/api/auth/send-reset-password-pin`,
@@ -45,9 +46,11 @@ const page = () => {
         }
       )
 
-      setSuccessMessage("Password reset link sent to your email.")
+      showToast("Password reset link sent to your email.", "success", 5000)
     } catch (error: any) {
-      setSubmitError(error.message)
+      showToast(error.message || "Failed to send reset link. Please try again.", "error", 5000)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -75,22 +78,11 @@ const page = () => {
         <button
           className="mt-7 self-end min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] text-black bg-[#4CC2FF] border-[#42A7DC] hover:bg-[#48B2E9]"
           type="submit"
+          disabled={isLoading}
         >
-          Send PIN
+          {isLoading ? "Sending..." : "Send PIN"}
         </button>
       </form>
-
-      {successMessage && (
-        <p className="text-center text-green-500 text-xs mt-2 mx-auto w-[280px]">
-          {successMessage}
-        </p>
-      )}
-
-      {submitError && (
-        <p className="text-center text-red-500 text-xs mt-2 mx-auto w-[280px]">
-          {submitError}
-        </p>
-      )}
     </div>
   )
 }
