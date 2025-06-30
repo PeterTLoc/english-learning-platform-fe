@@ -13,8 +13,8 @@ export default function AdminHeader() {
   useEffect(() => {
     // Initialize Flowbite drawer/sidebar
     const initFlowbite = async () => {
-      const { initFlowbite } = await import('flowbite')
-      initFlowbite()
+      const flowbite = await import('flowbite')
+      flowbite.initDrawers()
     }
     
     initFlowbite()
@@ -59,6 +59,7 @@ export default function AdminHeader() {
             <button 
               data-drawer-target="admin-sidebar" 
               data-drawer-toggle="admin-sidebar" 
+              data-drawer-backdrop="true"
               aria-controls="admin-sidebar" 
               type="button" 
               className="inline-flex items-center p-2 text-sm text-[#CFCFCF] rounded-lg sm:hidden hover:bg-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#4CC2FF] transition-colors duration-300 ease-in-out"

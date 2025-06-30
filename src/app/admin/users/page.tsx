@@ -252,7 +252,7 @@ const UserManagementPage = () => {
                 {users.data.map((user) => (
                   <tr
                     key={user._id}
-                    className={`border-b bg-[#202020] border-[#1D1D1D] ${
+                    className={`border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D] transition-colors ${
                       user.isDeleted ? "opacity-50" : ""
                     }`}
                   >

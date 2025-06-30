@@ -50,7 +50,13 @@ export default function AdminSidebar() {
   ]
 
   return (
-    <aside id="admin-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-[#202020] border-r border-[#1D1D1D] sm:translate-x-0" aria-label="Admin sidebar">
+    <aside 
+      id="admin-sidebar" 
+      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-[#202020] border-r border-[#1D1D1D] sm:translate-x-0" 
+      aria-label="Admin sidebar"
+      data-drawer="show"
+      data-drawer-target="admin-sidebar"
+    >
       <div className="h-full px-3 pb-4 overflow-y-auto bg-[#202020]">
         <ul className="space-y-2 font-medium">
           {sidebarItems.map((item) => (

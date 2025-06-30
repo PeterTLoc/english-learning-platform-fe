@@ -7,11 +7,10 @@ interface MembershipModalProps {
   mode: "create" | "edit";
   membership?: IMembership | null;
   onClose: () => void;
-  onCreate: (membershipData: Partial<IMembership>) => Promise<void>;
-  onUpdate: (membershipId: string, membershipData: Partial<IMembership>) => Promise<void>;
+  onSubmit: ((membershipData: Partial<IMembership>) => Promise<void>) | ((membershipId: string, membershipData: Partial<IMembership>) => Promise<void>);
 }
 
-const MembershipModal = ({ mode, membership, onClose, onCreate, onUpdate }: MembershipModalProps) => {
+const MembershipModal = ({ mode, membership, onClose, onSubmit }: MembershipModalProps) => {
   const [formData, setFormData] = useState<Partial<IMembership>>({
     name: "",
     description: "",
@@ -47,9 +46,9 @@ const MembershipModal = ({ mode, membership, onClose, onCreate, onUpdate }: Memb
       };
 
       if (mode === "create") {
-        await onCreate(payload);
+        await (onSubmit as (data: Partial<IMembership>) => Promise<void>)(payload);
       } else if (mode === "edit" && membership) {
-        await onUpdate(membership._id, payload);
+        await (onSubmit as (id: string, data: Partial<IMembership>) => Promise<void>)(membership._id, payload);
       }
       onClose();
     } catch (error) {

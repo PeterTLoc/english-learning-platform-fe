@@ -149,39 +149,52 @@ export const getUserDetailById = async (userId: string): Promise<UserDetail> => 
   }
 
   if (coursesResponse.status === 'fulfilled' && coursesResponse.value) {
+    console.log(coursesResponse.value)
+    const courses = coursesResponse.value.data || [];
     userDetail.courses = {
-      total: coursesResponse.value.length,
-      completed: coursesResponse.value.filter((c: any) => c.status === 'completed').length,
-      inProgress: coursesResponse.value.filter((c: any) => c.status === 'in-progress').length,
-      list: coursesResponse.value.map((c: any) => ({
+      total: courses.length,
+      completed: courses.filter((c: any) => c.status === 'completed').length,
+      inProgress: courses.filter((c: any) => c.status === 'ongoing').length,
+      list: courses.map((c: any) => ({
         _id: c._id,
-        name: c.course.name, // Note: You might need to fetch course details separately
-        progress: c.progress,
+        name: c.course?.name || 'Unknown Course',
+        progress: c.progress || 0,
         status: c.status
       }))
     }
   }
 
   if (lessonsResponse.status === 'fulfilled' && lessonsResponse.value) {
+    const lessons = lessonsResponse.value.data || [];
     userDetail.lessons = {
-      total: lessonsResponse.value.length,
-      completed: lessonsResponse.value.filter((l: any) => l.status === 'completed').length,
-      inProgress: lessonsResponse.value.filter((l: any) => l.status === 'in-progress').length
+      total: lessons.length,
+      completed: lessons.filter((l: any) => l.status === 'completed').length,
+      inProgress: lessons.filter((l: any) => l.status === 'in-progress').length
     }
   }
 
   if (testsResponse.status === 'fulfilled' && testsResponse.value) {
-    const scores = testsResponse.value.map((t: any) => t.score)
+    const tests = testsResponse.value.data || [];
+    const scores = tests.map((t: any) => t.score || 0);
     userDetail.tests = {
-      total: testsResponse.value.length,
-      completed: testsResponse.value.filter((t: any) => t.status === 'completed').length,
-      averageScore: scores.length ? scores.reduce((a: any, b: any) => a + b, 0) / scores.length : 0,
+      total: tests.length,
+      completed: tests.filter((t: any) => t.status === 'completed').length,
+      averageScore: scores.length ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length : 0,
       highestScore: scores.length ? Math.max(...scores) : 0
     }
   }
 
   if (achievementsResponse.status === 'fulfilled' && achievementsResponse.value?.data) {
-    userDetail.achievements = achievementsResponse.value.data
+    const achievements = achievementsResponse.value.data.data || [];
+    userDetail.achievements = {
+      total: achievements.length,
+      list: achievements.map((a: any) => ({
+        _id: a._id,
+        title: a.achievement?.name || 'Unknown Achievement',
+        description: a.achievement?.description || '',
+        dateAwarded: a.createdAt
+      }))
+    }
   }
 
   if (flashcardsResponse.status === 'fulfilled' && flashcardsResponse.value?.data) {

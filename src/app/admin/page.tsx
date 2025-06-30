@@ -111,8 +111,9 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col gap-4 justify-center items-center h-screen">
         <LoadingSpinner />
+        <p className="text-[#CFCFCF]">Loading dashboard data...</p>
       </div>
     )
   }

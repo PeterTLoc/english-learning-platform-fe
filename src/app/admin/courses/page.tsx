@@ -126,7 +126,7 @@ const CourseManagementPage = () => {
     }
   };
 
-  const handleCreateCourse = async (courseData: Partial<Course>) => {
+  const handleCreateCourse = async (courseData: FormData) => {
     try {
       await courseService.createCourse(courseData);
       showToast("Course has been created", "success");
@@ -139,10 +139,7 @@ const CourseManagementPage = () => {
     }
   };
 
-  const handleUpdateCourse = async (
-    courseId: string,
-    courseData: Partial<Course>
-  ) => {
+  const handleUpdateCourse = async (courseId: string, courseData: FormData) => {
     try {
       await courseService.updateCourse(courseId, courseData);
       showToast("Course has been updated", "success");
@@ -342,9 +339,7 @@ const CourseManagementPage = () => {
                 {courses.data.map((course) => (
                   <tr
                     key={course._id}
-                    className={`border-b bg-[#202020] border-[#1D1D1D] ${
-                      course.isDeleted ? "opacity-50" : ""
-                    }`}
+                    className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D] transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center">

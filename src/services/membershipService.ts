@@ -45,21 +45,17 @@ interface GetMembershipsParams {
   page: number;
   size: number;
   search?: string;
-  price?: "asc" | "desc" | "";
-  duration?: "asc" | "desc" | "";
   sortBy?: string;
   order?: string;
 }
 
 export const getAllMemberships = async (params: GetMembershipsParams): Promise<PaginatedMemberships> => {
-  const { page, size, search, price, duration, sortBy, order } = params;
+  const { page, size, search, sortBy, order } = params;
   const response = await api.get<PaginatedMemberships>('/api/memberships', {
     params: {
       page,
       size,
       search,
-      price,
-      duration,
       sortBy,
       order
     }
@@ -78,7 +74,7 @@ export const createMembership = async (membershipData: Partial<IMembership>): Pr
 };
 
 export const updateMembership = async (id: string, membershipData: Partial<IMembership>): Promise<IMembership> => {
-  const response = await api.put<IMembership>(`/api/memberships/${id}`, membershipData);
+  const response = await api.patch<IMembership>(`/api/memberships/${id}`, membershipData);
   return response.data;
 };
 

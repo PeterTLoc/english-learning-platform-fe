@@ -15,7 +15,7 @@ export default {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        sans: ['var(--font-mulish)'],
+        mulish: ['var(--font-mulish)', 'sans-serif'],
       },
       transitionProperty: {
         'all': 'all',

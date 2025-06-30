@@ -7,8 +7,8 @@ interface CourseModalProps {
   mode: "create" | "edit";
   course?: Course | null;
   onClose: () => void;
-  onCreate: (courseData: Partial<Course>) => Promise<void>;
-  onUpdate: (courseId: string, courseData: Partial<Course>) => Promise<void>;
+  onCreate: (courseData: FormData) => Promise<void>;
+  onUpdate: (courseId: string, courseData: FormData) => Promise<void>;
 }
 
 const CourseModal = ({ mode, course, onClose, onCreate, onUpdate }: CourseModalProps) => {
@@ -17,10 +17,12 @@ const CourseModal = ({ mode, course, onClose, onCreate, onUpdate }: CourseModalP
     description: "",
     level: "A1",
     type: "free",
-    coverImage: "",
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const [shouldDeleteImage, setShouldDeleteImage] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && course) {
@@ -29,10 +31,30 @@ const CourseModal = ({ mode, course, onClose, onCreate, onUpdate }: CourseModalP
         description: course.description,
         level: course.level,
         type: course.type,
-        coverImage: course.coverImage,
       });
+      setImagePreview(course.coverImage || "");
     }
   }, [mode, course]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setShouldDeleteImage(false);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    setShouldDeleteImage(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,9 +63,31 @@ const CourseModal = ({ mode, course, onClose, onCreate, onUpdate }: CourseModalP
 
     try {
       if (mode === "create") {
-        await onCreate(formData);
+        const formDataToSend = new FormData();
+        formDataToSend.append("name", formData.name || "");
+        formDataToSend.append("description", formData.description || "");
+        formDataToSend.append("level", formData.level || "A1");
+        formDataToSend.append("type", formData.type || "free");
+        
+        if (imageFile) {
+          formDataToSend.append("courseCover", imageFile);
+        }
+
+        await onCreate(formDataToSend);
       } else if (mode === "edit" && course) {
-        await onUpdate(course._id, formData);
+        const formDataToSend = new FormData();
+        formDataToSend.append("name", formData.name || "");
+        formDataToSend.append("description", formData.description || "");
+        formDataToSend.append("level", formData.level || "A1");
+        formDataToSend.append("type", formData.type || "free");
+        
+        if (imageFile) {
+          formDataToSend.append("courseCover", imageFile);
+        }
+        if (shouldDeleteImage) {
+          formDataToSend.append("deleteCoverImage", "true");
+        }
+        await onUpdate(course._id, formDataToSend);
       }
       onClose();
     } catch (error) {
@@ -74,8 +118,8 @@ const CourseModal = ({ mode, course, onClose, onCreate, onUpdate }: CourseModalP
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[#202020] rounded-lg p-6 w-full max-w-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#202020] rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-semibold text-white mb-4">
           {mode === "create" ? "Create New Course" : "Edit Course"}
         </h2>
@@ -139,14 +183,34 @@ const CourseModal = ({ mode, course, onClose, onCreate, onUpdate }: CourseModalP
           </div>
 
           <div>
-            <label className="block text-[#CFCFCF] mb-1">Cover Image URL</label>
-            <input
-              type="url"
-              value={formData.coverImage}
-              onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-              className="input w-full p-2"
-              placeholder="https://example.com/image.jpg"
-            />
+            <label className="block text-[#CFCFCF] mb-1">Cover Image</label>
+            <div className="relative">
+              <input
+                type="file"
+                onChange={handleImageChange}
+                accept="image/*"
+                className="block w-full text-sm text-[#CFCFCF] file:mr-4 file:py-2 file:px-4 file:rounded-[5px] file:border-0 file:text-sm file:bg-[#4CC2FF] file:text-black hover:file:bg-[#3AA0DB] cursor-pointer bg-[#2D2D2D] rounded-[5px] border border-[#1D1D1D]"
+                required={mode === "create"}
+              />
+            </div>
+            {imagePreview && (
+              <div className="mt-2 relative group">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded border border-[#1D1D1D]"
+                />
+                <button
+                  type="button"
+                  onClick={handleDeleteImage}
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-2 mt-6">

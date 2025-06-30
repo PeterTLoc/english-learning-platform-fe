@@ -38,14 +38,22 @@ export const getCourseById = async (id: string): Promise<Course> => {
   return response.data.course
 }
 
-export const createCourse = async (courseData: Partial<Course>): Promise<Course> => {
-  const response = await api.post("/api/courses", courseData)
-  return response.data.course
+export const createCourse = async (courseData: FormData): Promise<Course> => {
+  const response = await api.post("/api/courses", courseData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data.course;
 }
 
-export const updateCourse = async (id: string, courseData: Partial<Course>): Promise<Course> => {
-  const response = await api.patch(`/api/courses/${id}`, courseData)
-  return response.data.course
+export const updateCourse = async (id: string, courseData: FormData): Promise<Course> => {
+  const response = await api.patch(`/api/courses/${id}`, courseData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data.course;
 }
 
 export const deleteCourse = async (id: string): Promise<void> => {

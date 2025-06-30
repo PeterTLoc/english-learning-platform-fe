@@ -1,11 +1,15 @@
 import type { Metadata } from "next"
 import "./globals.css"
-import { AuthProvider } from "@/context/AuthContext"
-import LayoutWrapper from "@/components/layout/LayoutWrapper"
+import { Mulish } from "next/font/google"
+import ClientProviders from "@/components/layout/ClientProviders"
 import { Suspense } from "react"
 import LoadingSpinner from "@/components/ui/LoadingSpinner"
-import { CourseProvider } from "@/context/CourseContext"
 
+const mulish = Mulish({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mulish",
+})
 
 export const metadata: Metadata = {
   title: "English Learning Platform",
@@ -18,14 +22,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-        <body className={`antialiased`}>
+    <html lang="en" className={mulish.variable}>
+      <body className={`font-mulish antialiased`}>
         <Suspense fallback={<LoadingSpinner fullScreen size="large" />}>
-          <AuthProvider>
-            <CourseProvider>
-              <LayoutWrapper>{children}</LayoutWrapper>
-            </CourseProvider>
-          </AuthProvider>
+          <ClientProviders>
+            {children}
+          </ClientProviders>
         </Suspense>
       </body>
     </html>

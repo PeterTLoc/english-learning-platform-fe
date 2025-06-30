@@ -11,10 +11,12 @@ export interface Course {
   level: CourseLevelEnum
   type: CourseTypeEnum
   totalLessons: number
-  coverImage?: string
+  coverImage: string | null
+  rating: number
+  totalEnrolled: number
+  isDeleted: boolean
   createdAt: string
   updatedAt: string
-  isDeleted: boolean
 }
 
 export interface Lesson {
