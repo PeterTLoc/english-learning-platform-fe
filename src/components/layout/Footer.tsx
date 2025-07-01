@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="bg-[#202020] text-white py-6 mt-auto">
-      <div className="mx-auto text-center text-sm">
+    <footer className="bg-[#1D1D1D] text-white py-5 mt-auto">
+      <div className="text-center text-xs">
         &copy; {new Date().getFullYear()} ELS. All rights reserved.
       </div>
     </footer>

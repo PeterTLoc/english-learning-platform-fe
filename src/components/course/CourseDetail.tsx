@@ -2,27 +2,39 @@
 
 import LessonContent from "@/components/course/LessonContent"
 import LessonSidebar from "@/components/course/LessonSideBar"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Course } from "@/types/course/course"
-
-interface Lesson {
-  id: string
-  title: string
-}
+import { getAllLessonsByCourseId } from "@/services/lessonService"
+import { parseAxiosError } from "@/utils/apiErrors"
+import { Lesson } from "@/types/lesson/lesson"
 
 interface CourseDetailProps {
   course: Course
 }
 
 export default function CourseDetail({ course }: CourseDetailProps) {
+  const [lessons, setLessons] = useState<Lesson[]>([])
   const [openLessonId, setOpenLessonId] = useState<string | null>(null)
   const [activeTabs, setActiveTabs] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(true)
 
-  const lessons: Lesson[] = [
-    { id: "lesson-1", title: "Lesson 1: Basics" },
-    { id: "lesson-2", title: "Lesson 2: Greetings" },
-    { id: "lesson-3", title: "Lesson 3: Numbers" },
-  ] 
+  useEffect(() => {
+    const fetchLessons = async () => {
+      try {
+        const data = await getAllLessonsByCourseId(course._id)
+        setLessons(data)
+      } catch (error) {
+        const parsed = parseAxiosError(error)
+
+        console.error("Login failed:", parsed.message)
+        throw new Error(parsed.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLessons()
+  }, [course._id])
 
   return (
     <div className="mt-10 flex">

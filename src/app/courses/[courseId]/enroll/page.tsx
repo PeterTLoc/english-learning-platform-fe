@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import EnrollButton from "@/components/course/EnrollButton"
 import LessonList from "@/components/course/LessonList"
 
-export default async function page({
+export default async function Page({
   params,
 }: {
   params: { courseId: string }

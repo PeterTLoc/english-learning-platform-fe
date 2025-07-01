@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from "react"
 import Carousel from "@/components/ui/Carousel"
-import CourseCard from "@/components/ui/CourseCard"
+import CourseCard from "@/components/course/CourseCard"
 import { Course } from "@/types/course/course"
 import { getAllCourses } from "@/services/courseService"
 import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import { parseAxiosError } from "@/utils/apiErrors"
 
 const renderCourseCard = (course: Course) => (
   <CourseCard
@@ -14,7 +15,8 @@ const renderCourseCard = (course: Course) => (
     description={course.description}
     href={`/courses/${course._id}/enroll`}
     imageUrl={
-      course.coverImage || `https://picsum.photos/seed/${course._id}/400/300`
+      course.coverImage ||
+      `https://www.aesence.com/wp-content/uploads/2022/08/white-kenyahara-aesence.jpg`
     }
     ctaLabel={`${course.totalLessons ?? 0} Lessons`}
   />
@@ -30,7 +32,10 @@ const page = () => {
         const data = await getAllCourses()
         setCourses(data)
       } catch (error) {
-        console.error("Error fetching courses", error)
+        const parsed = parseAxiosError(error)
+
+        console.error("Login failed:", parsed.message)
+        throw new Error(parsed.message)
       } finally {
         setLoading(false)
       }

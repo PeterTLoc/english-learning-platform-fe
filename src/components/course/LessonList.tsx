@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getLessonsByCourseId } from "@/services/lessonService"
-import { Lesson } from "@/types/course/course"
+import { getAllLessonsByCourseId } from "@/services/lessonService"
 import { CheckCircle, ChevronRight } from "lucide-react"
+import { parseAxiosError } from "@/utils/apiErrors"
+import { Lesson } from "@/types/lesson/lesson"
 
 export default function LessonList({ courseId }: { courseId: string }) {
   const [lessons, setLessons] = useState<Lesson[]>([])
@@ -12,10 +13,13 @@ export default function LessonList({ courseId }: { courseId: string }) {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const data = await getLessonsByCourseId(courseId)
+        const data = await getAllLessonsByCourseId(courseId)
         setLessons(data)
-      } catch (err) {
-        console.error("Failed to fetch lessons", err)
+      } catch (error) {
+        const parsed = parseAxiosError(error)
+
+        console.error("Login failed:", parsed.message)
+        throw new Error(parsed.message)
       } finally {
         setLoading(false)
       }
