@@ -1,16 +1,12 @@
+import { Lesson } from "@/types/lesson/lesson"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown } from "lucide-react"
-
-interface Lesson {
-  id: string
-  title: string
-}
 
 interface SidebarProps {
   lessons: Lesson[]
   openLessonId: string | null
   activeTabs: Record<string, string>
-  setOpenLessonId: (id: string | null) => void
+  setOpenLessonId: (_id: string | null) => void
   setActiveTabs: (tabs: Record<string, string>) => void
 }
 
@@ -34,16 +30,16 @@ export default function LessonSidebar({
   return (
     <div className="p-5">
       {lessons.map((lesson) => {
-        const isOpen = openLessonId === lesson.id
-        const activeTab = activeTabs[lesson.id] || "Vocabulary"
+        const isOpen = openLessonId === lesson._id
+        const activeTab = activeTabs[lesson._id] || "Vocabulary"
 
         return (
-          <div key={lesson.id} className="mb-1">
+          <div key={lesson._id} className="mb-1">
             <button
               className="flex justify-between items-center mb-1 h-9 hover:bg-[#2D2D2D] rounded-[5px] pl-3 pr-2 text-[13px] text-left w-[280px]"
-              onClick={() => toggleLesson(lesson.id)}
+              onClick={() => toggleLesson(lesson._id)}
             >
-              <p>{lesson.title}</p>
+              <p>{lesson.name}</p>
               <ChevronDown
                 strokeWidth={2}
                 size={16}
@@ -68,7 +64,7 @@ export default function LessonSidebar({
                       className={`h-9 hover:bg-[#2D2D2D] rounded-[5px] px-3 text-[13px] text-left w-[280px] ${
                         activeTab === tab ? "bg-[#2D2D2D]" : "text-gray-300"
                       }`}
-                      onClick={() => setTabForLesson(lesson.id, tab)}
+                      onClick={() => setTabForLesson(lesson._id, tab)}
                     >
                       {tab}
                     </button>

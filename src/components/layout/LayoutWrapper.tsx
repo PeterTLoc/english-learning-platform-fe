@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 import dynamic from 'next/dynamic'
 import RoleGuard, { UserRole } from "../guards/RoleGuard"
+import Header from "./Header"
 
 // Dynamically import components
 const NavBar = dynamic(() => import("./NavBar"), { ssr: false })
@@ -66,7 +67,7 @@ export default function LayoutWrapper({
   // User layout
   return (
     <div className="flex flex-col min-h-screen">
-      {!hideNav && <NavBar />}
+      {!hideNav && <Header />}
 
           {/* Fullscreen gradient below navbar */}
           {/* <div className="fixed top-[84px] left-0 w-full h-[calc(100vh-84px)] z-0 bg-gradient-to-r from-black/10 via-gray-200/40 to-gray-300 pointer-events-none" /> */}
