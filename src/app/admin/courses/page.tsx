@@ -326,13 +326,14 @@ const CourseManagementPage = () => {
             <table className="w-full text-md text-left text-[#CFCFCF]">
               <thead className="text-sm uppercase bg-[#373737] text-white">
                 <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Level</th>
-                  <th className="px-6 py-3">Type</th>
-                  <th className="px-6 py-3">Total Lessons</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Created At</th>
-                  <th className="px-6 py-3">Actions</th>
+                  <th className="px-6 py-3 text-center">Image</th>
+                  <th className="px-6 py-3 text-center">Name</th>
+                  <th className="px-6 py-3 text-center">Level</th>
+                  <th className="px-6 py-3 text-center">Type</th>
+                  <th className="px-6 py-3 text-center">Total Lessons</th>
+                  <th className="px-6 py-3 text-center">Status</th>
+                  <th className="px-6 py-3 text-center">Created At</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -341,23 +342,25 @@ const CourseManagementPage = () => {
                     key={course._id}
                     className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D] transition-colors"
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        {course.coverImage ? (
-                          <img
-                            src={course.coverImage}
-                            alt={course.name}
-                            className="w-8 h-8 rounded mr-2 object-cover"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 bg-[#373737] rounded mr-2 flex items-center justify-center">
-                            {course.name?.charAt(0)?.toUpperCase() || "C"}
-                          </div>
-                        )}
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center">
+                      {course.coverImage ? (
+                        <img
+                          src={course.coverImage}
+                          alt={course.name}
+                          className="w-32 h-32 rounded object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-[#373737] rounded mr-2 flex items-center justify-center">
+                          {course.name?.charAt(0)?.toUpperCase() || "C"}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                    <td className="px-6 py-4 text-center">
                         {course.name || "Untitled Course"}
-                      </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2 py-1 rounded text-sm ${getLevelColor(
                           course.level as CourseLevelEnum
@@ -367,7 +370,7 @@ const CourseManagementPage = () => {
                           "Unknown Level"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2 py-1 rounded text-sm ${getTypeColor(
                           course.type as CourseTypeEnum
@@ -377,8 +380,8 @@ const CourseManagementPage = () => {
                           "Unknown Type"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{course.totalLessons || 0}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">{course.totalLessons || 0}</td>
+                    <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2 py-1 rounded text-sm ${
                           course.isDeleted
@@ -389,12 +392,12 @@ const CourseManagementPage = () => {
                         {course.isDeleted ? "Deleted" : "Active"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       {course.createdAt
                         ? new Date(course.createdAt).toLocaleDateString()
                         : "N/A"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">
                         <button
                           onClick={() => openEditModal(course)}

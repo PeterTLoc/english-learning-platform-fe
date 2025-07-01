@@ -263,11 +263,11 @@ const MembershipManagementPage = () => {
             <table className="w-full text-md text-left text-[#CFCFCF]">
               <thead className="text-sm uppercase bg-[#373737] text-white">
                 <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Description</th>
-                  <th className="px-6 py-3">Price</th>
-                  <th className="px-6 py-3">Duration</th>
-                  <th className="px-6 py-3">Actions</th>
+                  <th className="px-6 py-3 text-center">Name</th>
+                  <th className="px-6 py-3 text-center">Description</th>
+                  <th className="px-6 py-3 text-center">Price</th>
+                  <th className="px-6 py-3 text-center">Duration</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -276,17 +276,17 @@ const MembershipManagementPage = () => {
                     key={membership._id}
                     className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D]"
                   >
-                    <td className="px-6 py-4">{membership.name}</td>
-                    <td className="px-6 py-4 text-[#CFCFCF] max-w-lg truncate">
+                    <td className="px-6 py-4 text-center">{membership.name}</td>
+                    <td className="px-6 py-4 text-center text-[#CFCFCF] max-w-lg truncate">
                       {membership.description}
                     </td>
-                    <td className="px-6 py-4 text-[#4CC2FF]">
+                    <td className="px-6 py-4 text-center text-[#4CC2FF]">
                       {formatPrice(membership.price)}
                     </td>
-                    <td className="px-6 py-4 text-[#CFCFCF]">
+                    <td className="px-6 py-4 text-center text-[#CFCFCF]">
                       {membership.duration} days
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">
                         <button
                           onClick={() => openEditModal(membership)}

@@ -65,76 +65,93 @@ const MembershipModal = ({ mode, membership, onClose, onSubmit }: MembershipModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-[#1F1F1F] p-8 rounded-lg w-[500px]">
-        <h2 className="text-2xl font-bold mb-4 text-white">
-          {mode === "edit" ? "Edit Membership" : "Create Membership"}
-        </h2>
+      <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg flex flex-col w-full max-w-2xl max-h-[80vh]">
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">
+                {mode === "edit" ? "Edit Membership" : "Create Membership"}
+              </h2>
+              <button onClick={onClose} className="text-[#CFCFCF] hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-        {error && (
-          <div className="bg-red-600 text-white p-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+            {error && (
+              <div className="bg-red-600 text-white p-3 rounded mb-4">
+                {error}
+              </div>
+            )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-[#CFCFCF] mb-1">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="w-full p-2 bg-[#2C2C2C] text-white rounded"
-              required
-            />
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[#CFCFCF] mb-1">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#CFCFCF] mb-1">Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white h-32"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#CFCFCF] mb-1">Price</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#CFCFCF] mb-1">Duration (days)</label>
+                  <input
+                    type="number"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleInputChange}
+                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
+                    required
+                  />
+                </div>
+              </div>
+            </form>
           </div>
-          <div className="mb-4">
-            <label className="block text-[#CFCFCF] mb-1">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className="w-full p-2 bg-[#2C2C2C] text-white rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-[#CFCFCF] mb-1">Price</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleInputChange}
-              className="w-full p-2 bg-[#2C2C2C] text-white rounded"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-[#CFCFCF] mb-1">Duration (days)</label>
-            <input
-              type="number"
-              name="duration"
-              value={formData.duration}
-              onChange={handleInputChange}
-              className="w-full p-2 bg-[#2C2C2C] text-white rounded"
-              required
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              {loading ? "Saving..." : mode === "edit" ? "Update" : "Create"}
-            </button>
-          </div>
-        </form>
+        </div>
+
+        <div className="flex justify-end gap-2 p-4 border-t border-[#1D1D1D]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-[#CFCFCF] hover:text-white transition-colors"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : mode === "edit" ? "Update" : "Create"}
+          </button>
+        </div>
       </div>
     </div>
   );
