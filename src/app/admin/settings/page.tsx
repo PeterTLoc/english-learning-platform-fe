@@ -25,7 +25,6 @@ const SettingsPage = () => {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [configs, setConfigs] = useState<Config[]>([]);
   const [formData, setFormData] = useState<ConfigFormData>({});
   const [originalData, setOriginalData] = useState<ConfigFormData>({});
@@ -45,11 +44,9 @@ const SettingsPage = () => {
       
       setFormData(configData);
       setOriginalData(configData);
-      setError(null);
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to load settings", "error");
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }
@@ -68,7 +65,6 @@ const SettingsPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setError(null);
 
     try {
       // Only update configs that have changed
@@ -86,8 +82,7 @@ const SettingsPage = () => {
       showToast("Settings updated successfully", "success");
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to update settings", "error");
+      showToast(parsedError.message, "error");
     } finally {
       setSaving(false);
     }
@@ -115,12 +110,6 @@ const SettingsPage = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-white">System Settings</h1>
       </div>
-
-      {error && (
-        <div className="bg-red-600 text-white p-4 rounded mb-6">
-          {error}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,3 +1,13 @@
+import { IExercise } from "@/types/models/IExercise"
+import { ILesson } from "@/types/models/ILesson"
+import { Test } from "@/types/course/test"
+
+interface LessonDetails {
+  lesson: ILesson
+  exercises: IExercise[]
+  tests: Test[]
+}
+
 interface LessonContentProps {
   lessonId: string | null
   tab: string | null

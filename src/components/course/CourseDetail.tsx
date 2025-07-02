@@ -2,6 +2,7 @@
 
 import LessonContent from "@/components/course/LessonContent"
 import LessonSidebar from "@/components/course/LessonSideBar"
+import CourseInfoModal from "@/components/course/CourseInfoModal"
 import { useEffect, useState } from "react"
 import { Course } from "@/types/course/course"
 import { getAllLessonsByCourseId } from "@/services/lessonService"
@@ -17,6 +18,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
   const [openLessonId, setOpenLessonId] = useState<string | null>(null)
   const [activeTabs, setActiveTabs] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -25,8 +27,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
         setLessons(data)
       } catch (error) {
         const parsed = parseAxiosError(error)
-
-        console.error("Login failed:", parsed.message)
+        console.error("Failed to fetch lessons:", parsed.message)
         throw new Error(parsed.message)
       } finally {
         setLoading(false)
@@ -48,7 +49,15 @@ export default function CourseDetail({ course }: CourseDetailProps) {
 
       <div className="px-5 flex-1">
         <div className="max-w-[1000px] mx-auto">
-          <h1 className="title">{course.name}</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="title">{course.name}</h1>
+            <button
+              onClick={() => setIsInfoModalOpen(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              View Course Information
+            </button>
+          </div>
 
           <LessonContent
             lessonId={openLessonId}
@@ -56,6 +65,13 @@ export default function CourseDetail({ course }: CourseDetailProps) {
           />
         </div>
       </div>
+
+      <CourseInfoModal
+        course={course}
+        lessons={lessons}
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+      />
     </div>
   )
 }
