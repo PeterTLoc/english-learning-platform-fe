@@ -1,58 +1,64 @@
-"use client"
+"use client";
 
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
-import { 
-  BadgeCheck, 
-  BookOpen, 
-  Home, 
-  LayoutDashboard, 
-  Settings, 
-  User2, 
-  Users
-} from 'lucide-react'
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  BadgeCheck,
+  BookOpen,
+  Home,
+  LayoutDashboard,
+  Newspaper,
+  Settings,
+  User2,
+  Users,
+} from "lucide-react";
 
 interface SidebarItem {
-  name: string
-  path: string
-  icon: React.ReactNode
+  name: string;
+  path: string;
+  icon: React.ReactNode;
 }
 
 export default function AdminSidebar() {
-  const pathname = usePathname()
-  
+  const pathname = usePathname();
+
   const sidebarItems: SidebarItem[] = [
     {
-      name: 'Dashboard',
-      path: '/admin',
-      icon: <LayoutDashboard className="w-5 h-5" />
+      name: "Dashboard",
+      path: "/admin",
+      icon: <LayoutDashboard className="w-5 h-5" />,
     },
     {
-      name: 'Users',
-      path: '/admin/users',
-      icon: <Users className="w-5 h-5" />
+      name: "Users",
+      path: "/admin/users",
+      icon: <Users className="w-5 h-5" />,
     },
     {
-      name: 'Courses',
-      path: '/admin/courses',
-      icon: <BookOpen className="w-5 h-5" />
+      name: "Courses",
+      path: "/admin/courses",
+      icon: <BookOpen className="w-5 h-5" />,
     },
     {
-      name: 'Memberships',
-      path: '/admin/memberships',
-      icon: <BadgeCheck className="w-5 h-5" />
+      name: "Memberships",
+      path: "/admin/memberships",
+      icon: <BadgeCheck className="w-5 h-5" />,
     },
     {
-      name: 'Site Settings',
-      path: '/admin/settings',
-      icon: <Settings className="w-5 h-5" />
+      name: "Blogs",
+      path: "/admin/blogs",
+      icon: <Newspaper className="w-5 h-5" />,
     },
-  ]
+    {
+      name: "Site Settings",
+      path: "/admin/settings",
+      icon: <Settings className="w-5 h-5" />,
+    },
+  ];
 
   return (
-    <aside 
-      id="admin-sidebar" 
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-[#202020] border-r border-[#1D1D1D] sm:translate-x-0" 
+    <aside
+      id="admin-sidebar"
+      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-[#202020] border-r border-[#1D1D1D] sm:translate-x-0"
       aria-label="Admin sidebar"
       data-drawer="show"
       data-drawer-target="admin-sidebar"
@@ -61,12 +67,12 @@ export default function AdminSidebar() {
         <ul className="space-y-2 font-medium">
           {sidebarItems.map((item) => (
             <li key={item.path}>
-              <Link 
+              <Link
                 href={item.path}
                 className={`flex items-center p-3 rounded-lg ${
                   pathname === item.path
-                    ? 'bg-[#4CC2FF] text-white'
-                    : 'text-white hover:bg-[#2D2D2D]'
+                    ? "bg-[#4CC2FF] text-white"
+                    : "text-white hover:bg-[#2D2D2D]"
                 }`}
               >
                 {item.icon}
@@ -74,9 +80,9 @@ export default function AdminSidebar() {
               </Link>
             </li>
           ))}
-          
+
           <li className="mt-10">
-            <Link 
+            <Link
               href="/"
               className="flex items-center p-3 text-white rounded-lg hover:bg-[#2D2D2D]"
             >
@@ -87,5 +93,5 @@ export default function AdminSidebar() {
         </ul>
       </div>
     </aside>
-  )
-} 
+  );
+}
