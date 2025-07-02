@@ -22,7 +22,6 @@ const UserDropdown = () => {
       ? [{ label: "Admin Dashboard", href: "/admin" }] 
       : []),
     { label: "Profile", href: "/profile" },
-    { label: "Settings", href: "/settings" }, 
     { label: "Logout", onClick: handleLogout }
   ]
   

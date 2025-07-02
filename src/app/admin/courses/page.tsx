@@ -11,6 +11,7 @@ import { Course, CourseLevelEnum, CourseTypeEnum } from "@/types/course/course";
 import { useToast } from "@/context/ToastContext";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import CourseModal from "@/components/admin/CourseModal";
+import CourseDetailsModal from "@/components/admin/CourseDetailsModal";
 
 const CourseManagementPage = () => {
   const router = useRouter();
@@ -20,12 +21,13 @@ const CourseManagementPage = () => {
 
   const [courses, setCourses] = useState<PaginatedCourses | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
+  const [selectedCourseForDetails, setSelectedCourseForDetails] = useState<Course | null>(null);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -36,6 +38,22 @@ const CourseManagementPage = () => {
 
   const page = parseInt(searchParams.get("page") || "1");
   const size = parseInt(searchParams.get("size") || "10");
+
+  // Level options
+  const levelOptions = [
+    { value: "A1", label: "Beginner (A1)" },
+    { value: "A2", label: "Elementary (A2)" },
+    { value: "B1", label: "Intermediate (B1)" },
+    { value: "B2", label: "Upper Intermediate (B2)" },
+    { value: "C1", label: "Advanced (C1)" },
+    { value: "C2", label: "Mastery (C2)" },
+  ] as const;
+
+  // Type options
+  const typeOptions = [
+    { value: "free", label: "Free Course" },
+    { value: "membership", label: "Premium Course" },
+  ] as const;
 
   const getLevelLabel = (level: CourseLevelEnum) => {
     const labels = {
@@ -77,7 +95,6 @@ const CourseManagementPage = () => {
 
   const fetchCourses = async () => {
     setLoading(true);
-    setError(null);
 
     try {
       const searchValue = searchParams.get("search") || "";
@@ -108,7 +125,7 @@ const CourseManagementPage = () => {
       setCourses(data);
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }
@@ -121,8 +138,7 @@ const CourseManagementPage = () => {
       fetchCourses();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to delete course", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
@@ -134,8 +150,7 @@ const CourseManagementPage = () => {
       fetchCourses();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to create course", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
@@ -147,8 +162,7 @@ const CourseManagementPage = () => {
       fetchCourses();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to update course", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
@@ -167,6 +181,16 @@ const CourseManagementPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCourse(null);
+  };
+
+  const openDetailsModal = (course: Course) => {
+    setSelectedCourseForDetails(course);
+    setIsDetailsModalOpen(true);
+  };
+
+  const closeDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedCourseForDetails(null);
   };
 
   const handleSearch = () => {
@@ -190,6 +214,20 @@ const CourseManagementPage = () => {
     setSortBy("date");
     setSortOrder("desc");
     router.push("/admin/courses");
+  };
+
+  const handleConfirmDelete = async (courseId: string) => {
+    const confirmed = await showConfirmation({
+      title: "Delete Course",
+      message: "Are you sure you want to delete this course? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      variant: "danger"
+    });
+
+    if (confirmed) {
+      handleDeleteCourse(courseId);
+    }
   };
 
   useEffect(() => {
@@ -230,18 +268,15 @@ const CourseManagementPage = () => {
             </label>
             <select
               value={levelFilter}
-              onChange={(e) =>
-                setLevelFilter(e.target.value as CourseLevelEnum)
-              }
+              onChange={(e) => setLevelFilter(e.target.value as CourseLevelEnum)}
               className="w-full bg-[#2D2D2D] border border-[#1D1D1D] rounded-md p-2"
             >
               <option value="">All Levels</option>
-              <option value="A1">{getLevelLabel("A1")}</option>
-              <option value="A2">{getLevelLabel("A2")}</option>
-              <option value="B1">{getLevelLabel("B1")}</option>
-              <option value="B2">{getLevelLabel("B2")}</option>
-              <option value="C1">{getLevelLabel("C1")}</option>
-              <option value="C2">{getLevelLabel("C2")}</option>
+              {levelOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -255,8 +290,11 @@ const CourseManagementPage = () => {
               className="w-full bg-[#2D2D2D] border border-[#1D1D1D] rounded-md p-2"
             >
               <option value="">All Types</option>
-              <option value="free">{getTypeLabel("free")}</option>
-              <option value="membership">{getTypeLabel("membership")}</option>
+              {typeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -307,13 +345,6 @@ const CourseManagementPage = () => {
         </div>
       </div>
 
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-600 text-white p-4 mb-6 rounded">
-          Error: {error}
-        </div>
-      )}
-
       {/* Course table */}
       {loading ? (
         <div className="flex flex-col items-center gap-4 justify-center py-20">
@@ -342,23 +373,23 @@ const CourseManagementPage = () => {
                     key={course._id}
                     className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D] transition-colors"
                   >
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center">
-                      {course.coverImage ? (
-                        <img
-                          src={course.coverImage}
-                          alt={course.name}
-                          className="w-32 h-32 rounded object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-[#373737] rounded mr-2 flex items-center justify-center">
-                          {course.name?.charAt(0)?.toUpperCase() || "C"}
-                        </div>
-                      )}
-                    </div>
-                  </td>
                     <td className="px-6 py-4 text-center">
-                        {course.name || "Untitled Course"}
+                      <div className="flex items-center">
+                        {course.coverImage ? (
+                          <img
+                            src={course.coverImage}
+                            alt={course.name}
+                            className="w-32 h-32 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 bg-[#373737] rounded mr-2 flex items-center justify-center">
+                            {course.name?.charAt(0)?.toUpperCase() || "C"}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {course.name || "Untitled Course"}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
@@ -398,7 +429,13 @@ const CourseManagementPage = () => {
                         : "N/A"}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <div className="flex gap-2">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => openDetailsModal(course)}
+                          className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                          Details
+                        </button>
                         <button
                           onClick={() => openEditModal(course)}
                           className="px-3 py-1 text-sm bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors"
@@ -407,22 +444,8 @@ const CourseManagementPage = () => {
                         </button>
                         {!course.isDeleted && (
                           <button
-                            onClick={async () => {
-                              const confirmed = await showConfirmation({
-                                title: "Delete Course",
-                                message: `Are you sure you want to delete ${
-                                  course.name || "this course"
-                                }? This action cannot be undone.`,
-                                confirmText: "Delete",
-                                cancelText: "Cancel",
-                                variant: "danger",
-                              });
-
-                              if (confirmed) {
-                                handleDeleteCourse(course._id);
-                              }
-                            }}
-                            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                            onClick={() => handleConfirmDelete(course._id)}
+                            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                           >
                             Delete
                           </button>
@@ -457,9 +480,20 @@ const CourseManagementPage = () => {
         <CourseModal
           mode={modalMode}
           course={selectedCourse}
+          isOpen={isModalOpen}
           onClose={closeModal}
-          onCreate={handleCreateCourse}
-          onUpdate={handleUpdateCourse}
+          onSubmit={modalMode === "create" 
+            ? handleCreateCourse 
+            : (formData: FormData) => handleUpdateCourse(selectedCourse?._id || '', formData)}
+        />
+      )}
+
+      {/* Course Details Modal */}
+      {selectedCourseForDetails && (
+        <CourseDetailsModal
+          course={selectedCourseForDetails}
+          isOpen={isDetailsModalOpen}
+          onClose={closeDetailsModal}
         />
       )}
     </div>

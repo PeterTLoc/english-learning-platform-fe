@@ -3,10 +3,10 @@ export interface Test {
   name: string
   description: string
   courseId: string
-  duration: number
+  lessonIds: string[]
   totalQuestions: number
-  passingScore: number
   isDeleted?: boolean
   createdAt: string
   updatedAt: string
+  exercises?: any[] // IExercise[] once we define it
 } 

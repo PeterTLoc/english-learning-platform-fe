@@ -32,7 +32,6 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         setLoading(true);
         try {
           const detail = await getUserDetailById(user._id);
-          console.log(detail);
           setUserDetail(detail);
         } catch (error) {
           console.error("Failed to fetch user details:", error);
@@ -194,7 +193,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
 
             {/* Tab Content */}
             {loading ? (
-              <div className="flex justify-center items-center py-12">
+              <div className="flex flex-col gap-4 justify-center items-center py-12">
                 <LoadingSpinner />
                 <span className="ml-2 text-[#CFCFCF]">Loading user details...</span>
               </div>

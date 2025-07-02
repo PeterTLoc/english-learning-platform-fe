@@ -10,7 +10,7 @@ interface SidebarProps {
   setActiveTabs: (tabs: Record<string, string>) => void
 }
 
-const tabs = ["Vocabulary", "Grammar", "Exercises"]
+const tabs = ["Vocabulary", "Grammar", "Exercises", "Tests"]
 
 export default function LessonSidebar({
   lessons,

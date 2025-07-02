@@ -20,7 +20,6 @@ const UserManagementPage = () => {
   
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   
   // Modal states
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -37,7 +36,6 @@ const UserManagementPage = () => {
 
   const fetchUsers = async () => {
     setLoading(true);
-    setError(null);
     
     try {
       const searchValue = searchParams.get("search") || "";
@@ -63,7 +61,7 @@ const UserManagementPage = () => {
       setUsers(data);
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }
@@ -77,8 +75,7 @@ const UserManagementPage = () => {
       fetchUsers();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to disable user", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
@@ -211,13 +208,6 @@ const UserManagementPage = () => {
           </button>
         </div>
       </div>
-
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-600 text-white p-4 mb-6 rounded">
-          Error: {error}
-        </div>
-      )}
 
       {/* User Details Modal */}
       <UserDetailsModal

@@ -1,140 +1,112 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { IMembership } from "@/types/membership/membership";
+import { useToast } from "@/context/ToastContext";
 
 interface MembershipModalProps {
-  mode: "create" | "edit";
-  membership?: IMembership | null;
+  membership?: IMembership;
+  isOpen: boolean;
   onClose: () => void;
-  onSubmit: ((membershipData: Partial<IMembership>) => Promise<void>) | ((membershipId: string, membershipData: Partial<IMembership>) => Promise<void>);
+  onSubmit: (formData: FormData) => Promise<void>;
 }
 
-const MembershipModal = ({ mode, membership, onClose, onSubmit }: MembershipModalProps) => {
-  const [formData, setFormData] = useState<Partial<IMembership>>({
-    name: "",
-    description: "",
-    price: 0,
-    duration: 0,
-    isDeleted: false,
-  });
+export default function MembershipModal({
+  membership,
+  isOpen,
+  onClose,
+  onSubmit,
+}: MembershipModalProps) {
+  const [formState, setFormState] = useState<Partial<IMembership>>(membership || {});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (mode === "edit" && membership) {
-      setFormData({
-        name: membership.name,
-        description: membership.description,
-        price: membership.price,
-        duration: membership.duration,
-        isDeleted: membership.isDeleted,
-      });
-    }
-  }, [mode, membership]);
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
-      const payload = {
-        ...formData,
-        price: Number(formData.price),
-        duration: Number(formData.duration),
-      };
+      const formData = new FormData();
+      Object.entries(formState).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value.toString());
+        }
+      });
 
-      if (mode === "create") {
-        await (onSubmit as (data: Partial<IMembership>) => Promise<void>)(payload);
-      } else if (mode === "edit" && membership) {
-        await (onSubmit as (id: string, data: Partial<IMembership>) => Promise<void>)(membership._id, payload);
-      }
+      await onSubmit(formData);
       onClose();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      showToast(error instanceof Error ? error.message : "An error occurred", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg flex flex-col w-full max-w-2xl max-h-[80vh]">
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">
-                {mode === "edit" ? "Edit Membership" : "Create Membership"}
-              </h2>
-              <button onClick={onClose} className="text-[#CFCFCF] hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {error && (
-              <div className="bg-red-600 text-white p-3 rounded mb-4">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[#CFCFCF] mb-1">Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#CFCFCF] mb-1">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white h-32"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#CFCFCF] mb-1">Price</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#CFCFCF] mb-1">Duration (days)</label>
-                  <input
-                    type="number"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
-                    required
-                  />
-                </div>
-              </div>
-            </form>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg flex flex-col w-full max-w-lg max-h-[90vh]">
+        <div className="p-6 border-b border-[#1D1D1D]">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">
+              {membership ? "Edit" : "Create"} Membership
+            </h2>
+            <button onClick={onClose} className="text-[#CFCFCF] hover:text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 p-4 border-t border-[#1D1D1D]">
+        <div className="flex-1 overflow-y-auto p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-[#CFCFCF] mb-1">Name</label>
+              <input
+                type="text"
+                value={formState.name || ''}
+                onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[#CFCFCF] mb-1">Description</label>
+              <textarea
+                value={formState.description || ''}
+                onChange={(e) => setFormState({ ...formState, description: e.target.value })}
+                className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white h-32"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[#CFCFCF] mb-1">Price</label>
+              <input
+                type="number"
+                value={formState.price || ''}
+                onChange={(e) => setFormState({ ...formState, price: Number(e.target.value) })}
+                className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
+                min="0"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[#CFCFCF] mb-1">Duration (days)</label>
+              <input
+                type="number"
+                value={formState.duration || ''}
+                onChange={(e) => setFormState({ ...formState, duration: Number(e.target.value) })}
+                className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
+                min="1"
+                required
+              />
+            </div>
+          </form>
+        </div>
+
+        <div className="p-4 border-t border-[#1D1D1D] flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
@@ -145,16 +117,14 @@ const MembershipModal = ({ mode, membership, onClose, onSubmit }: MembershipModa
           </button>
           <button
             type="submit"
-            onClick={handleSubmit}
+            form="membershipForm"
             className="px-4 py-2 bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors disabled:opacity-50"
             disabled={loading}
           >
-            {loading ? "Saving..." : mode === "edit" ? "Update" : "Create"}
+            {loading ? "Saving..." : membership ? "Update" : "Create"}
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default MembershipModal; 
+} 
