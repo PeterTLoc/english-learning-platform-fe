@@ -133,14 +133,14 @@ export default function CreateBlogModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-2 sm:px-4">
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black bg-opacity-60 transition-opacity"
         onClick={toggleOpen}
       />
       {/* Modal content */}
-      <div className="relative max-w-3xl z-10 mx-auto bg-gray-900 text-white shadow-lg rounded-xl p-8 mt-8 space-y-8 overflow-y-auto max-h-[90vh]">
+      <div className="relative w-full max-w-lg sm:max-w-2xl md:max-w-3xl z-10 mx-auto bg-gray-900 text-white shadow-lg rounded-xl p-4 sm:p-8 mt-8 space-y-8 overflow-y-auto max-h-[90vh]">
         {/* Close button */}
         <button
           type="button"
@@ -162,7 +162,7 @@ export default function CreateBlogModal({
             );
           }}
         >
-          <h1 className="text-3xl font-bold text-center mb-6 text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-white">
             Create Blog
           </h1>
 
@@ -209,7 +209,7 @@ export default function CreateBlogModal({
             </label>
             <div className="border rounded-lg bg-gray-800 border-gray-700 p-2">
               {/* Toolbar */}
-              <div className="mb-2 flex flex-wrap items-center bg-gray-900 border border-gray-700 rounded-t-lg px-2 py-1">
+              <div className="mb-2 flex flex-wrap items-center bg-gray-900 border border-gray-700 rounded-t-lg px-1 sm:px-2 py-1 gap-1 sm:gap-2">
                 <Button
                   onClick={() => editor?.chain().focus().toggleBold().run()}
                   active={editor?.isActive("bold")}
@@ -316,7 +316,7 @@ export default function CreateBlogModal({
               </div>
               <EditorContent
                 editor={editor}
-                className="min-h-[200px] bg-gray-900 rounded-b-lg px-2 py-2 text-white"
+                className="min-h-[160px] sm:min-h-[200px] bg-gray-900 rounded-b-lg px-2 py-2 text-white"
               />
             </div>
           </div>
@@ -338,7 +338,7 @@ export default function CreateBlogModal({
 
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow transition"
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 sm:py-3 rounded-lg shadow transition text-base sm:text-lg"
           >
             Save
           </button>

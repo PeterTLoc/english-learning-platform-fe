@@ -10,7 +10,7 @@ import LoginForm from "@/components/login/LoginForm";
 import { validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 
-const page = () => {
+export default function LoginPage() {
   const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +44,12 @@ const page = () => {
     } catch (error: any) {
       console.error("Login error:", error);
       // Show error toast
-      showToast(error.message || "Login failed. Please check your credentials and try again.", "error", 5000);
+      showToast(
+        error.message ||
+          "Login failed. Please check your credentials and try again.",
+        "error",
+        5000
+      );
       // Ensure the isLoading state is set to false on error
       setIsLoading(false);
     }
@@ -61,6 +66,4 @@ const page = () => {
       />
     </div>
   );
-};
-
-export default page;
+}

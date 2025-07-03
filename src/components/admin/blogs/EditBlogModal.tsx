@@ -43,8 +43,8 @@ export default function EditBlogModal({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-[#202020] rounded-xl shadow-2xl w-full max-w-md p-8 relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-2 sm:px-4">
+      <div className="bg-[#202020] rounded-xl shadow-2xl w-full max-w-xs sm:max-w-md p-4 sm:p-8 relative">
         <h2 className="text-2xl font-bold mb-6 text-start text-white">
           Edit Blog
         </h2>
@@ -68,7 +68,7 @@ export default function EditBlogModal({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none text-black"
+              className="w-full border border-gray-300 rounded-lg p-2 sm:p-3 focus:ring-2 focus:ring-blue-400 focus:outline-none text-black text-base sm:text-lg"
               required
             />
           </div>
@@ -79,7 +79,7 @@ export default function EditBlogModal({
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as BlogStatusEnum)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none text-black"
+              className="w-full border border-gray-300 rounded-lg p-2 sm:p-3 focus:ring-2 focus:ring-blue-400 focus:outline-none text-black text-base sm:text-lg"
               required
             >
               {Object.values(BlogStatusEnum).map((s) => (
@@ -101,27 +101,27 @@ export default function EditBlogModal({
                 height={100}
                 objectFit="cover"
                 quality={100}
-                className="w-full h-40 object-cover rounded-lg border border-gray-200 mb-2"
+                className="w-full h-32 sm:h-40 object-cover rounded-lg border border-gray-200 mb-2"
               />
             )}
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="w-full text-white"
+              className="w-full text-white text-sm sm:text-base"
             />
           </div>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-gray-300 transition"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-gray-300 transition text-base sm:text-lg"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50 text-base sm:text-lg"
             >
               Update Blog
             </button>
