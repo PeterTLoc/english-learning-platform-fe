@@ -154,7 +154,7 @@ export default function BlogList({
     );
 
   return (
-    <div className="flex flex-col w-full mx-2 rounded-md shadow-md">
+    <div className="flex flex-col w-full mx-auto rounded-md shadow-md px-1 sm:px-4 md:px-8 py-2 max-w-5xl">
       <div className="flex justify-center mb-4">
         <button
           className="bg-[#4CC2FF] text-black px-4 py-2 rounded-md"
@@ -173,8 +173,8 @@ export default function BlogList({
         handleSearch={handleSearch}
         handleReset={handleReset}
       />
-      <div className="overflow-x-auto">
-        <table className="w-full text-md text-left text-[#CFCFCF]">
+      <div className="overflow-x-auto rounded-md">
+        <table className="min-w-[600px] w-full text-md text-left text-[#CFCFCF]">
           <thead className="text-sm uppercase bg-[#373737] text-white">
             <tr>
               <th className="px-6 py-3 text-center">Image</th>

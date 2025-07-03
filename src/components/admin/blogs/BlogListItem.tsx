@@ -19,7 +19,7 @@ export default function BlogListItem({
   const [preview, setPreview] = useState(false);
 
   return (
-    <tr className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D] transition-colors">
+    <tr className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D] transition-colors text-sm sm:text-base">
       <td className="px-6 py-4 text-center">
         <div className="flex items-center justify-center">
           {blog.coverImage ? (
@@ -65,7 +65,7 @@ export default function BlogListItem({
           })}
       </td>
       <td className="px-6 py-4 text-center">
-        <div className="flex gap-2 justify-center">
+        <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
           <button
             className="px-3 py-1 text-sm bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors"
             onClick={() => {
