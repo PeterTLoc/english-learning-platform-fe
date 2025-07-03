@@ -1,4 +1,5 @@
 import mongoose, { Document } from "mongoose";
+import { IUser } from "./IUser";
 
 export interface IFlashcardSet extends Document {
   name: string;
@@ -7,4 +8,6 @@ export interface IFlashcardSet extends Document {
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  flashcardCount?: number;
+  user?: IUser;
 }
