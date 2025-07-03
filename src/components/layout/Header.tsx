@@ -61,9 +61,9 @@ const Header = () => {
     //   </div>
     // </nav>
 
-    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] shadow-lg shadow-[#ffffff80]">
-      <div className="flex justify-between items-center h-full px-[84px]">
-        <div className="flex items-center">
+    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] shadow-xl shadow-zinc-600/60">
+      <div className="flex justify-between items-center h-full px-[20px]">
+        <div className="flex gap-8 items-center">
           <div className="pr-8">
             <Link href="/" className="flex items-center">
               {/* <img
@@ -71,10 +71,10 @@ const Header = () => {
               alt="ELS Logo"
               className="h-10 w-auto"
             /> */}
-              <div className="flex items-end gap-2.5">
+              <div className="flex items-center gap-2.5">
                 <span className="text-xl font-bold">ELS</span>
                 <span className="h-7 w-[1px] bg-[#8C8C8C]"></span>
-                <span>Learning</span>
+                <span className="text-lg">Learning</span>
               </div>
             </Link>
           </div>
@@ -84,7 +84,7 @@ const Header = () => {
               <Link
                 key={href}
                 href={href}
-                className={`relative py-2 mx-1 transition-all duration-300 ease-in-out hover:text-[#4CC2FF] ${
+                className={`relative py-2 mx-1 text-[1rem] transition-all duration-300 ease-in-out hover:text-[#4CC2FF] ${
                   pathname === href ? "text-[#4CC2FF] font-semibold" : "subtext"
                 } group`}
               >

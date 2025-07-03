@@ -4,8 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect } from 'react'
-import Dropdown from '../ui/Dropdown'
-import UserAvatar from '../ui/UserAvatar'
+import UserDropdown from '../layout/UserDropdown'
 
 export default function AdminHeader() {
   const { user } = useAuth()
@@ -19,37 +18,6 @@ export default function AdminHeader() {
     
     initFlowbite()
   }, [])
-  
-  const dropdownItems = [
-    {
-      label: 'Profile',
-      href: '/admin/profile'
-    },
-    {
-      label: 'Settings',
-      href: '/admin/settings'
-    }
-  ]
-  
-  const headerContent = (
-    <div>
-      <div className="flex items-center gap-3 mb-3">
-        <UserAvatar 
-          username={user?.username} 
-          avatarUrl={user?.avatar} 
-          size="md" 
-        />
-        <div>
-          <p className="text-sm font-medium text-white">
-            {user?.username || 'Admin User'}
-          </p>
-          <p className="text-xs text-[#CFCFCF] truncate">
-            {user?.email || 'admin@example.com'}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
   
   return (
     <nav className="fixed top-0 z-50 w-full bg-[#202020] border-b border-[#1D1D1D]">
@@ -73,19 +41,7 @@ export default function AdminHeader() {
           </div>
           <div className="flex items-center">
             <div className="flex items-center ml-3">
-              <Dropdown 
-                trigger={
-                  <UserAvatar 
-                    username={user?.username} 
-                    avatarUrl={user?.avatar} 
-                    size="sm" 
-                    className="bg-[#4CC2FF] cursor-pointer"
-                  />
-                }
-                items={dropdownItems}
-                headerContent={headerContent}
-                align="right"
-              />
+              <UserDropdown />
             </div>
           </div>
         </div>

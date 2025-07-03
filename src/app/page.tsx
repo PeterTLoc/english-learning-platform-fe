@@ -20,7 +20,7 @@ export default function Home() {
         />
 
         {/* Smoother Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/20 to-[#202020]/90 animate-fade-in" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/45 to-[#202020]/85 animate-fade-in" />
 
         {/* Foreground Content */}
         <div className="relative z-10">

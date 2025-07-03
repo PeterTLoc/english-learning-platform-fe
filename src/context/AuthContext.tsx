@@ -40,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter()
 
   const login = async (formData: LoginFormPayload): Promise<void> => {
+    setLoading(true)
     try {
       // Login only returns token, not user data
       await authService.login(formData)
@@ -52,6 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Login failed:", parsed.message)
       // Ensure the error is thrown so it can be caught by the login page
       throw new Error(parsed.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -105,11 +108,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Handle redirects based on user role
   useEffect(() => {
     if (user && !loading) {
-      // If user is admin, redirect to admin dashboard
-      if (user.role === UserRole.ADMIN) {
-        const pathname = window.location.pathname
-        if (pathname === '/' || pathname === '/login') {
+      const pathname = window.location.pathname
+      if (pathname === '/login' || pathname === '/register') {
+        // If user is admin, redirect to admin dashboard
+        if (user.role === UserRole.ADMIN) {
           router.push('/admin')
+        } else {
+          // If regular user, redirect to home page
+          router.push('/')
         }
       }
     }
