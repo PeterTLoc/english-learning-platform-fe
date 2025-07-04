@@ -77,17 +77,17 @@ input:-webkit-autofill {
 }
 
 .button {
-  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C];
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[4px] w-fit rounded-[5px] text-sm bg-[#373737] hover:bg-[#3C3C3C];
   transition: var(--transition-default);
 }
 
 .button-blue {
-  @apply min-w-[130px] min-h-[32px] px-4 pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#4CC2FF] hover:bg-[#48B2E9];
+  @apply min-w-[130px] min-h-[32px] px-4 pt-[5px] pb-[4px] w-fit rounded-[5px] text-sm text-black bg-[#4CC2FF] hover:bg-[#48B2E9];
   transition: var(--transition-default);
 }
 
 .title {
-  @apply font-bold text-[25px] mt-4 mb-5
+  @apply font-bold text-[28px] mt-[12px] mb-[9px]
 }
 
 .subtitle {

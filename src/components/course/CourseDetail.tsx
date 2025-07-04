@@ -12,6 +12,10 @@ interface CourseDetailProps {
   course: Course
 }
 
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default function CourseDetail({ course }: CourseDetailProps) {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [openLessonId, setOpenLessonId] = useState<string | null>(null)
@@ -23,6 +27,19 @@ export default function CourseDetail({ course }: CourseDetailProps) {
       try {
         const data = await getAllLessonsByCourseId(course._id)
         setLessons(data)
+
+        if (data.length > 0 && !openLessonId) {
+          const defaultLesson = data[0]
+
+          const firstAvailableType =
+            defaultLesson.length?.[0]?.for || "Vocabulary"
+
+          setOpenLessonId(data[0]._id)
+          setActiveTabs((prev) => ({
+            ...prev,
+            [defaultLesson._id]: capitalize(firstAvailableType),
+          }))
+        }
       } catch (error) {
         const parsed = parseAxiosError(error)
 
@@ -37,7 +54,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
   }, [course._id])
 
   return (
-    <div className="mt-10 flex">
+    <div className="mt-5 flex">
       <LessonSidebar
         lessons={lessons}
         openLessonId={openLessonId}
@@ -48,10 +65,8 @@ export default function CourseDetail({ course }: CourseDetailProps) {
 
       <div className="px-5 flex-1">
         <div className="max-w-[1000px] mx-auto">
-          <h1 className="title">{course.name}</h1>
-
           <LessonContent
-            lessonId={openLessonId}
+            lesson={lessons.find((l) => l._id === openLessonId) || null}
             tab={openLessonId ? activeTabs[openLessonId] || "Vocabulary" : null}
           />
         </div>

@@ -1,6 +1,6 @@
 import { Lesson } from "@/types/lesson/lesson"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown } from "lucide-react"
+import { Check, CheckCircle, ChevronDown } from "lucide-react"
 
 interface SidebarProps {
   lessons: Lesson[]
@@ -10,7 +10,7 @@ interface SidebarProps {
   setActiveTabs: (tabs: Record<string, string>) => void
 }
 
-const tabs = ["Vocabulary", "Grammar", "Exercises"]
+const tabs = ["Vocabulary", "Grammar", "Exercise"]
 
 export default function LessonSidebar({
   lessons,
@@ -58,17 +58,24 @@ export default function LessonSidebar({
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.1, ease: "easeInOut" }}
                 >
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab}
-                      className={`h-9 hover:bg-[#2D2D2D] rounded-[5px] px-3 text-[13px] text-left w-[280px] ${
-                        activeTab === tab ? "bg-[#2D2D2D]" : "text-gray-300"
-                      }`}
-                      onClick={() => setTabForLesson(lesson._id, tab)}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                  {tabs.map((tab) => {
+                    const isActive = activeTab === tab
+
+                    return (
+                      <button
+                        key={tab}
+                        className={`flex items-center gap-[10px] h-9 rounded-[5px] px-3 text-[13px] text-left w-[280px] ${
+                          isActive
+                            ? "bg-[#2D2D2D] text-white"
+                            : "text-gray-300 hover:bg-[#2D2D2D]"
+                        }`}
+                        onClick={() => setTabForLesson(lesson._id, tab)}
+                      >
+                        <CheckCircle size={16} />
+                        <span className="mt-[3px]">{tab}</span>
+                      </button>
+                    )
+                  })}
                 </motion.div>
               )}
             </AnimatePresence>

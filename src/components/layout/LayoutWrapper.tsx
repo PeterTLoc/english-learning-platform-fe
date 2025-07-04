@@ -4,10 +4,9 @@ import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 import dynamic from 'next/dynamic'
 import RoleGuard, { UserRole } from "../guards/RoleGuard"
-import Header from "./Header"
 
 // Dynamically import components
-const NavBar = dynamic(() => import("./NavBar"), { ssr: false })
+const Header = dynamic(() => import("./Header"), { ssr: false })
 const Footer = dynamic(() => import("./Footer"), { ssr: false })
 const AdminHeader = dynamic(() => import("../admin/AdminHeader"), { ssr: false })
 const AdminSidebar = dynamic(() => import("../admin/AdminSidebar"), { ssr: false })

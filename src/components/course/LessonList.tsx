@@ -33,26 +33,6 @@ export default function LessonList({ courseId }: { courseId: string }) {
   return lessons.length === 0 ? (
     <p>No lessons found for this course.</p>
   ) : (
-    // <ul className="flex flex-col gap-1">
-    //   {lessons.map((lesson: any) => (
-    //     <li
-    //       key={lesson._id}
-    //       className="container flex items-center justify-between hover:bg-[#323232]"
-    //     >
-    //       <div>
-    //         <h3 className="font-bold">{lesson.name}</h3>
-
-    //         <div className="mt-2 text-sm subtext">
-    //           <p>{lesson.description}</p>
-    //           <p>{lesson.length} minutes</p>
-    //         </div>
-    //       </div>
-
-    //       <ChevronRight size={20} />
-    //     </li>
-    //   ))}
-    // </ul>
-
     <ul className="flex flex-col gap-1">
       {lessons.map((lesson: any) => (
         <li
@@ -64,8 +44,16 @@ export default function LessonList({ courseId }: { courseId: string }) {
             <div>
               <h3 className="font-bold text-sm">{lesson.name}</h3>
 
-              <div className="text-xs subtext">
-                <p>{lesson.length} minutes</p>
+              <div className="text-xs subtext flex gap-[10px]">
+                {lesson.length.map((item: any, index: number) => (
+                  <div key={item.for} className="flex items-center gap-1">
+                    <p>{item.amount}</p>
+                    <p>{item.for}</p>
+                    {index !== lesson.length.length - 1 && (
+                      <p className="w-[1px] h-3 bg-gray-300 ml-[6px]"></p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
