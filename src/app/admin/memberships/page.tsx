@@ -267,6 +267,7 @@ const MembershipManagementPage = () => {
                   <th className="px-6 py-3 text-center">Description</th>
                   <th className="px-6 py-3 text-center">Price</th>
                   <th className="px-6 py-3 text-center">Duration</th>
+                  <th className="px-6 py-3 text-center">Created At</th>
                   <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -285,6 +286,9 @@ const MembershipManagementPage = () => {
                     </td>
                     <td className="px-6 py-4 text-center text-[#CFCFCF]">
                       {membership.duration} days
+                    </td>
+                    <td className="px-6 py-4 text-center text-[#CFCFCF]">
+                      {membership.createdAt ? new Date(membership.createdAt).toLocaleString() : "N/A"}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">

@@ -22,7 +22,7 @@ export default function BlogPreview({
         onClick={onClose}
       />
       {/* Modal content */}
-      <div className="relative z-10 w-full max-w-xs sm:max-w-lg md:max-w-2xl mx-auto bg-gray-900 text-white shadow-lg rounded-xl overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto">
+      <div className="relative z-10 w-full max-w-xs sm:max-w-lg md:max-w-2xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto">
         {/* Close button */}
         <button
           type="button"

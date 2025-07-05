@@ -5,7 +5,7 @@ import React from "react";
 export default function BlogContent({ blog }: { blog: IBlog }) {
   return (
     <div className="min-h-screen bg-gray-950 py-12 sm:py-16 px-2">
-      <article className="max-w-3xl mx-auto bg-gray-900 rounded-xl shadow-2xl overflow-hidden">
+      <article className="max-w-3xl mx-auto bg-gray-900 rounded-lg shadow-2xl overflow-hidden">
         <div className="relative h-64 sm:h-80 md:h-[28rem]">
           <Image
             src={blog.coverImage}

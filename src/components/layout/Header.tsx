@@ -62,7 +62,7 @@ const Header = () => {
     //   </div>
     // </nav>
 
-    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] shadow-xl shadow-zinc-600/60">
+    <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] shadow-xl shadow-zinc-600/10">
       <div className="flex justify-between items-center h-full px-[20px]">
         <div className="flex gap-8 items-center">
           <div className="pr-8">

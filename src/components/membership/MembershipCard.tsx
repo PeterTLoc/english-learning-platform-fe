@@ -33,7 +33,7 @@ export default function MembershipCard({
       className={
         connectedLayout
           ? "bg-[#f9fafb] h-full flex-1 rounded-none p-4 md:p-8 w-full min-h-[340px]"
-          : "relative w-full md:max-w-sm bg-[#f9fafb] rounded-xl shadow-md p-4 md:p-5 transition-all duration-300 transform hover:scale-105 min-h-[340px]"
+          : "relative w-full md:max-w-sm bg-[#f9fafb] rounded-lg shadow-md p-4 md:p-5 transition-all duration-300 transform hover:scale-105 min-h-[340px]"
       }
       style={
         connectedLayout

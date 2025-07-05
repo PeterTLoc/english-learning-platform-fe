@@ -184,8 +184,8 @@ export default function CourseDetailsModal({
                   </div>
                   <div>
                     <p><span className="font-medium">Total Enrolled:</span> {courseDetails.totalEnrolled ?? 'Unknown'}</p>
-                    <p><span className="font-medium">Created:</span> {new Date(courseDetails.createdAt).toLocaleDateString()}</p>
-                    <p><span className="font-medium">Last Updated:</span> {new Date(courseDetails.updatedAt).toLocaleDateString()}</p>
+                    <p><span className="font-medium">Created:</span> {new Date(courseDetails.createdAt).toLocaleString()}</p>
+                    <p><span className="font-medium">Last Updated:</span> {new Date(courseDetails.updatedAt).toLocaleString()}</p>
                   </div>
                 </div>
               </div>

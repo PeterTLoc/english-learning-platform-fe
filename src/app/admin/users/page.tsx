@@ -287,7 +287,7 @@ const UserManagementPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {new Date(user.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">

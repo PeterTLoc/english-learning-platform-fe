@@ -24,6 +24,28 @@ class FlashcardSetService {
     return response.data;
   }
 
+  async getAllFlashcardSets(params: {
+    page: number;
+    size: number;
+    search?: string;
+    sortBy?: string;
+    order?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+
+    if (params.page) queryParams.set("page", params.page.toString());
+    if (params.size) queryParams.set("size", params.size.toString());
+    if (params.search) queryParams.set("search", params.search);
+    if (params.sortBy) queryParams.set("sortBy", params.sortBy);
+    if (params.order) queryParams.set("order", params.order);
+
+    const response = await api.get(
+      `/api/flashcard-sets?${queryParams.toString()}`
+    );
+
+    return response.data;
+  }
+
   async getFlashcardSetById(id: string) {
     const response = await api.get(`/api/flashcard-sets/${id}`);
     return response.data;

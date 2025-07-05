@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import FilterBox from "../common/FilterBox";
+import { Plus, Search, Grid3X3 } from "lucide-react";
 
 const flashcardSetService = new FlashcardSetService();
 
@@ -34,6 +35,7 @@ export default function FlashcardSetList({
   const [flashcardSets, setFlashcardSets] = useState<IFlashcardSet[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function FlashcardSetList({
       );
       setFlashcardSets(response.data);
       setTotalPages(response.totalPages);
+      setTotal(response.total)
       setLoading(false);
     };
 
@@ -56,8 +59,9 @@ export default function FlashcardSetList({
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
+      <div className="flex flex-col gap-4 justify-center items-center min-h-[400px]">
         <LoadingSpinner />
+        <p className="text-white">Loading flashcard sets...</p>
       </div>
     );
   }
@@ -87,54 +91,41 @@ export default function FlashcardSetList({
   return (
     <div className="w-full max-w-7xl mx-auto">
       {/* Filter Section */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-8">
         <div className="flex justify-center">
-          <div className="w-full max-w-2xl">
+          <div className="w-full">
             <FilterBox onSearch={onSearch} />
           </div>
         </div>
       </div>
 
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-8">
         <div className="flex-1">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">
-            Flashcard Sets
-          </h2>
-          <p className="text-gray-400 text-sm sm:text-base">
-            {flashcardSets.length} {flashcardSets.length === 1 ? "set" : "sets"}{" "}
+          <div className="flex items-center gap-3 mb-2">
+            <Grid3X3 className="w-6 h-6 text-purple-400" />
+            <h2 className="text-2xl lg:text-3xl font-bold text-white">
+              Flashcard Sets
+            </h2>
+          </div>
+          <p className="text-slate-300 text-sm sm:text-base">
+            {total} {total === 1 ? "set" : "sets"}{" "}
             available
           </p>
         </div>
 
         <button
-          className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+          className="px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors"
           onClick={() => setIsCreateModalOpen(true)}
         >
-          <span className="flex items-center justify-center gap-2">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <span className="hidden sm:inline">Create Flashcard Set</span>
-            <span className="sm:hidden">Create Set</span>
-          </span>
+          Add Flashcard Set
         </button>
       </div>
 
       {/* Content Section */}
-      <div className="mb-8 sm:mb-12">
+      <div className="mb-12">
         {flashcardSets.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {flashcardSets.map((flashcardSet) => (
               <FlashcardSetCard
                 key={(flashcardSet._id as ObjectId).toString()}
@@ -143,37 +134,25 @@ export default function FlashcardSetList({
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 sm:py-16">
+          <div className="text-center py-8 bg-[#2b2b2b] rounded-lg">
             <div className="max-w-md mx-auto">
-              <div className="w-20 h-20 mx-auto mb-4 bg-gray-700 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-10 h-10 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                  />
-                </svg>
+              <div className="w-20 h-20 mx-auto mb-6 bg-slate-700 rounded-full flex items-center justify-center">
+                <Search className="w-10 h-10 text-slate-400" />
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-300 mb-2">
+              <h3 className="text-xl font-semibold text-slate-200 mb-3">
                 No flashcard sets found
               </h3>
-              <p className="text-gray-500 text-sm sm:text-base mb-6">
+              <p className="text-slate-400 text-base mb-8">
                 {search
                   ? `No results for "${search}"`
                   : "Be the first to create a flashcard set!"}
               </p>
               {!search && (
                 <button
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                  className="px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors mx-auto"
                   onClick={() => setIsCreateModalOpen(true)}
                 >
-                  Create Your First Set
+                  Add Flashcard Set
                 </button>
               )}
             </div>
@@ -182,15 +161,15 @@ export default function FlashcardSetList({
       </div>
 
       {/* Pagination Section */}
-      {totalPages > 1 && (
+      {
         <div className="flex justify-center">
           <ServerPagination
             currentPage={page}
-            totalPages={totalPages}
+            totalPages={totalPages !== 0 ? totalPages : 1}
             pageSize={size}
           />
         </div>
-      )}
+      }
 
       {/* Modal */}
       <CreateFlashcardSetModal

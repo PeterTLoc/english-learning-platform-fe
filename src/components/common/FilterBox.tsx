@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Search, Calendar, SortAsc, SortDesc, Filter } from "lucide-react";
 
 export default function FilterBox({
   onSearch,
@@ -21,127 +22,119 @@ export default function FilterBox({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full mx-auto">
       <form onSubmit={handleSearch} className="w-full">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4 w-full">
-          {/* Search Input */}
-          <div className="flex-1 w-full">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 w-full">
+          {/* Search Input - Increased width */}
+          <div className="flex-1 w-full lg:w-2/5">
             <div className="relative">
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search flashcard sets..."
-                className="w-full p-3 pl-10 pr-4 rounded-lg bg-[#232526] text-white border border-gray-700 focus:ring-2 focus:ring-[#4CC2FF] focus:border-[#4CC2FF] placeholder-gray-400 transition-all duration-300 text-sm sm:text-base"
+                className="w-full h-12 p-3 pl-10 pr-4 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 placeholder-slate-400 transition-all duration-300 text-sm sm:text-base backdrop-blur-sm"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+                <Search className="w-5 h-15 text-slate-400" />
               </div>
             </div>
           </div>
 
           {/* Filter Controls */}
-          <div className="flex flex-col sm:flex-row gap-3 lg:gap-2 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-3/5">
             {/* Sort Select */}
-            <div className="flex-1 sm:flex-none">
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="w-full sm:w-auto p-3 rounded-lg bg-[#232526] text-white border border-gray-700 focus:ring-2 focus:ring-[#4CC2FF] focus:border-[#4CC2FF] transition-all duration-300 text-sm sm:text-base cursor-pointer"
-              >
-                <option value="date">📅 Sort by Date</option>
-                <option value="name">🔤 Sort by Name</option>
-              </select>
+            <div className="flex-1">
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="w-full p-3 pl-10 pr-4 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base cursor-pointer appearance-none backdrop-blur-sm"
+                >
+                  <option value="date">Sort by Date</option>
+                  <option value="name">Sort by Name</option>
+                </select>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="w-4 h-4 text-slate-400" />
+                </div>
+              </div>
             </div>
 
             {/* Order Select */}
-            <div className="flex-1 sm:flex-none">
-              <select
-                value={order}
-                onChange={(e) => setOrder(e.target.value)}
-                className="w-full sm:w-auto p-3 rounded-lg bg-[#232526] text-white border border-gray-700 focus:ring-2 focus:ring-[#4CC2FF] focus:border-[#4CC2FF] transition-all duration-300 text-sm sm:text-base cursor-pointer"
-              >
-                <option value="desc">⬇️ Descending</option>
-                <option value="asc">⬆️ Ascending</option>
-              </select>
+            <div className="flex-1">
+              <div className="relative">
+                <select
+                  value={order}
+                  onChange={(e) => setOrder(e.target.value)}
+                  className="w-full p-3 pl-10 pr-4 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base cursor-pointer appearance-none backdrop-blur-sm"
+                >
+                  <option value="desc">Descending</option>
+                  <option value="asc">Ascending</option>
+                </select>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  {order === "desc" ? (
+                    <SortDesc className="w-4 h-4 text-slate-400" />
+                  ) : (
+                    <SortAsc className="w-4 h-4 text-slate-400" />
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Search Button */}
-          <div className="w-full sm:w-auto lg:w-auto">
-            <button
-              type="submit"
-              className="w-full sm:w-auto bg-[#4CC2FF] hover:bg-[#38aee6] text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:shadow-[#4CC2FF]/25 transition-all duration-300 hover:scale-105 text-sm sm:text-base flex items-center justify-center gap-2"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {/* Search Button */}
+            <div className="w-full sm:w-auto">
+              <button
+                type="submit"
+                className="h-12 px-4 flex items-center gap-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <span>Search</span>
-            </button>
+                <Search className="w-4 h-4" />
+                <span>Search</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Quick Filter Tags (Optional Enhancement) */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          <span className="text-xs text-gray-400 mr-2">Quick filters:</span>
-          <button
-            type="button"
-            onClick={() => {
-              setSearch("");
-              setSort("date");
-              setOrder("desc");
-              onSearch("", "date", "desc");
-            }}
-            className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full transition-colors duration-200"
-          >
-            Recent
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setSearch("");
-              setSort("name");
-              setOrder("asc");
-              onSearch("", "name", "asc");
-            }}
-            className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full transition-colors duration-200"
-          >
-            A-Z
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setSearch("");
-              setSort("date");
-              setOrder("asc");
-              onSearch("", "date", "asc");
-            }}
-            className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full transition-colors duration-200"
-          >
-            Oldest
-          </button>
+        {/* Quick Filter Tags - Centered */}
+        <div className="mt-6 flex flex-col items-center">
+          <div className="flex flex-wrap justify-center gap-3">
+            <span className="text-sm text-slate-300 mb-2 w-full text-center">Quick filters:</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setSort("date");
+                setOrder("desc");
+                onSearch("", "date", "desc");
+              }}
+              className="px-4 py-2 text-sm bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-lg transition-colors duration-200 border border-slate-600"
+            >
+              Recent
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setSort("name");
+                setOrder("asc");
+                onSearch("", "name", "asc");
+              }}
+              className="px-4 py-2 text-sm bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-lg transition-colors duration-200 border border-slate-600"
+            >
+              A-Z
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setSort("date");
+                setOrder("asc");
+                onSearch("", "date", "asc");
+              }}
+              className="px-4 py-2 text-sm bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-lg transition-colors duration-200 border border-slate-600"
+            >
+              Oldest
+            </button>
+          </div>
         </div>
       </form>
     </div>

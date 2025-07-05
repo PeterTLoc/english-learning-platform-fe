@@ -11,6 +11,7 @@ import {
   Settings,
   User2,
   Users,
+  FileText,
 } from "lucide-react";
 
 interface SidebarItem {
@@ -47,6 +48,11 @@ export default function AdminSidebar() {
       name: "Blogs",
       path: "/admin/blogs",
       icon: <Newspaper className="w-5 h-5" />,
+    },
+    {
+      name: "Flashcard Sets",
+      path: "/admin/flashcard-sets",
+      icon: <FileText className="w-5 h-5" />,
     },
     {
       name: "Site Settings",
