@@ -95,6 +95,15 @@ const page = () => {
     } catch (error: unknown) {
       const { message } = parseAxiosError(error)
       showToast(message, "error", 5000)
+      
+      // Optionally set form errors if the backend returns specific field errors
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as any;
+        if (axiosError.response?.data?.errors) {
+          setErrors(axiosError.response.data.errors);
+        }
+      }
+    } finally {
       setIsLoading(false)
     }
   }

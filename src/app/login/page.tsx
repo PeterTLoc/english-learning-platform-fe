@@ -56,21 +56,21 @@ export default function LoginPage() {
       await login(form);
       showToast("Login successful!", "success");
     } catch (error: any) {
-      console.error("Login error:", error);
-      // Show error toast
-      showToast(
-        error.message ||
-          "Login failed. Please check your credentials and try again.",
-        "error",
-        5000
-      );
-      // Ensure the isLoading state is set to false on error
+      // Show error toast with the actual error message
+      const errorMessage = error?.message || "Login failed. Please check your credentials and try again.";
+      showToast(errorMessage, "error", 5000);
+      
+      // Optionally set form errors if the backend returns specific field errors
+      if (error?.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      }
+    } finally {
       setIsLoading(false);
     }
   };
 
   // Show loading state while checking auth status
-  if (authLoading) {
+  if (authLoading && !user) {
     return (
       <div className="bg-[url(https://wallpapercrafter.com/desktop/269688-knowledge.jpg)] flex flex-col items-center justify-center min-h-screen">
         <div className="bg-black/70 p-5 rounded-md">

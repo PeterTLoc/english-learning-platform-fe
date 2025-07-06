@@ -44,7 +44,7 @@ export default function FlashcardSetCard({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              window.location.href = `/flashcard-sets?userId=${flashcardSet.userId}`;
+              window.location.href = `/profile/${flashcardSet.userId}`;
             }}
           >
             <div className="flex items-center gap-2 group-hover/user:text-purple-400 transition-colors cursor-pointer">

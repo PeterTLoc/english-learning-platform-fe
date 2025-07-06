@@ -27,7 +27,7 @@ export default function CourseInfoModal({
         />
 
         {/* Modal */}
-        <div className="relative w-full max-w-4xl rounded-lg bg-white p-6 shadow-xl">
+        <div className="relative w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg">
           <div className="mb-4 flex items-start justify-between">
             <h2 className="text-2xl font-bold">{course.name}</h2>
             <button

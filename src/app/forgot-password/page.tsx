@@ -1,21 +1,14 @@
 "use client"
 
-import axios from "axios"
 import React, { useState } from "react"
 import { useToast } from "@/context/ToastContext"
+import { sendResetPasswordPin } from "@/services/authService"
 
 const page = () => {
   const [email, setEmail] = useState("")
   const [errors, setErrors] = useState<{ email?: string }>({})
   const [isLoading, setIsLoading] = useState(false)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
   const { showToast } = useToast()
-
-  if (!apiUrl) {
-    throw new Error(
-      "NEXT_PUBLIC_API_URL must be defined in environment variables."
-    )
-  }
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -38,17 +31,10 @@ const page = () => {
     setIsLoading(true)
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/api/auth/send-reset-password-pin`,
-        { email },
-        {
-          withCredentials: true,
-        }
-      )
-
-      showToast("Password reset link sent to your email.", "success", 5000)
+      await sendResetPasswordPin(email)
+      showToast("Password reset PIN sent to your email.", "success", 5000)
     } catch (error: any) {
-      showToast(error.message || "Failed to send reset link. Please try again.", "error", 5000)
+      showToast(error.response?.data?.message || "Failed to send reset PIN. Please try again.", "error", 5000)
     } finally {
       setIsLoading(false)
     }
