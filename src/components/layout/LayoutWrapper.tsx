@@ -1,10 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import RoleGuard, { UserRole } from "../guards/RoleGuard";
 import Header from "./Header";
+import TutorTrigger from "./TutorTrigger";
+import TutorModal from "./TutorModal";
 
 // Dynamically import components
 const NavBar = dynamic(() => import("./Header"), { ssr: false });
@@ -34,6 +36,9 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
 
+  const [isTutorOpen, setIsTutorOpen] = useState(true);
+  const [isTutorModalOpen, setIsTutorModalOpen] = useState(false);
+
   // Determine which layout to use
   const isAdminLayout = pathname?.startsWith("/admin");
 
@@ -43,12 +48,28 @@ export default function LayoutWrapper({
     pathname === "/register" ||
     pathname === "/forgot-password";
 
+  const hideTutor = pathname === "/login" || pathname === "/register"; //exam + exercise path;
+
   // Initialize Flowbite for admin layout
   useEffect(() => {
     if (isAdminLayout) {
       importFlowbite();
     }
   }, [isAdminLayout]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsTutorModalOpen((open) => {
+          if (!open) setIsTutorOpen(false);
+          return !open;
+        });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Admin layout
   if (isAdminLayout) {
@@ -74,6 +95,26 @@ export default function LayoutWrapper({
       {/* Fullscreen gradient below navbar */}
       {/* <div className="fixed top-[84px] left-0 w-full h-[calc(100vh-84px)] z-0 bg-gradient-to-r from-black/10 via-gray-200/40 to-gray-300 pointer-events-none" /> */}
       <main>{children}</main>
+      {!hideTutor && (
+        <>
+          <TutorTrigger
+            isOpen={isTutorOpen}
+            onClick={() => {
+              setIsTutorModalOpen(true);
+              setIsTutorOpen(false);
+            }}
+          />
+        </>
+      )}
+      {!hideTutor && (
+        <TutorModal
+          isOpen={isTutorModalOpen}
+          onClose={() => {
+            setIsTutorModalOpen(false);
+            setIsTutorOpen(true);
+          }}
+        />
+      )}
       {!hideNav && <Footer />}
     </div>
   );
