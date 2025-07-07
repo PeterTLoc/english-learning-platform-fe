@@ -32,9 +32,9 @@ export interface TestSubmissionResponse {
 // Get tests by lesson ID
 export const getTestsByLessonId = async (lessonId: string): Promise<Test[]> => {
   try {
-    console.log("Calling getTestsByLessonId for lesson:", lessonId)
+    // console.log("Calling getTestsByLessonId for lesson:", lessonId)
     const response = await api.get(`/api/tests/lesson/${lessonId}`)
-    console.log("getTestsByLessonId response:", response.data)
+    // console.log("getTestsByLessonId response:", response.data)
     return response.data.data || []
   } catch (error) {
     console.error("Error in getTestsByLessonId:", error)
@@ -45,9 +45,9 @@ export const getTestsByLessonId = async (lessonId: string): Promise<Test[]> => {
 // Get test by ID (includes exercises)
 export const getTestById = async (testId: string): Promise<Test> => {
   try {
-    console.log("Calling getTestById for test:", testId)
+    // console.log("Calling getTestById for test:", testId)
     const response = await api.get(`/api/tests/${testId}?_t=${Date.now()}`)
-    console.log('getTestById API Response:', response.data)
+    // console.log('getTestById API Response:', response.data)
     return response.data.test
   } catch (error) {
     console.error("Error in getTestById:", error)
@@ -58,17 +58,17 @@ export const getTestById = async (testId: string): Promise<Test> => {
 // Submit a test
 export const submitTest = async (data: TestSubmission): Promise<TestSubmissionResponse> => {
   try {
-    console.log("Submitting test with data:", data)
+    // console.log("Submitting test with data:", data)
     const response = await api.post(`/api/tests/${data.testId}/submission`, {
       userId: data.userId,
       answers: data.answers
     })
-    console.log("submitTest response:", response.data)
-    console.log("submitTest response.submission:", response.data.submission)
+    // console.log("submitTest response:", response.data)
+    // console.log("submitTest response.submission:", response.data.submission)
     
     // Return the submission data directly
     const result = response.data.submission
-    console.log("Returning from submitTest:", result)
+    // console.log("Returning from submitTest:", result)
     return result
   } catch (error: any) {
     console.error("Error in submitTest:", error)

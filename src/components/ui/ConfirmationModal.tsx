@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { AlertTriangle, Info, AlertCircle } from "lucide-react";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -40,8 +41,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg p-6 max-w-md w-full">
-        <h2 className="text-xl font-bold text-white mb-2">{title}</h2>
-        <p className="text-[#CFCFCF] mb-6">{message}</p>
+        <div className="flex flex-col items-center mb-4">
+          {variant === "danger" && <AlertCircle className="w-14 h-14 text-red-500 mb-2" />}
+          {variant === "warning" && <AlertTriangle className="w-14 h-14 text-amber-400 mb-2" />}
+          {variant === "info" && <Info className="w-14 h-14 text-blue-400 mb-2" />}
+          <h2 className="text-xl font-bold text-white text-center mt-2">{title}</h2>
+        </div>
+        <p className="text-[#CFCFCF] mb-6 text-center">{message}</p>
         
         <div className="flex justify-end gap-3">
           <button

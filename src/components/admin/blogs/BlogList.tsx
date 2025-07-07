@@ -154,8 +154,9 @@ export default function BlogList({
     );
 
   return (
-    <div className="flex flex-col w-full mx-auto rounded-md shadow-md px-1 sm:px-4 md:px-8 py-2 max-w-5xl">
-      <div className="flex justify-center mb-4">
+    <div className="flex flex-col w-full mx-auto rounded-md py-2">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold text-white">Blog Management</h1>
         <button
           className="bg-[#4CC2FF] text-black px-4 py-2 rounded-md"
           onClick={() => setCreateModalOpen(true)}
@@ -181,7 +182,7 @@ export default function BlogList({
               <th className="px-6 py-3 text-center">Title</th>
               <th className="px-6 py-3 text-center">Author</th>
               <th className="px-6 py-3 text-center">Status</th>
-              <th className="px-6 py-3 text-center">Created</th>
+              <th className="px-6 py-3 text-center">Created At</th>
               <th className="px-6 py-3 text-center">Actions</th>
             </tr>
           </thead>

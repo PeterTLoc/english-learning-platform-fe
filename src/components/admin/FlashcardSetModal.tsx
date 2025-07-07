@@ -1,18 +1,57 @@
 "use client";
-import React, { useState } from "react";
-import { X, Plus, BookOpen } from "lucide-react";
 
-export default function CreateFlashcardSetModal({
-  isOpen,
-  onClose,
-  onCreate,
-}: {
+import { useState, useEffect } from "react";
+import { IFlashcardSet } from "@/types/models/IFlashcardSet";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
+interface FlashcardSetModalProps {
+  mode: "create" | "edit";
+  flashcardSet: IFlashcardSet | null;
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (name: string, description: string) => void;
-}) {
+  onSubmit: (data: { name: string; description: string }) => void;
+}
+
+export default function FlashcardSetModal({
+  mode,
+  flashcardSet,
+  isOpen,
+  onClose,
+  onSubmit,
+}: FlashcardSetModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (mode === "edit" && flashcardSet) {
+        setName(flashcardSet.name || "");
+        setDescription(flashcardSet.description || "");
+      } else {
+        setName("");
+        setDescription("");
+      }
+    }
+  }, [isOpen, mode, flashcardSet]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!name.trim()) {
+      alert("Name is required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit({ name: name.trim(), description: description.trim() });
+    } catch (error) {
+      console.error("Error submitting flashcard set:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -20,7 +59,9 @@ export default function CreateFlashcardSetModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-white">Create Flashcard Set</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {mode === "create" ? "Create Flashcard Set" : "Edit Flashcard Set"}
+          </h2>
           <button
             onClick={onClose}
             className="text-[#CFCFCF] hover:text-white transition-colors"
@@ -40,40 +81,35 @@ export default function CreateFlashcardSetModal({
             </svg>
           </button>
         </div>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            onCreate(name, description);
-          }}
-          className="space-y-4"
-        >
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
               Name *
             </label>
             <input
-              value={name}
-              onChange={e => setName(e.target.value)}
               type="text"
-              name="name"
-              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full p-3 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white placeholder-[#CFCFCF] focus:outline-none focus:border-[#4CC2FF]"
               placeholder="Enter flashcard set name"
               required
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
               Description
             </label>
             <textarea
               value={description}
-              onChange={e => setDescription(e.target.value)}
-              rows={3}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
               className="w-full p-3 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white placeholder-[#CFCFCF] focus:outline-none focus:border-[#4CC2FF] resize-none"
               placeholder="Enter flashcard set description"
             />
           </div>
+
           <div className="flex gap-3 pt-4">
             <button
               type="button"
@@ -84,14 +120,21 @@ export default function CreateFlashcardSetModal({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors flex items-center justify-center gap-2"
-              disabled={!name.trim()}
+              disabled={isSubmitting}
+              className="flex-1 px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Create
+              {isSubmitting ? (
+                <>
+                  <LoadingSpinner size="small" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{mode === "create" ? "Create" : "Update"}</span>
+              )}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
-}
+} 

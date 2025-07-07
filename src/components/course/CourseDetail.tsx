@@ -6,7 +6,7 @@ import LessonOverview from "@/components/lesson/LessonOverview"
 import CourseInfoModal from "@/components/course/CourseInfoModal"
 import { useEffect, useState } from "react"
 import { Course } from "@/types/course/course"
-import { getAllLessonsByCourseId } from "@/services/lessonService"
+import { getAllLessons } from "@/services/lessonService"
 import { parseAxiosError } from "@/utils/apiErrors"
 import { Lesson } from "@/types/lesson/lesson"
 import TestContent from "@/components/lesson-content/TestContent"
@@ -48,7 +48,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const data = await getAllLessonsByCourseId(course._id)
+        const data = await getAllLessons()
         setLessons(data)
 
         // Check URL parameters for initial view
@@ -63,7 +63,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
           })
         } else if (lessonParam) {
           // Navigate to specific lesson
-          const lessonExists = data.find(l => l._id === lessonParam)
+          const lessonExists = data.find((l: Lesson) => l._id === lessonParam)
           if (lessonExists) {
             setCurrentView({
               lessonId: lessonParam,

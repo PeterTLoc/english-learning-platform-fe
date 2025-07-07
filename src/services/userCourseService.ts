@@ -1,5 +1,6 @@
 import api from "@/lib/api"
 import { Course } from "@/types/course/course"
+import { UserCourseStatusType } from "@/enums/UserCourseStatusEnum"
 
 export interface UserCourse {
   _id: string
@@ -7,7 +8,7 @@ export interface UserCourse {
   courseId: string
   lessonFinished: number
   averageScore: number | null
-  status: 'ongoing' | 'completed' | 'dropped'
+  status: UserCourseStatusType
   isDeleted?: boolean
   createdAt: string
   updatedAt: string

@@ -44,7 +44,7 @@ export default function EditBlogModal({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-2 sm:px-4">
-      <div className="bg-[#202020] rounded-xl shadow-2xl w-full max-w-xs sm:max-w-md p-4 sm:p-8 relative">
+      <div className="bg-[#202020] rounded-lg shadow-2xl w-full max-w-xs sm:max-w-md p-4 sm:p-8 relative">
         <h2 className="text-2xl font-bold mb-6 text-start text-white">
           Edit Blog
         </h2>

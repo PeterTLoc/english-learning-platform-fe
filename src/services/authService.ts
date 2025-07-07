@@ -19,3 +19,15 @@ export const getCurrentUser = async (): Promise<User> => {
   const response = await api.get("/api/auth/me")
   return response.data.user;
 }
+
+export const sendResetPasswordPin = async (email: string): Promise<void> => {
+  await api.post("/api/auth/send-reset-password-pin", { email })
+}
+
+export const confirmResetPasswordPin = async (email: string, pin: string): Promise<void> => {
+  await api.post("/api/auth/confirm-reset-password-pin", { email, pin })
+}
+
+export const resetPassword = async (email: string, newPassword: string): Promise<void> => {
+  await api.put("/api/auth/reset-password", { email, newPassword })
+}

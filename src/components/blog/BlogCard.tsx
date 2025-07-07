@@ -9,8 +9,8 @@ import React from "react";
 export default function BlogCard({ blog }: { blog: IBlog }) {
   const { title, coverImage, content, createdAt, updatedAt } = blog;
   const date = updatedAt
-    ? new Date(updatedAt).toLocaleDateString()
-    : new Date(createdAt!).toLocaleDateString();
+    ? new Date(updatedAt).toLocaleString()
+    : new Date(createdAt!).toLocaleString();
 
   return (
     <Link href={`/blog/${(blog._id as ObjectId).toString()}`}>

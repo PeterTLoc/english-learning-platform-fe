@@ -1,6 +1,6 @@
 "use client";
 
-import { User, UserDetail, getUserDetailById } from "@/services/userService";
+import UserService, { User, UserDetail } from "@/services/userService";
 import { UserRole } from "@/components/guards";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import { useToast } from "@/context/ToastContext";
@@ -25,13 +25,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "courses" | "tests" | "flashcards" | "achievements">("overview");
   const [loading, setLoading] = useState<boolean>(false);
+  const userService = new UserService();
   
   useEffect(() => {
     const fetchUserDetail = async () => {
       if (isOpen && user) {
         setLoading(true);
         try {
-          const detail = await getUserDetailById(user._id);
+          const detail = await userService.getUserDetailById(user._id);
           setUserDetail(detail);
         } catch (error) {
           console.error("Failed to fetch user details:", error);
@@ -212,11 +213,11 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                           </div>
                           <div>
                             <p className="text-[#CFCFCF] text-sm">Account Created</p>
-                            <p className="text-white">{new Date(user.createdAt).toLocaleDateString()}</p>
+                            <p className="text-white">{new Date(user.createdAt).toLocaleString()}</p>
                           </div>
                           <div>
                             <p className="text-[#CFCFCF] text-sm">Last Online</p>
-                            <p className="text-white">{new Date(user.lastOnline).toLocaleDateString()}</p>
+                            <p className="text-white">{new Date(user.lastOnline).toLocaleString()}</p>
                           </div>
                           <div>
                             <p className="text-[#CFCFCF] text-sm">Online Streak</p>
@@ -225,7 +226,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                           {user.activeUntil && (
                             <div>
                               <p className="text-[#CFCFCF] text-sm">Premium Until</p>
-                              <p className="text-white">{new Date(user.activeUntil).toLocaleDateString()}</p>
+                              <p className="text-white">{new Date(user.activeUntil).toLocaleString()}</p>
                             </div>
                           )}
                         </div>
@@ -519,7 +520,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                             <h4 className="text-[#FFD700] font-medium">{achievement.title}</h4>
                             <p className="text-[#CFCFCF] text-sm mt-1">{achievement.description}</p>
                             <div className="mt-2 text-xs text-[#CFCFCF]">
-                              Awarded on: {new Date(achievement.dateAwarded).toLocaleDateString()}
+                              Awarded on: {new Date(achievement.dateAwarded).toLocaleString()}
                             </div>
                           </div>
                         ))}

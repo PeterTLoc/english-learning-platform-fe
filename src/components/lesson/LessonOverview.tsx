@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Lesson } from "@/types/lesson/lesson"
 import { BookOpen, PenTool, ClipboardCheck, ChevronRight } from "lucide-react"
 import { motion } from "framer-motion"
@@ -141,9 +142,9 @@ export default function LessonOverview({
               // Insert Practice subtitle before Exercise
               if (tab === "Exercise") {
                 return (
-                  <>
+                  <React.Fragment key={tab}>
                     <div className="subtitle">Practice</div>
-                    <li key={tab} className="flex flex-col gap-1">
+                    <li className="flex flex-col gap-1">
                       <button
                         onClick={() => onNavigateToTab(tab)}
                         className="bg-[#2B2B2B] border border-[#1D1D1D] p-5 rounded-[5px] flex items-center gap-5 h-[69px] w-full hover:bg-[#3B3B3B] transition-colors duration-150 group"
@@ -160,7 +161,7 @@ export default function LessonOverview({
                         </div>
                       </button>
                     </li>
-                  </>
+                  </React.Fragment>
                 )
               }
               // Render Vocabulary and Grammar as usual

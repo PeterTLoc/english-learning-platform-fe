@@ -81,125 +81,160 @@ export interface UserQueryParams {
   order?: string
 }
 
-/**
- * Get users with pagination and filtering
- */
-export const getUsers = async (params: UserQueryParams): Promise<PaginatedUsers> => {
-  const queryParams = new URLSearchParams()
-  
-  if (params.page) queryParams.set("page", params.page.toString())
-  if (params.size) queryParams.set("size", params.size.toString())
-  if (params.search) queryParams.set("search", params.search)
-  if (params.role) queryParams.set("role", params.role)
-  if (params.sortBy) queryParams.set("sortBy", params.sortBy)
-  if (params.order) queryParams.set("order", params.order)
-  
-  const response = await api.get(`/api/users?${queryParams.toString()}`)
-  return response.data
+class UserService {
+  /**
+   * Get users with pagination and filtering
+   */
+  async getUsers(params: UserQueryParams): Promise<PaginatedUsers> {
+    const queryParams = new URLSearchParams()
+    
+    if (params.page) queryParams.set("page", params.page.toString())
+    if (params.size) queryParams.set("size", params.size.toString())
+    if (params.search) queryParams.set("search", params.search)
+    if (params.role) queryParams.set("role", params.role)
+    if (params.sortBy) queryParams.set("sortBy", params.sortBy)
+    if (params.order) queryParams.set("order", params.order)
+    
+    const response = await api.get(`/api/users?${queryParams.toString()}`)
+    return response.data
+  }
+
+  /**
+   * Disable user (soft delete)
+   */
+  async disableUser(userId: string): Promise<void> {
+    await api.delete(`/api/users/${userId}`)
+  }
+
+  /**
+   * Get user by ID
+   */
+  async getUserById(userId: string): Promise<{ user: User }> {
+    const response = await api.get(`/api/users/${userId}`)
+    return response.data
+  }
+
+  /**
+   * Get detailed user information including stats, flashcards, courses, lessons, tests, and achievements
+   */
+  async getUserDetailById(userId: string): Promise<UserDetail> {
+    // First get the basic user information
+    const userResponse = await api.get(`/api/users/${userId}`)
+    const user = userResponse.data.user
+
+    // Initialize the detailed user object
+    const userDetail: UserDetail = {
+      ...user
+    }
+
+    // Use Promise.allSettled to handle potentially unimplemented endpoints
+    const [
+      statsResponse,
+      coursesResponse,
+      lessonsResponse,
+      testsResponse,
+      achievementsResponse,
+      flashcardsResponse
+    ] = await Promise.allSettled([
+      api.get(`/api/statistics/user/${userId}`).catch(() => ({ data: null })),
+      getUserCourses(userId).catch(() => null),
+      getUserLessons(userId).catch(() => null),
+      getUserTests(userId).catch(() => null),
+      api.get(`/api/user-achievements/${userId}/users`).catch(() => ({ data: null })),
+      api.get(`/api/flashcard-sets/${userId}/user`).catch(() => ({ data: null }))
+    ])
+
+    // Safely add data if the endpoint was successful
+    if (statsResponse.status === 'fulfilled' && statsResponse.value?.data) {
+      userDetail.stats = statsResponse.value.data
+    }
+
+    if (coursesResponse.status === 'fulfilled' && coursesResponse.value) {
+      const courses = coursesResponse.value.data || [];
+      userDetail.courses = {
+        total: courses.length,
+        completed: courses.filter((c: any) => c.status === 'completed').length,
+        inProgress: courses.filter((c: any) => c.status === 'ongoing').length,
+        list: courses.map((c: any) => ({
+          _id: c._id,
+          name: c.course?.name || 'Unknown Course',
+          progress: c.progress || 0,
+          status: c.status
+        }))
+      }
+    }
+
+    if (lessonsResponse.status === 'fulfilled' && lessonsResponse.value) {
+      const lessons = lessonsResponse.value.data || [];
+      userDetail.lessons = {
+        total: lessons.length,
+        completed: lessons.filter((l: any) => l.status === 'completed').length,
+        inProgress: lessons.filter((l: any) => l.status === 'in-progress').length
+      }
+    }
+
+    if (testsResponse.status === 'fulfilled' && testsResponse.value) {
+      const tests = testsResponse.value.data || [];
+      const scores = tests.map((t: any) => t.score || 0);
+      userDetail.tests = {
+        total: tests.length,
+        completed: tests.filter((t: any) => t.status === 'completed').length,
+        averageScore: scores.length ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length : 0,
+        highestScore: scores.length ? Math.max(...scores) : 0
+      }
+    }
+
+    if (achievementsResponse.status === 'fulfilled' && achievementsResponse.value?.data) {
+      const achievements = achievementsResponse.value.data.data || [];
+      userDetail.achievements = {
+        total: achievements.length,
+        list: achievements.map((a: any) => ({
+          _id: a._id,
+          title: a.achievement?.name || 'Unknown Achievement',
+          description: a.achievement?.description || '',
+          dateAwarded: a.createdAt
+        }))
+      }
+    }
+
+    if (flashcardsResponse.status === 'fulfilled' && flashcardsResponse.value?.data) {
+      userDetail.flashcards = flashcardsResponse.value.data
+    }
+
+    // Return user detail with whatever data was successfully fetched
+    return userDetail
+  }
+
+  /**
+   * Update user profile information (username and avatar only)
+   */
+  async updateUserProfile(userId: string, profileData: { username?: string; avatarFile?: File }): Promise<{ user: User }> {
+    const formData = new FormData()
+    
+    // Add username as "name" field (backend expects "name" not "username")
+    if (profileData.username) {
+      formData.append('name', profileData.username)
+    }
+    
+    // Add avatar file if provided
+    if (profileData.avatarFile) {
+      formData.append('avatar', profileData.avatarFile)
+    }
+    
+    const response = await api.patch(`/api/users/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
+  }
+
+  /**
+   * Change user password
+   */
+  async changePassword(userId: string, passwordData: { oldPassword: string; newPassword: string }): Promise<void> {
+    await api.put(`/api/auth/change-password`, passwordData)
+  }
 }
 
-/**
- * Disable user (soft delete)
- */
-export const disableUser = async (userId: string): Promise<void> => {
-  await api.delete(`/api/users/${userId}`)
-}
-
-/**
- * Get user by ID
- */
-export const getUserById = async (userId: string): Promise<User> => {
-  const response = await api.get(`/api/users/${userId}`)
-  return response.data.user
-}
-
-/**
- * Get detailed user information including stats, flashcards, courses, lessons, tests, and achievements
- */
-export const getUserDetailById = async (userId: string): Promise<UserDetail> => {
-  // First get the basic user information
-  const userResponse = await api.get(`/api/users/${userId}`)
-  const user = userResponse.data.user
-
-  // Initialize the detailed user object
-  const userDetail: UserDetail = {
-    ...user
-  }
-
-  // Use Promise.allSettled to handle potentially unimplemented endpoints
-  const [
-    statsResponse,
-    coursesResponse,
-    lessonsResponse,
-    testsResponse,
-    achievementsResponse,
-    flashcardsResponse
-  ] = await Promise.allSettled([
-    api.get(`/api/statistics/user/${userId}`).catch(() => ({ data: null })),
-    getUserCourses(userId).catch(() => null),
-    getUserLessons(userId).catch(() => null),
-    getUserTests(userId).catch(() => null),
-    api.get(`/api/user-achievements/${userId}/users`).catch(() => ({ data: null })),
-    api.get(`/api/flashcard-sets/${userId}/user`).catch(() => ({ data: null }))
-  ])
-
-  // Safely add data if the endpoint was successful
-  if (statsResponse.status === 'fulfilled' && statsResponse.value?.data) {
-    userDetail.stats = statsResponse.value.data
-  }
-
-  if (coursesResponse.status === 'fulfilled' && coursesResponse.value) {
-    const courses = coursesResponse.value.data || [];
-    userDetail.courses = {
-      total: courses.length,
-      completed: courses.filter((c: any) => c.status === 'completed').length,
-      inProgress: courses.filter((c: any) => c.status === 'ongoing').length,
-      list: courses.map((c: any) => ({
-        _id: c._id,
-        name: c.course?.name || 'Unknown Course',
-        progress: c.progress || 0,
-        status: c.status
-      }))
-    }
-  }
-
-  if (lessonsResponse.status === 'fulfilled' && lessonsResponse.value) {
-    const lessons = lessonsResponse.value.data || [];
-    userDetail.lessons = {
-      total: lessons.length,
-      completed: lessons.filter((l: any) => l.status === 'completed').length,
-      inProgress: lessons.filter((l: any) => l.status === 'in-progress').length
-    }
-  }
-
-  if (testsResponse.status === 'fulfilled' && testsResponse.value) {
-    const tests = testsResponse.value.data || [];
-    const scores = tests.map((t: any) => t.score || 0);
-    userDetail.tests = {
-      total: tests.length,
-      completed: tests.filter((t: any) => t.status === 'completed').length,
-      averageScore: scores.length ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length : 0,
-      highestScore: scores.length ? Math.max(...scores) : 0
-    }
-  }
-
-  if (achievementsResponse.status === 'fulfilled' && achievementsResponse.value?.data) {
-    const achievements = achievementsResponse.value.data.data || [];
-    userDetail.achievements = {
-      total: achievements.length,
-      list: achievements.map((a: any) => ({
-        _id: a._id,
-        title: a.achievement?.name || 'Unknown Achievement',
-        description: a.achievement?.description || '',
-        dateAwarded: a.createdAt
-      }))
-    }
-  }
-
-  if (flashcardsResponse.status === 'fulfilled' && flashcardsResponse.value?.data) {
-    userDetail.flashcards = flashcardsResponse.value.data
-  }
-
-  // Return user detail with whatever data was successfully fetched
-  return userDetail
-} 
+export default UserService 

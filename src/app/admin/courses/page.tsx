@@ -425,7 +425,7 @@ const CourseManagementPage = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       {course.createdAt
-                        ? new Date(course.createdAt).toLocaleDateString()
+                        ? new Date(course.createdAt).toLocaleString()
                         : "N/A"}
                     </td>
                     <td className="px-6 py-4 text-center">

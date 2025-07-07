@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { parseAxiosError } from "@/utils/apiErrors";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ServerPagination from "@/components/common/ServerPagination";
-import * as userService from "@/services/userService";
-import { PaginatedUsers, User } from "@/services/userService";
+import UserService, { PaginatedUsers, User } from "@/services/userService";
 import { UserRole } from "@/components/guards";
 import UserDetailsModal from "@/components/admin/UserDetailsModal";
 import { useToast } from "@/context/ToastContext";
@@ -17,6 +16,7 @@ const UserManagementPage = () => {
   const searchParams = useSearchParams();
   const { showToast } = useToast();
   const { showConfirmation } = useConfirmation();
+  const userService = new UserService();
   
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -287,7 +287,7 @@ const UserManagementPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {new Date(user.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">

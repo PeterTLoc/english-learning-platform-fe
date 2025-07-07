@@ -1,21 +1,29 @@
 "use client";
 
-import { usePathname } from "next/navigation"
-import { useEffect } from "react"
-import dynamic from 'next/dynamic'
-import RoleGuard, { UserRole } from "../guards/RoleGuard"
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
+import RoleGuard, { UserRole } from "../guards/RoleGuard";
+import Header from "./Header";
+import Footer from "./Footer";
 
-// Dynamically import components
-const Header = dynamic(() => import("./Header"), { ssr: false })
-const Footer = dynamic(() => import("./Footer"), { ssr: false })
-const AdminHeader = dynamic(() => import("../admin/AdminHeader"), { ssr: false })
-const AdminSidebar = dynamic(() => import("../admin/AdminSidebar"), { ssr: false })
+// Only dynamically import admin components to reduce initial bundle
+const AdminHeader = dynamic(() => import("../admin/AdminHeader"), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-[#2b2b2b]" />
+});
+const AdminSidebar = dynamic(() => import("../admin/AdminSidebar"), {
+  ssr: false,
+  loading: () => <div className="w-64 bg-[#2b2b2b]" />
+});
 
-// Import Flowbite JavaScript for admin interactive components
-const importFlowbite = async () => {
-  if (typeof window !== "undefined") {
+// Lazy load Flowbite only when needed
+let flowbiteLoaded = false;
+const loadFlowbite = async () => {
+  if (typeof window !== "undefined" && !flowbiteLoaded) {
     try {
       await import("flowbite");
+      flowbiteLoaded = true;
     } catch (error) {
       console.error("Error loading Flowbite:", error);
     }
@@ -29,30 +37,28 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
 
-  // Determine which layout to use
-  const isAdminLayout = pathname?.startsWith("/admin");
+  // Memoize layout calculations
+  const layoutConfig = useMemo(() => {
+    const isAdminLayout = pathname?.startsWith("/admin");
+    const hideNav = pathname === "/login" || pathname === "/register" || pathname === "/forgot-password";
+    
+    return { isAdminLayout, hideNav };
+  }, [pathname]);
 
-  // Pages that don't need navigation
-  const hideNav =
-    pathname === "/login" ||
-    pathname === "/register" ||
-    pathname === "/forgot-password";
-
-  // Initialize Flowbite for admin layout
+  // Load Flowbite only for admin pages
   useEffect(() => {
-    if (isAdminLayout) {
-      importFlowbite();
+    if (layoutConfig.isAdminLayout) {
+      loadFlowbite();
     }
-  }, [isAdminLayout]);
+  }, [layoutConfig.isAdminLayout]);
 
   // Admin layout
-  if (isAdminLayout) {
+  if (layoutConfig.isAdminLayout) {
     return (
       <RoleGuard allowedRoles={[UserRole.ADMIN]} fallbackPath="/">
         <div className="min-h-screen bg-[#2b2b2b] dark:bg-[#2b2b2b]">
           <AdminHeader />
           <AdminSidebar />
-
           <div className="p-4 sm:ml-64 bg-[#2b2b2b]">
             <div className="p-4 mt-14">{children}</div>
           </div>
@@ -64,12 +70,11 @@ export default function LayoutWrapper({
   // User layout
   return (
     <div className="flex flex-col min-h-screen">
-      {!hideNav && <Header />}
-
-      {/* Fullscreen gradient below navbar */}
-      {/* <div className="fixed top-[84px] left-0 w-full h-[calc(100vh-84px)] z-0 bg-gradient-to-r from-black/10 via-gray-200/40 to-gray-300 pointer-events-none" /> */}
+      {!layoutConfig.hideNav && <Header />}
       <main>{children}</main>
-      {!hideNav && <Footer />}
+      {!layoutConfig.hideNav && (
+        <Footer />
+      )}
     </div>
   );
 }

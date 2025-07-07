@@ -1,31 +1,67 @@
 "use client";
-import React, { useState } from "react";
 
-export default function CreateFlashcardModal({
-  isOpen,
-  onClose,
-  onCreate,
-  initialEnglish = "",
-  initialVietnamese = "",
-  mode = "create",
-}: {
+import { useState, useEffect } from "react";
+import { IFlashcard } from "@/types/models/IFlashcard";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
+interface FlashcardModalProps {
+  mode: "create" | "edit";
+  flashcard: IFlashcard | null;
+  flashcardSetId: string;
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (englishContent: string, vietnameseContent: string) => void;
-  initialEnglish?: string;
-  initialVietnamese?: string;
-  mode?: "create" | "edit";
-}) {
-  const [englishContent, setEnglishContent] = useState(initialEnglish);
-  const [vietnameseContent, setVietnameseContent] = useState(initialVietnamese);
+  onSubmit: (data: { englishContent: string; vietnameseContent: string }) => void;
+}
 
-  // Reset fields when modal opens/closes or mode/initial values change
-  React.useEffect(() => {
+export default function FlashcardModal({
+  mode,
+  flashcard,
+  flashcardSetId,
+  isOpen,
+  onClose,
+  onSubmit,
+}: FlashcardModalProps) {
+  const [englishContent, setEnglishContent] = useState("");
+  const [vietnameseContent, setVietnameseContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
     if (isOpen) {
-      setEnglishContent(initialEnglish);
-      setVietnameseContent(initialVietnamese);
+      if (mode === "edit" && flashcard) {
+        setEnglishContent(flashcard.englishContent || "");
+        setVietnameseContent(flashcard.vietnameseContent || "");
+      } else {
+        setEnglishContent("");
+        setVietnameseContent("");
+      }
     }
-  }, [isOpen, initialEnglish, initialVietnamese]);
+  }, [isOpen, mode, flashcard]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!englishContent.trim()) {
+      alert("English content is required");
+      return;
+    }
+
+    if (!vietnameseContent.trim()) {
+      alert("Vietnamese content is required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit({ 
+        englishContent: englishContent.trim(), 
+        vietnameseContent: vietnameseContent.trim() 
+      });
+    } catch (error) {
+      console.error("Error submitting flashcard:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -34,7 +70,7 @@ export default function CreateFlashcardModal({
       <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-white">
-            {mode === "edit" ? "Edit Flashcard" : "Create Flashcard"}
+            {mode === "create" ? "Create Flashcard" : "Edit Flashcard"}
           </h2>
           <button
             onClick={onClose}
@@ -55,39 +91,36 @@ export default function CreateFlashcardModal({
             </svg>
           </button>
         </div>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            onCreate(englishContent, vietnameseContent);
-          }}
-          className="space-y-4"
-        >
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
               English Content *
             </label>
             <textarea
               value={englishContent}
-              onChange={e => setEnglishContent(e.target.value)}
+              onChange={(e) => setEnglishContent(e.target.value)}
               rows={3}
               className="w-full p-3 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white placeholder-[#CFCFCF] focus:outline-none focus:border-[#4CC2FF] resize-none"
               placeholder="Enter English content"
               required
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
               Vietnamese Content *
             </label>
             <textarea
               value={vietnameseContent}
-              onChange={e => setVietnameseContent(e.target.value)}
+              onChange={(e) => setVietnameseContent(e.target.value)}
               rows={3}
               className="w-full p-3 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white placeholder-[#CFCFCF] focus:outline-none focus:border-[#4CC2FF] resize-none"
               placeholder="Enter Vietnamese content"
               required
             />
           </div>
+
           <div className="flex gap-3 pt-4">
             <button
               type="button"
@@ -98,13 +131,21 @@ export default function CreateFlashcardModal({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors flex items-center justify-center gap-2"
+              disabled={isSubmitting}
+              className="flex-1 px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {mode === "edit" ? "Update" : "Create"}
+              {isSubmitting ? (
+                <>
+                  <LoadingSpinner size="small" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{mode === "create" ? "Create" : "Update"}</span>
+              )}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
-}
+} 

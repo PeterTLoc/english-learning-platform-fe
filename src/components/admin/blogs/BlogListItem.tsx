@@ -28,7 +28,7 @@ export default function BlogListItem({
               alt={blog.title}
               width={64}
               height={64}
-              className="rounded object-cover w-16 h-16"
+              className="rounded object-cover w-32 h-32"
             />
           ) : (
             <div className="w-8 h-8 bg-[#373737] rounded flex items-center justify-center">
@@ -58,11 +58,7 @@ export default function BlogListItem({
       </td>
       <td className="px-6 py-4 text-center">
         {blog.createdAt &&
-          new Date(blog.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
+          new Date(blog.createdAt).toLocaleString()}
       </td>
       <td className="px-6 py-4 text-center">
         <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
@@ -72,7 +68,7 @@ export default function BlogListItem({
               setEditTarget(blog);
             }}
           >
-            Edit Blog Info
+            Edit
           </button>
           <button
             onClick={() => {

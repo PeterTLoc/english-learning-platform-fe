@@ -49,7 +49,7 @@ export default function ServerPagination({
           <li>
             <Link
               href={currentPage > 1 ? getPageUrl(currentPage - 1) : "#"}
-              className={`flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 ms-0 leading-tight border border-[#1D1D1D] rounded-l-lg bg-[#2B2B2B] text-[#4CC2FF] hover:bg-[#373737] hover:text-white transition-colors duration-200 ${
+              className={`flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 ms-0 leading-tight border border-[#1D1D1D] rounded-l-lg text-[#4CC2FF] hover:bg-[#373737] hover:text-white transition-colors duration-200 ${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
               aria-disabled={currentPage === 1}
@@ -62,7 +62,7 @@ export default function ServerPagination({
           {getPageNumbers().map((page, index) => (
             <li key={typeof page === "number" ? page : `${page}-${index}`}>
               {page === "..." ? (
-                <span className="flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 leading-tight text-[#CFCFCF] bg-[#2B2B2B] border border-[#1D1D1D]">
+                <span className="flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 leading-tight text-[#CFCFCF] border border-[#1D1D1D]">
                   ...
                 </span>
               ) : (
@@ -70,7 +70,7 @@ export default function ServerPagination({
                   href={currentPage === page ? "#" : getPageUrl(page as number)}
                   aria-disabled={currentPage === page}
                   aria-current={currentPage === page ? "page" : undefined}
-                  className={`flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 leading-tight border border-[#1D1D1D] bg-[#2B2B2B] text-[#4CC2FF] hover:bg-[#373737] hover:text-white transition-colors duration-200 ${
+                  className={`flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 leading-tight border border-[#1D1D1D] text-[#4CC2FF] hover:bg-[#373737] hover:text-white transition-colors duration-200 ${
                     currentPage === page
                       ? "bg-[#373737] text-white font-semibold opacity-50 cursor-not-allowed"
                       : ""
@@ -88,7 +88,7 @@ export default function ServerPagination({
               href={
                 currentPage < totalPages ? getPageUrl(currentPage + 1) : "#"
               }
-              className={`flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 leading-tight border border-[#1D1D1D] rounded-r-lg bg-[#2B2B2B] text-[#4CC2FF] hover:bg-[#373737] hover:text-white transition-colors duration-200 ${
+              className={`flex items-center justify-center px-3 sm:px-4 h-9 sm:h-10 leading-tight border border-[#1D1D1D] rounded-r-lg text-[#4CC2FF] hover:bg-[#373737] hover:text-white transition-colors duration-200 ${
                 currentPage === totalPages
                   ? "opacity-50 cursor-not-allowed"
                   : ""

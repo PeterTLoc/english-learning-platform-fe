@@ -140,7 +140,7 @@ export default function CreateBlogModal({
         onClick={toggleOpen}
       />
       {/* Modal content */}
-      <div className="relative w-full max-w-lg sm:max-w-2xl md:max-w-3xl z-10 mx-auto bg-gray-900 text-white shadow-lg rounded-xl p-4 sm:p-8 mt-8 space-y-8 overflow-y-auto max-h-[90vh]">
+      <div className="relative w-full max-w-lg sm:max-w-2xl md:max-w-3xl z-10 mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-4 sm:p-8 mt-8 space-y-8 overflow-y-auto max-h-[90vh]">
         {/* Close button */}
         <button
           type="button"
