@@ -1,4 +1,5 @@
 import mongoose, { Document } from "mongoose";
+import { IUser } from "./IUser";
 
 export interface IBlog extends Document {
   title: string;
@@ -9,4 +10,5 @@ export interface IBlog extends Document {
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  user?: IUser;
 }

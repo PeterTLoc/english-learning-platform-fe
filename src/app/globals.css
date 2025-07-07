@@ -60,6 +60,14 @@ a, button, input, select, textarea,
   transition: var(--transition-default);
 }
 
+/* Override browser default focus styles for text inputs */
+input[type="text"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #4CC2FF !important;
+  background-color: #2B2B2B !important;
+}
+
 .input {
   @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#2D2D2D] border border-b-2 border-b-[#999999] border-t-[#2D2D2D] border-l-[#2D2D2D] border-r-[#2D2D2D];
   transition: var(--transition-default);
@@ -91,15 +99,31 @@ input:-webkit-autofill {
 }
 
 .subtitle {
+  @apply text-[13px] font-semibold mb-[6px] mt-[29px]
+}
+
+.subtitle-top {
   @apply text-[13px] font-semibold mt-[1px] mb-[6px]
 }
 
 .subtext {
-  @apply text-[#CFCFCF]
+  @apply text-[#AAAAAA]
 }
 
 .container {
   @apply bg-[#2B2B2B] border border-[#1D1D1D] p-5 rounded-[5px]
+}
+
+.container-top {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] p-5 rounded-t-[5px]
+}
+
+.container-bottom {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] border-t-[#2B2B2B] p-5 rounded-b-[5px]
+}
+
+.container-no-padding {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]
 }
 
 .sidebar-link {
@@ -141,3 +165,98 @@ input[type="number"]::-webkit-inner-spin-button {
 .number-input-button svg {
   @apply w-3.5 h-3.5;
 }
+
+.flashcard-flip {
+  perspective: 1000px;
+}
+.flashcard-inner {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.flashcard-flipped {
+  transform: rotateY(180deg);
+}
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+}
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.flashcard-inner {
+  transition: transform 0.7s;
+  transform-style: preserve-3d;
+}
+
+.flashcard-flipped {
+  transform: rotateY(180deg);
+}
+
+/* ------------------- Vocabulary ------------------- */
+
+/* Exercise answer styling */
+.multiple-choice-option.correct-answer {
+  border-color: #10b981 !important;
+}
+
+.multiple-choice-option.incorrect-answer {
+  border-color: #ef4444 !important;
+}
+
+.multiple-choice-option {
+  border-color: #AAAAAA !important;
+}
+
+.multiple-choice-option:hover {
+  border-color: white !important;
+}
+
+/* Override hover for correct/incorrect answers */
+.multiple-choice-option.correct-answer:hover {
+  border-color: #10b981 !important;
+}
+
+.multiple-choice-option.incorrect-answer:hover {
+  border-color: #ef4444 !important;
+}
+
+/* Disable hover effects when exercise is completed */
+.multiple-choice-option.disabled {
+  cursor: default !important;
+}
+
+.multiple-choice-option.disabled:hover {
+  border-color: #AAAAAA !important;
+}
+
+.multiple-choice-option.correct-answer.disabled:hover {
+  border-color: #10b981 !important;
+}
+
+.multiple-choice-option.incorrect-answer.disabled:hover {
+  border-color: #ef4444 !important;
+}
+
+
+

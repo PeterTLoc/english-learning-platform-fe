@@ -44,4 +44,19 @@ export const updateUserTest = async (id: string, data: Partial<UserTest>) => {
 export const deleteUserTest = async (id: string) => {
   const response = await api.delete(`/api/user-tests/${id}`)
   return response.data
+}
+
+// Check if user has passed any tests for a course
+export const checkUserTestCompletion = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/user-tests/${userId}/user?page=1&size=100`)
+    const userTests = response.data.data || []
+    
+    // Check if user has any passed tests
+    const passedTests = userTests.filter((test: any) => test.status === 'passed')
+    return passedTests.length > 0
+  } catch (error) {
+    console.error('Failed to check test completion:', error)
+    return false
+  }
 } 

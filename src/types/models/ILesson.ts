@@ -1,13 +1,13 @@
-import mongoose, { Document } from "mongoose";
-import { ICourse } from "./ICourse";
+import { LessonLength } from '../lesson/LessonLength';
 
-export interface ILesson extends Document {
-  courseId: mongoose.Schema.Types.ObjectId | string | ICourse;
+export interface ILesson {
+  _id: string;
+  courseId: string;
   name: string;
   description: string;
-  length: number;
+  length: LessonLength[];
   order: number;
   isDeleted?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }

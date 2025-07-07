@@ -20,7 +20,6 @@ const UserManagementPage = () => {
   
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   
   // Modal states
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -37,7 +36,6 @@ const UserManagementPage = () => {
 
   const fetchUsers = async () => {
     setLoading(true);
-    setError(null);
     
     try {
       const searchValue = searchParams.get("search") || "";
@@ -63,7 +61,7 @@ const UserManagementPage = () => {
       setUsers(data);
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }
@@ -77,8 +75,7 @@ const UserManagementPage = () => {
       fetchUsers();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to disable user", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
@@ -212,13 +209,6 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-600 text-white p-4 mb-6 rounded">
-          Error: {error}
-        </div>
-      )}
-
       {/* User Details Modal */}
       <UserDetailsModal
         user={selectedUser}
@@ -239,13 +229,13 @@ const UserManagementPage = () => {
             <table className="w-full text-md text-left text-[#CFCFCF]">
               <thead className="text-sm uppercase bg-[#373737] text-white">
                 <tr>
-                  <th className="px-6 py-3">Username</th>
-                  <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Role</th>
-                  <th className="px-6 py-3">Points</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Created At</th>
-                  <th className="px-6 py-3">Actions</th>
+                  <th className="px-6 py-3 text-center">Username</th>
+                  <th className="px-6 py-3 text-center">Email</th>
+                  <th className="px-6 py-3 text-center">Role</th>
+                  <th className="px-6 py-3 text-center">Points</th>
+                  <th className="px-6 py-3 text-center">Status</th>
+                  <th className="px-6 py-3 text-center">Created At</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -256,8 +246,8 @@ const UserManagementPage = () => {
                       user.isDeleted ? "opacity-50" : ""
                     }`}
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center">
                         {user.avatar ? (
                           <img
                             src={user.avatar}
@@ -272,8 +262,8 @@ const UserManagementPage = () => {
                         {user.username}
                       </div>
                     </td>
-                    <td className="px-6 py-4">{user.email}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">{user.email}</td>
+                    <td className="px-6 py-4 text-center">
                       <span 
                         className={`px-2 py-1 rounded text-sm ${
                           user.role === 1 
@@ -286,8 +276,8 @@ const UserManagementPage = () => {
                         {getRoleName(user.role)}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{user.points || 0}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">{user.points || 0}</td>
+                    <td className="px-6 py-4 text-center">
                       <span className={`px-2 py-1 rounded text-sm ${
                         user.isDeleted 
                           ? "bg-red-900 text-red-300"
@@ -296,10 +286,10 @@ const UserManagementPage = () => {
                         {user.isDeleted ? "Disabled" : "Active"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">
                         <button
                           disabled={user.isDeleted}

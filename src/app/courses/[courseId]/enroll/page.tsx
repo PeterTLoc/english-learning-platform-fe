@@ -1,7 +1,7 @@
 import { getCourseById } from "@/services/courseService"
 import { notFound } from "next/navigation"
 import EnrollButton from "@/components/course/EnrollButton"
-import LessonList from "@/components/course/LessonList"
+import CourseContent from "@/components/course/CourseContent"
 
 export default async function Page({
   params,
@@ -46,8 +46,7 @@ export default async function Page({
       {/* Separate Section Below Gradient */}
       <div className="px-5">
         <div className="max-w-[1000px] mx-auto mb-16">
-          <h2 className="subtitle">Lessons</h2>
-          <LessonList courseId={course._id} />
+          <CourseContent courseId={course._id} />
         </div>
       </div>
     </div>

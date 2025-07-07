@@ -60,7 +60,7 @@ const AnimatedTitle: React.FC = () => {
       </motion.div>
 
       <motion.div
-        className="text-[#CFCFCF] text-sm text-center mt-3"
+        className="text-[#CFCFCF] text-lg text-center mt-3"
         variants={subtextVariants}
         initial="hidden"
         animate="visible"

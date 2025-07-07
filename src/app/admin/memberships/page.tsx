@@ -27,11 +27,10 @@ const MembershipManagementPage = () => {
   
   const [memberships, setMemberships] = useState<PaginatedMemberships | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedMembership, setSelectedMembership] = useState<IMembership | null>(null);
+  const [selectedMembership, setSelectedMembership] = useState<IMembership | undefined>(undefined);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   
   // Filter states
@@ -53,7 +52,6 @@ const MembershipManagementPage = () => {
 
   const fetchMemberships = async () => {
     setLoading(true);
-    setError(null);
     
     try {
       const searchValue = searchParams.get("search") || "";
@@ -76,7 +74,7 @@ const MembershipManagementPage = () => {
       setMemberships(data);
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }
@@ -96,41 +94,50 @@ const MembershipManagementPage = () => {
         fetchMemberships();
       } catch (error) {
         const parsedError = parseAxiosError(error);
-        setError(parsedError.message);
-        showToast("Failed to delete membership", "error");
+        showToast(parsedError.message, "error");
       }
     }
   };
 
-  const handleCreateMembership = async (membershipData: Partial<IMembership>) => {
+  const handleCreateMembership = async (formData: FormData) => {
     try {
+      const membershipData = {
+        name: formData.get('name') as string,
+        description: formData.get('description') as string,
+        price: Number(formData.get('price')),
+        duration: Number(formData.get('duration'))
+      };
       await membershipService.createMembership(membershipData);
       showToast("Membership has been created", "success");
       setIsModalOpen(false);
       fetchMemberships();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to create membership", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
-  const handleUpdateMembership = async (membershipId: string, membershipData: Partial<IMembership>) => {
+  const handleUpdateMembership = async (membershipId: string, formData: FormData) => {
     try {
+      const membershipData = {
+        name: formData.get('name') as string,
+        description: formData.get('description') as string,
+        price: Number(formData.get('price')),
+        duration: Number(formData.get('duration'))
+      };
       await membershipService.updateMembership(membershipId, membershipData);
       showToast("Membership has been updated", "success");
       setIsModalOpen(false);
       fetchMemberships();
     } catch (error) {
       const parsedError = parseAxiosError(error);
-      setError(parsedError.message);
-      showToast("Failed to update membership", "error");
+      showToast(parsedError.message, "error");
     }
   };
 
   const openCreateModal = () => {
     setModalMode("create");
-    setSelectedMembership(null);
+    setSelectedMembership(undefined);
     setIsModalOpen(true);
   };
 
@@ -142,7 +149,7 @@ const MembershipManagementPage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedMembership(null);
+    setSelectedMembership(undefined);
   };
 
   const handleSearch = () => {
@@ -243,13 +250,6 @@ const MembershipManagementPage = () => {
         </div>
       </div>
 
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-600 text-white p-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
       {/* Loading state */}
       {loading ? (
         <div className="flex flex-col items-center gap-4 justify-center py-20">
@@ -263,11 +263,11 @@ const MembershipManagementPage = () => {
             <table className="w-full text-md text-left text-[#CFCFCF]">
               <thead className="text-sm uppercase bg-[#373737] text-white">
                 <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Description</th>
-                  <th className="px-6 py-3">Price</th>
-                  <th className="px-6 py-3">Duration</th>
-                  <th className="px-6 py-3">Actions</th>
+                  <th className="px-6 py-3 text-center">Name</th>
+                  <th className="px-6 py-3 text-center">Description</th>
+                  <th className="px-6 py-3 text-center">Price</th>
+                  <th className="px-6 py-3 text-center">Duration</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -276,17 +276,17 @@ const MembershipManagementPage = () => {
                     key={membership._id}
                     className="border-b bg-[#202020] border-[#1D1D1D] hover:bg-[#2D2D2D]"
                   >
-                    <td className="px-6 py-4">{membership.name}</td>
-                    <td className="px-6 py-4 text-[#CFCFCF] max-w-lg truncate">
+                    <td className="px-6 py-4 text-center">{membership.name}</td>
+                    <td className="px-6 py-4 text-center text-[#CFCFCF] max-w-lg truncate">
                       {membership.description}
                     </td>
-                    <td className="px-6 py-4 text-[#4CC2FF]">
+                    <td className="px-6 py-4 text-center text-[#4CC2FF]">
                       {formatPrice(membership.price)}
                     </td>
-                    <td className="px-6 py-4 text-[#CFCFCF]">
+                    <td className="px-6 py-4 text-center text-[#CFCFCF]">
                       {membership.duration} days
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <div className="flex gap-2">
                         <button
                           onClick={() => openEditModal(membership)}
@@ -326,10 +326,12 @@ const MembershipManagementPage = () => {
       {/* Membership Modal */}
       {isModalOpen && (
         <MembershipModal
-          mode={modalMode}
           membership={selectedMembership}
+          isOpen={isModalOpen}
           onClose={closeModal}
-          onSubmit={modalMode === "create" ? handleCreateMembership : handleUpdateMembership}
+          onSubmit={modalMode === "create" 
+            ? handleCreateMembership 
+            : (formData: FormData) => handleUpdateMembership(selectedMembership?._id || '', formData)}
         />
       )}
     </div>

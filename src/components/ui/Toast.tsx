@@ -38,7 +38,7 @@ const Toast = ({
 
   // Define styles based on type
   const getToastStyles = () => {
-    const baseStyles = "fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-sm rounded-lg shadow z-50";
+    const baseStyles = "fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-sm rounded-lg shadow z-[9999]";
     
     switch (type) {
       case 'success':

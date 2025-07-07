@@ -1,13 +1,12 @@
+import { LessonLength } from './LessonLength';
+
 export interface Lesson {
   _id: string
   courseId: string
   name: string
-  description?: string
-  length: {
-    for: "vocabulary" | "grammar" | "exercise"
-    amount: number
-  }[]
   order: number
+  description: string
+  length: LessonLength[]
   isDeleted: boolean
   createdAt: string
   updatedAt: string

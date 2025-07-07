@@ -149,7 +149,6 @@ export const getUserDetailById = async (userId: string): Promise<UserDetail> => 
   }
 
   if (coursesResponse.status === 'fulfilled' && coursesResponse.value) {
-    console.log(coursesResponse.value)
     const courses = coursesResponse.value.data || [];
     userDetail.courses = {
       total: courses.length,

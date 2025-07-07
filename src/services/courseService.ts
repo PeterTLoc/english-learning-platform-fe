@@ -1,5 +1,8 @@
 import api from "@/lib/api"
 import { Course, CourseLevelEnum, CourseTypeEnum } from "@/types/course/course"
+import { Test } from "@/types/course/test"
+import { ILesson } from "@/types/models/ILesson"
+import { IExercise } from "@/types/models/IExercise"
 
 export interface CourseQueryParams {
   page?: number
@@ -16,6 +19,15 @@ export interface PaginatedCourses {
   total: number
   totalPages: number
   data: Course[]
+}
+
+export interface CourseDetails extends Course {
+  lessons: Array<{
+    lesson: ILesson
+    exercises: IExercise[]
+    tests: Test[]
+  }>
+  courseTests: Test[]
 }
 
 export const getAllCourses = async (params: CourseQueryParams): Promise<PaginatedCourses> => {
@@ -35,6 +47,11 @@ export const getAllCourses = async (params: CourseQueryParams): Promise<Paginate
 
 export const getCourseById = async (id: string): Promise<Course> => {
   const response = await api.get(`/api/courses/${id}`)
+  return response.data.course
+}
+
+export const getCourseDetails = async (id: string): Promise<CourseDetails> => {
+  const response = await api.get(`/api/courses/${id}/details`)
   return response.data.course
 }
 
