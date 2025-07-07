@@ -1,3 +1,5 @@
+import { IExercise } from "../models/IExercise"
+
 export interface Test {
   _id: string
   name: string
@@ -5,8 +7,9 @@ export interface Test {
   courseId: string
   lessonIds: string[]
   totalQuestions: number
+  order: number
   isDeleted?: boolean
   createdAt: string
   updatedAt: string
-  exercises?: any[] // IExercise[] once we define it
+  exercises?: IExercise[]
 } 

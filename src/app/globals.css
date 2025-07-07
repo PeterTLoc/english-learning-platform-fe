@@ -60,6 +60,14 @@ a, button, input, select, textarea,
   transition: var(--transition-default);
 }
 
+/* Override browser default focus styles for text inputs */
+input[type="text"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #4CC2FF !important;
+  background-color: #2B2B2B !important;
+}
+
 .input {
   @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#2D2D2D] border border-b-2 border-b-[#999999] border-t-[#2D2D2D] border-l-[#2D2D2D] border-r-[#2D2D2D];
   transition: var(--transition-default);
@@ -77,29 +85,45 @@ input:-webkit-autofill {
 }
 
 .button {
-  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#373737] hover:bg-[#3C3C3C];
+  @apply min-w-[130px] min-h-[32px] pt-[5px] pb-[4px] w-fit rounded-[5px] text-sm bg-[#373737] hover:bg-[#3C3C3C];
   transition: var(--transition-default);
 }
 
 .button-blue {
-  @apply min-w-[130px] min-h-[32px] px-4 pt-[5px] pb-[3px] w-fit rounded-[5px] text-[13px] bg-[#4CC2FF] hover:bg-[#48B2E9];
+  @apply min-w-[130px] min-h-[32px] px-4 pt-[5px] pb-[4px] w-fit rounded-[5px] text-sm text-black bg-[#4CC2FF] hover:bg-[#48B2E9];
   transition: var(--transition-default);
 }
 
 .title {
-  @apply font-bold text-[25px] mt-4 mb-5
+  @apply font-bold text-[28px] mt-[12px] mb-[9px]
 }
 
 .subtitle {
+  @apply text-[13px] font-semibold mb-[6px] mt-[29px]
+}
+
+.subtitle-top {
   @apply text-[13px] font-semibold mt-[1px] mb-[6px]
 }
 
 .subtext {
-  @apply text-[#CFCFCF]
+  @apply text-[#AAAAAA]
 }
 
 .container {
   @apply bg-[#2B2B2B] border border-[#1D1D1D] p-5 rounded-[5px]
+}
+
+.container-top {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] p-5 rounded-t-[5px]
+}
+
+.container-bottom {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] border-t-[#2B2B2B] p-5 rounded-b-[5px]
+}
+
+.container-no-padding {
+  @apply bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]
 }
 
 .sidebar-link {
@@ -187,4 +211,47 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .flashcard-flipped {
   transform: rotateY(180deg);
+}
+
+/* Exercise answer styling */
+.multiple-choice-option.correct-answer {
+  border-color: #10b981 !important;
+}
+
+.multiple-choice-option.incorrect-answer {
+  border-color: #ef4444 !important;
+}
+
+.multiple-choice-option {
+  border-color: #AAAAAA !important;
+}
+
+.multiple-choice-option:hover {
+  border-color: white !important;
+}
+
+/* Override hover for correct/incorrect answers */
+.multiple-choice-option.correct-answer:hover {
+  border-color: #10b981 !important;
+}
+
+.multiple-choice-option.incorrect-answer:hover {
+  border-color: #ef4444 !important;
+}
+
+/* Disable hover effects when exercise is completed */
+.multiple-choice-option.disabled {
+  cursor: default !important;
+}
+
+.multiple-choice-option.disabled:hover {
+  border-color: #AAAAAA !important;
+}
+
+.multiple-choice-option.correct-answer.disabled:hover {
+  border-color: #10b981 !important;
+}
+
+.multiple-choice-option.incorrect-answer.disabled:hover {
+  border-color: #ef4444 !important;
 }
