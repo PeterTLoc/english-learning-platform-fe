@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { parseAxiosError } from "@/utils/apiErrors";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ServerPagination from "@/components/common/ServerPagination";
-import * as userService from "@/services/userService";
-import { PaginatedUsers, User } from "@/services/userService";
+import UserService, { PaginatedUsers, User } from "@/services/userService";
 import { UserRole } from "@/components/guards";
 import UserDetailsModal from "@/components/admin/UserDetailsModal";
 import { useToast } from "@/context/ToastContext";
@@ -17,6 +16,7 @@ const UserManagementPage = () => {
   const searchParams = useSearchParams();
   const { showToast } = useToast();
   const { showConfirmation } = useConfirmation();
+  const userService = new UserService();
   
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { ToastContainer } from "react-toastify";
 
+
 const mulish = Mulish({
   subsets: ["latin"],
   display: "swap",

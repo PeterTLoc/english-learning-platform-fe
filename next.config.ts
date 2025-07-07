@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Development optimizations
+  ...(process.env.NODE_ENV === 'development' && {
+    experimental: {
+      optimizePackageImports: ['lucide-react', 'react-icons', 'framer-motion'],
+    },
+  }),
+  
+  // Production optimizations
+  ...(process.env.NODE_ENV === 'production' && {
+    compress: true,
+  }),
+
   images: {
     domains: ['res.cloudinary.com'],
     remotePatterns: [
@@ -40,8 +52,29 @@ const nextConfig: NextConfig = {
         hostname: "*.cloudinary.com",
       }
     ],
-    unoptimized: true,
+    unoptimized: process.env.NODE_ENV === 'development', // Only unoptimized in development
   },
+  
+  // Webpack optimizations for development (only when not using Turbopack)
+  ...(process.env.NODE_ENV === 'development' && !process.env.TURBOPACK && {
+    webpack: (config, { dev, isServer }) => {
+      if (dev && !isServer) {
+        // Optimize module resolution
+        config.resolve.symlinks = false;
+        
+        // Reduce bundle size in development
+        config.optimization = {
+          ...config.optimization,
+          removeAvailableModules: false,
+          removeEmptyChunks: false,
+          splitChunks: false,
+        };
+      }
+      
+      return config;
+    },
+  }),
+
   async headers() {
     return [
       {

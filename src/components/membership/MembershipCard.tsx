@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { IMembership } from "@/types/models/IMembership";
+import { IMembership } from "@/types/membership/membership";
 import {
   baseShadow,
   hoverShadow,
@@ -32,8 +32,8 @@ export default function MembershipCard({
     <div
       className={
         connectedLayout
-          ? "bg-[#f9fafb] h-full flex-1 rounded-none p-4 md:p-8 w-full min-h-[340px]"
-          : "relative w-full md:max-w-sm bg-[#f9fafb] rounded-lg shadow-md p-4 md:p-5 transition-all duration-300 transform hover:scale-105 min-h-[340px]"
+          ? "bg-[#2b2b2b] h-full flex-1 rounded-none p-4 md:p-8 w-full min-h-[340px] border border-[#1D1D1D]"
+          : "relative w-full md:max-w-sm bg-[#2b2b2b] rounded-lg shadow-sm p-4 md:p-5 transition-all duration-300 transform hover:scale-105 min-h-[340px] border border-[#1D1D1D]"
       }
       style={
         connectedLayout
@@ -49,7 +49,7 @@ export default function MembershipCard({
       {/* Header with Colored Badge */}
       <div className="flex justify-center items-center mb-5">
         <div
-          className="text-lg font-semibold text-gray-800 px-4 py-2 rounded-full"
+          className="text-lg font-semibold text-white px-4 py-2 rounded-full"
           style={{ backgroundColor: toRGBA(color, 0.15) }}
         >
           {name}
@@ -58,7 +58,7 @@ export default function MembershipCard({
 
       {/* Description */}
       {description && (
-        <p className="hidden md:block text-gray-700 text-sm mb-5 h-[90px] overflow-y-hidden leading-snug">
+        <p className="hidden md:block text-[#CFCFCF] text-sm mb-5 h-[90px] overflow-y-hidden leading-snug">
           {description.length > 160
             ? `${description.slice(0, 160)}...`
             : description}
@@ -67,13 +67,13 @@ export default function MembershipCard({
 
       {/* Details */}
       <div className="space-y-2 mb-5">
-        <div className="flex justify-between text-gray-600">
+        <div className="flex justify-between text-[#CFCFCF]">
           <span className="font-medium">Duration:</span>
           <span>{duration} months</span>
         </div>
-        <div className="flex justify-between text-gray-600">
+        <div className="flex justify-between text-[#CFCFCF]">
           <span className="font-medium">Price:</span>
-          <span className="font-medium">{price.toLocaleString("vi-VN")}₫</span>
+          <span className="font-medium text-white">{price.toLocaleString("vi-VN")}₫</span>
         </div>
       </div>
 

@@ -1,10 +1,10 @@
 "use client";
-import { IMembership } from "@/types/models/IMembership";
+import { IMembership } from "@/types/membership/membership";
 import { ObjectId } from "mongoose";
 import React, { useState } from "react";
 import MembershipCard from "./MembershipCard";
 import CheckoutModal from "./CheckoutModal";
-import { toast, ToastContainer } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import PaymentService from "@/services/PaymentService";
 
 const paymentService = new PaymentService();
@@ -20,6 +20,7 @@ export default function MembershipList({
   }>({ isOpen: false, membership: null, index: -1 });
 
   const [paymentMethod, setPaymentMethod] = useState("");
+  const { showToast } = useToast();
 
   const openModal = (membership: IMembership, index: number) => {
     setModalState({ isOpen: true, membership, index });
@@ -32,30 +33,29 @@ export default function MembershipList({
   const checkout = async (membershipId: string) => {
     try {
       if (!paymentMethod || paymentMethod === "") {
-        toast.error("Please select a payment method to proceed");
+        showToast("Please select a payment method to proceed", "error");
+        return;
       }
 
       if (paymentMethod === "vnpay") {
         const response = await paymentService.createVNPayPayment(membershipId);
-
         window.location.href = response.link;
       }
 
       if (paymentMethod === "paypal") {
         const response = await paymentService.createPaypalPayment(membershipId);
-
         window.location.href = response.link;
       }
     } catch (error) {
-      toast.error((error as Error).message);
+      showToast((error as Error).message, "error");
     }
   };
+  
   return (
-    <div className="flex justify-center items-center w-[90%] gap-10">
-      <ToastContainer />
+    <div className="flex justify-center items-center w-full gap-6">
       {memberships && memberships.length > 0 ? (
         memberships.map((membership: IMembership, index: number) => (
-          <div key={(membership._id as ObjectId).toString()}>
+          <div key={membership._id}>
             <MembershipCard
               membership={membership}
               index={index}
@@ -64,7 +64,9 @@ export default function MembershipList({
           </div>
         ))
       ) : (
-        <p>No memberships found.</p>
+        <div className="bg-[#2b2b2b] rounded-lg p-8 text-center">
+          <p className="text-[#CFCFCF] text-lg">No memberships found.</p>
+        </div>
       )}
 
       {ModalState.isOpen && ModalState.membership && (

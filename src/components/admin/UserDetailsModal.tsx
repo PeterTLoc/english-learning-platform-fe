@@ -1,6 +1,6 @@
 "use client";
 
-import { User, UserDetail, getUserDetailById } from "@/services/userService";
+import UserService, { User, UserDetail } from "@/services/userService";
 import { UserRole } from "@/components/guards";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import { useToast } from "@/context/ToastContext";
@@ -25,13 +25,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "courses" | "tests" | "flashcards" | "achievements">("overview");
   const [loading, setLoading] = useState<boolean>(false);
+  const userService = new UserService();
   
   useEffect(() => {
     const fetchUserDetail = async () => {
       if (isOpen && user) {
         setLoading(true);
         try {
-          const detail = await getUserDetailById(user._id);
+          const detail = await userService.getUserDetailById(user._id);
           setUserDetail(detail);
         } catch (error) {
           console.error("Failed to fetch user details:", error);

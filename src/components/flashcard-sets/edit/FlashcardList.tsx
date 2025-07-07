@@ -44,7 +44,7 @@ export default function FlashcardList({
           sort,
           search
         );
-        console.log(response);
+        // console.log(response);
         setFlashcards(response.data);
         setTotalPages(response.totalPages);
         setCurrentPage(response.page);

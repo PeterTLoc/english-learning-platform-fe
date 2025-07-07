@@ -124,7 +124,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-4 justify-center items-center min-h-[60vh]">
+      <div className="flex flex-col gap-4 justify-center items-center min-h-[100vh]">
         <LoadingSpinner />
         <p className="text-white">Loading flashcard set...</p>
       </div>
@@ -185,7 +185,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
               {/* User Info */}
               <div className="mb-4">
                 <Link
-                  href={`/flashcard-sets?userId=${flashcardSet.userId}`}
+                  href={`/profile/${flashcardSet.userId}`}
                   className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity"
                 >
                   {flashcardSet.user?.avatar ? (

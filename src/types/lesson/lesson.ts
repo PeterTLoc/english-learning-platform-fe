@@ -4,6 +4,7 @@ export interface Lesson {
   _id: string
   courseId: string
   name: string
+  order: number
   description: string
   length: LessonLength[]
   isDeleted: boolean

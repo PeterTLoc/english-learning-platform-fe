@@ -29,8 +29,8 @@ const page = () => {
   useEffect(() => {
     const loadCourses = async () => {
       try {
-        const data = await getAllCourses()
-        setCourses(data)
+        const  { data: courseList } = await getAllCourses({})
+        setCourses(courseList)
       } catch (error) {
         const parsed = parseAxiosError(error)
 

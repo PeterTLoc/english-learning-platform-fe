@@ -40,7 +40,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
 
   const login = async (formData: LoginFormPayload): Promise<void> => {
-    setLoading(true)
     try {
       // Login only returns token, not user data
       await authService.login(formData);
@@ -50,26 +49,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(userData);
     } catch (error) {
       const parsed = parseAxiosError(error);
-      console.error("Login failed:", parsed.message);
       // Ensure the error is thrown so it can be caught by the login page
       throw new Error(parsed.message)
-    } finally {
-      setLoading(false)
     }
   };
 
   const register = async (formData: RegisterFormPayload): Promise<void> => {
-    setLoading(true);
     try {
       const user = await authService.register(formData);
       setUser(user);
     } catch (error) {
       const parsed = parseAxiosError(error);
-
-      console.error("Register failed:", parsed.message);
       throw new Error(parsed.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -81,7 +72,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Redirect to home page after logout
       router.push("/");
     } catch (error) {
-      console.error("Logout failed: ", error);
+      const parsed = parseAxiosError(error);
+      throw new Error(parsed.message);
     }
   };
 

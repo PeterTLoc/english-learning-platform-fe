@@ -1,5 +1,5 @@
 "use client";
-import { IMembership } from "@/types/models/IMembership";
+import { IMembership } from "@/types/membership/membership";
 import React from "react";
 import MembershipCard from "./MembershipCard";
 import { baseShadow, membershipColorPalette, toRGBA } from "@/utils/colorUtils";
@@ -37,7 +37,7 @@ export default function CheckoutModal({
       }}
     >
       <div
-        className="flex flex-col md:flex-row w-[98%] max-w-4xl bg-[#f9fafb] relative animate-fade-in scale-95 opacity-0 transition-all duration-300 shadow-2xl border border-gray-200 rounded-2xl overflow-hidden"
+        className="flex flex-col md:flex-row w-[98%] max-w-4xl bg-[#2b2b2b] relative animate-fade-in scale-95 opacity-0 transition-all duration-300 shadow-lg border border-[#1D1D1D] rounded-2xl overflow-hidden"
         style={{
           animation: isOpen ? "fadeInScale 0.3s forwards" : undefined,
         }}
@@ -71,14 +71,14 @@ export default function CheckoutModal({
           style={{ backgroundColor: toRGBA(color, 0.15) }}
         ></div>
         {/* Right Side: Payment Options */}
-        <div className="flex-1 h-full bg-[#f9fafb] p-4 md:p-8 rounded-none min-w-[250px] min-h-[250px]">
-          <h3 className="text-2xl font-bold mb-6 text-gray-900">
+        <div className="flex-1 h-full bg-[#2b2b2b] p-4 md:p-8 rounded-none min-w-[250px] min-h-[250px]">
+          <h3 className="text-2xl font-bold mb-6 text-white">
             Order Summary
           </h3>
-          <div className="space-y-3 text-gray-700">
+          <div className="space-y-3 text-[#CFCFCF]">
             <div className="flex justify-between">
               <span>Membership:</span>
-              <span className="font-medium">{name}</span>
+              <span className="font-medium text-white">{name}</span>
             </div>
             <div className="flex justify-between">
               <span>Quantity:</span>
@@ -87,25 +87,25 @@ export default function CheckoutModal({
             <hr className={`border-t border-[${color}] my-3`} />
             <div className="flex justify-between">
               <span className="font-semibold">Total:</span>
-              <span className="text-lg font-bold text-gray-900">
+              <span className="text-lg font-bold text-white">
                 {price.toLocaleString("vi-VN")}₫
               </span>
             </div>
           </div>
-          <h3 className="text-2xl font-bold mt-8 mb-6 text-gray-900">
+          <h3 className="text-2xl font-bold mt-8 mb-6 text-white">
             Payment Method
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <label className="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+            <label className="flex items-center p-4 bg-[#232323] rounded-lg border border-[#1D1D1D] hover:bg-[#373737] transition-colors duration-200">
               <input
                 checked={paymentMethod === "vnpay"}
                 onChange={() => setPaymentMethod("vnpay")}
                 type="radio"
                 name="payment"
                 value="vnpay"
-                className="mr-4 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                className="mr-4 text-[#4CC2FF] focus:ring-2 focus:ring-[#4CC2FF] focus:ring-opacity-50"
               />
-              <span className="text-gray-800 font-medium mr-4">VNPay</span>{" "}
+              <span className="text-white font-medium mr-4">VNPay</span>{" "}
               <Image
                 src="/vnpay-removebg-preview.png"
                 width={50}
@@ -113,16 +113,16 @@ export default function CheckoutModal({
                 alt=""
               />
             </label>
-            <label className="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+            <label className="flex items-center p-4 bg-[#232323] rounded-lg border border-[#1D1D1D] hover:bg-[#373737] transition-colors duration-200">
               <input
                 checked={paymentMethod === "paypal"}
                 onChange={() => setPaymentMethod("paypal")}
                 type="radio"
                 name="payment"
                 value="paypal"
-                className="mr-4 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                className="mr-4 text-[#4CC2FF] focus:ring-2 focus:ring-[#4CC2FF] focus:ring-opacity-50"
               />
-              <span className="text-gray-800 font-medium mr-4">PayPal</span>{" "}
+              <span className="text-white font-medium mr-4">PayPal</span>{" "}
               <Image
                 src="/paypal-removebg-preview.png"
                 width={50}
@@ -132,7 +132,7 @@ export default function CheckoutModal({
             </label>
           </div>
           <button
-            className="mt-8 w-full px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+            className="mt-8 w-full px-6 py-3 bg-[#4CC2FF] hover:bg-[#48B2E9] text-white rounded-lg shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#4CC2FF] focus:ring-opacity-50 font-semibold"
             onClick={() => checkout(membership._id as string)}
           >
             Proceed to Payment
