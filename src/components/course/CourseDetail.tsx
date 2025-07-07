@@ -213,6 +213,7 @@ export default function CourseDetail({ course }: CourseDetailProps) {
               {getBreadcrumbTitle()}
             </h1>
 
+
             <button
               onClick={() => setIsInfoModalOpen(true)}
               className="flex gap-4 items-center hover:bg-[#2D2D2D] px-2 pt-[6px] pb-[7px] rounded-[5px]"

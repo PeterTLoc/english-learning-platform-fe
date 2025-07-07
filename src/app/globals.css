@@ -213,8 +213,6 @@ input[type="number"]::-webkit-inner-spin-button {
   transform: rotateY(180deg);
 }
 
-/* ------------------- Vocabulary ------------------- */
-
 /* Exercise answer styling */
 .multiple-choice-option.correct-answer {
   border-color: #10b981 !important;
@@ -257,6 +255,3 @@ input[type="number"]::-webkit-inner-spin-button {
 .multiple-choice-option.incorrect-answer.disabled:hover {
   border-color: #ef4444 !important;
 }
-
-
-
