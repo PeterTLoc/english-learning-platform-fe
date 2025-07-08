@@ -1,15 +1,16 @@
-import { getCourseById } from "@/services/courseService"
-import { notFound } from "next/navigation"
-import EnrollButton from "@/components/course/EnrollButton"
-import CourseContent from "@/components/course/CourseContent"
+import { getCourseById } from "@/services/courseService";
+import { notFound } from "next/navigation";
+import EnrollButton from "@/components/course/EnrollButton";
+import CourseContent from "@/components/course/CourseContent";
 
 export default async function Page({
   params,
 }: {
-  params: { courseId: string }
+  params: Promise<{ courseId: string }>;
 }) {
-  const course = await getCourseById(params.courseId)
-  if (!course) notFound()
+  const { courseId } = await params;
+  const course = await getCourseById(courseId);
+  if (!course) notFound();
 
   return (
     <div>
@@ -32,9 +33,7 @@ export default async function Page({
               </p>
             </div>
 
-            <p className="text-sm mt-8 mb-[14px]">
-              {course.description}
-            </p>
+            <p className="text-sm mt-8 mb-[14px]">{course.description}</p>
 
             <div>
               <EnrollButton courseId={course._id} />
@@ -50,5 +49,5 @@ export default async function Page({
         </div>
       </div>
     </div>
-  )
+  );
 }

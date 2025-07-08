@@ -6,12 +6,22 @@ import LessonOverview from "@/components/lesson/LessonOverview";
 import CourseInfoModal from "@/components/course/CourseInfoModal";
 import { useEffect, useState } from "react";
 import { Course } from "@/types/course/course";
-import { getAllLessonsByCourseId } from "@/services/lessonService";
+import {
+  getAllLessonsByCourseId,
+  getLessonById,
+} from "@/services/lessonService";
 import { parseAxiosError } from "@/utils/apiErrors";
 import { Lesson } from "@/types/lesson/lesson";
 import TestContent from "@/components/lesson-content/TestContent";
 import { ChevronRight, Info } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import {
+  getUserLessonById,
+  getUserLessonByLessonId,
+  updateUserLesson,
+} from "@/services/userLessonService";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
 
 interface CourseDetailProps {
   course: Course;
@@ -37,6 +47,7 @@ interface CurrentView {
 export default function CourseDetail({ course }: CourseDetailProps) {
   const searchParams = useSearchParams();
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [currentView, setCurrentView] = useState<CurrentView>({
     lessonId: null,
     contentType: LESSON_CONTENT_TYPES.OVERVIEW,
@@ -63,26 +74,17 @@ export default function CourseDetail({ course }: CourseDetailProps) {
             contentType: LESSON_CONTENT_TYPES.TEST,
           });
         } else if (lessonParam) {
-          // Navigate to specific lesson
-          const lessonExists = data.find((l: Lesson) => l._id === lessonParam);
+          // Navigate to specific lesson - use getLessonById to create user lesson => support access for resources
+          const lessonExists = await getLessonById(lessonParam);
           if (lessonExists) {
-            setCurrentView({
-              lessonId: lessonParam,
-              contentType: LESSON_CONTENT_TYPES.OVERVIEW,
-            });
+            await navigateToLesson(lessonParam);
           } else if (data.length > 0) {
             // Fallback to first lesson if specified lesson doesn't exist
-            setCurrentView({
-              lessonId: data[0]._id,
-              contentType: LESSON_CONTENT_TYPES.OVERVIEW,
-            });
+            await navigateToLesson(data[0]._id);
           }
         } else if (data.length > 0 && !currentView.lessonId) {
           // Default to first lesson overview
-          setCurrentView({
-            lessonId: data[0]._id,
-            contentType: LESSON_CONTENT_TYPES.OVERVIEW,
-          });
+          await navigateToLesson(data[0]._id);
         }
       } catch (error) {
         const parsed = parseAxiosError(error);
@@ -97,12 +99,28 @@ export default function CourseDetail({ course }: CourseDetailProps) {
   }, [course._id, searchParams]);
 
   // Navigation handlers
-  const navigateToLesson = (lessonId: string | null) => {
+  const navigateToLesson = async (lessonId: string | null) => {
     if (lessonId) {
-      setCurrentView({
-        lessonId,
-        contentType: LESSON_CONTENT_TYPES.OVERVIEW,
-      });
+      try {
+        // Use getLessonById to ensure user lesson is created
+        const lesson = await getLessonById(lessonId);
+        setCurrentLesson(lesson);
+        setCurrentView({
+          lessonId,
+          contentType: LESSON_CONTENT_TYPES.OVERVIEW,
+        });
+      } catch (error) {
+        console.error("Failed to fetch lesson:", error);
+        // Fallback to lesson from lessons array
+        const fallbackLesson = lessons.find((l) => l._id === lessonId);
+        if (fallbackLesson) {
+          setCurrentLesson(fallbackLesson);
+          setCurrentView({
+            lessonId,
+            contentType: LESSON_CONTENT_TYPES.OVERVIEW,
+          });
+        }
+      }
     }
   };
 
@@ -127,8 +145,26 @@ export default function CourseDetail({ course }: CourseDetailProps) {
     setSidebarKey((prev) => prev + 1);
   };
 
-  // Get current lesson data
-  const currentLesson = lessons.find((l) => l._id === currentView.lessonId);
+  const handleMarkAsCompleted = async () => {
+    if (currentView.lessonId) {
+      try {
+        const response = await getUserLessonByLessonId(currentView.lessonId);
+        if (response.userLesson.status === "completed") {
+          toast.info("Lesson already completed");
+          return;
+        }
+        await updateUserLesson(response.userLesson._id.toString(), "completed");
+
+        toast.success("Lesson marked as completed");
+      } catch (error) {
+        toast.error(
+          error instanceof AxiosError
+            ? error.response?.data.message
+            : "Failed to mark lesson as completed"
+        );
+      }
+    }
+  };
 
   // Render content based on current view
   const renderContent = () => {
@@ -233,6 +269,14 @@ export default function CourseDetail({ course }: CourseDetailProps) {
           </div>
 
           {renderContent()}
+        </div>
+        <div className="flex justify-center my-10">
+          <button
+            className="bg-[#2D2D2D] px-2 pt-[6px] pb-[7px] rounded-[5px] text-white"
+            onClick={handleMarkAsCompleted}
+          >
+            Mark as Completed
+          </button>
         </div>
       </div>
 
