@@ -65,8 +65,14 @@ export default function LayoutWrapper({
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setIsTutorModalOpen((open) => {
-          if (!open) setIsTutorOpen(false);
-          return !open;
+          if (!open) {
+            setIsTutorOpen(false);
+            setIsTutorModalOpen(true);
+          } else {
+            setIsTutorOpen(true);
+            setIsTutorModalOpen(false);
+          }
+          return open;
         });
       }
     };

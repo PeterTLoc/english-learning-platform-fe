@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import { useAuth } from "@/context/AuthContext"
-import { useExerciseContent } from "@/hooks/useExerciseContent"
-import ExerciseQuestion from "./exercise/ExerciseQuestion"
-import ExerciseProgressBar from "./exercise/ExerciseProgressBar"
-import { createUserExercise } from "@/services/userExerciseService"
-import ContentSlideIn from "@/components/ui/ContentSlideIn"
-import { isAnswerCorrect } from "@/utils/exerciseUtils"
+import { useEffect, useState, useRef } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useExerciseContent } from "@/hooks/useExerciseContent";
+import ExerciseQuestion from "./exercise/ExerciseQuestion";
+import ExerciseProgressBar from "./exercise/ExerciseProgressBar";
+import { createUserExercise } from "@/services/userExerciseService";
+import ContentSlideIn from "@/components/ui/ContentSlideIn";
+import { isAnswerCorrect } from "@/utils/exerciseUtils";
 
 interface ExerciseContentProps {
-  lessonId: string
-  itemsPerPage?: number
-  setSidebarRefreshKey?: React.Dispatch<React.SetStateAction<number>>
+  lessonId: string;
+  itemsPerPage?: number;
+  setSidebarRefreshKey?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function ExerciseContent({
@@ -20,12 +20,12 @@ export default function ExerciseContent({
   itemsPerPage = 5,
   setSidebarRefreshKey,
 }: ExerciseContentProps) {
-  const { user } = useAuth()
-  const userId = user?._id
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
-  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false)
-  const [isPracticeMode, setIsPracticeMode] = useState(false)
-  const hasInitialized = useRef(false)
+  const { user } = useAuth();
+  const userId = user?._id;
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+  const [isPracticeMode, setIsPracticeMode] = useState(false);
+  const hasInitialized = useRef(false);
 
   const {
     state,
@@ -38,82 +38,83 @@ export default function ExerciseContent({
     lessonId,
     userId,
     itemsPerPage,
-  })
+  });
 
   // Initialize data only once when component mounts
   useEffect(() => {
     if (!hasInitialized.current && userId) {
-      hasInitialized.current = true
-      fetchUserExercises()
-      fetchAllExercises()
-      fetchExercises()
+      hasInitialized.current = true;
+      fetchUserExercises();
+      fetchAllExercises();
+      fetchExercises();
     }
-  }, [userId, lessonId, fetchUserExercises, fetchAllExercises, fetchExercises])
+  }, [userId, lessonId, fetchUserExercises, fetchAllExercises, fetchExercises]);
 
   // Initialize to first incomplete exercise
   useEffect(() => {
     if (state.allExercises.length > 0 && completedExercisesMap) {
       const firstIncompleteIndex = state.allExercises.findIndex((exercise) => {
-        const exerciseId = exercise._id as string
-        return !completedExercisesMap[exerciseId]?.completed
-      })
+        const exerciseId = exercise._id as string;
+        return !completedExercisesMap[exerciseId]?.completed;
+      });
 
       if (firstIncompleteIndex !== -1) {
-        setCurrentExerciseIndex(firstIncompleteIndex)
+        setCurrentExerciseIndex(firstIncompleteIndex);
       }
     }
-  }, [state.allExercises, completedExercisesMap])
+  }, [state.allExercises, completedExercisesMap]);
 
   // Get all exercises for the lesson
-  const allExercises = state.allExercises
-  const currentExercise = allExercises[currentExerciseIndex]
-  const total = allExercises.length
+  const allExercises = state.allExercises;
+  const currentExercise = allExercises[currentExerciseIndex];
+  const total = allExercises.length;
   const completed = allExercises.filter((e) => {
-    const exerciseId = e._id as string
-    return completedExercisesMap[exerciseId]?.completed
-  }).length
+    const exerciseId = e._id as string;
+    return completedExercisesMap[exerciseId]?.completed;
+  }).length;
 
   // Calculate progress percentage
-  const percent = total > 0 ? Math.round((completed / total) * 100) : 0
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   // Find next incomplete exercise
   const findNextIncompleteExercise = () => {
     // First, try to find the next incomplete exercise after current index
     for (let i = currentExerciseIndex + 1; i < total; i++) {
-      const exerciseId = allExercises[i]._id as string
+      const exerciseId = allExercises[i]._id as string;
       if (!completedExercisesMap[exerciseId]?.completed) {
-        return i
+        return i;
       }
     }
 
     // If no incomplete exercises found after current index, loop back to beginning
     for (let i = 0; i < currentExerciseIndex; i++) {
-      const exerciseId = allExercises[i]._id as string
+      const exerciseId = allExercises[i]._id as string;
       if (!completedExercisesMap[exerciseId]?.completed) {
-        return i
+        return i;
       }
     }
 
-    return -1
-  }
+    return -1;
+  };
 
   // Check if all exercises are completed
   const allExercisesCompleted = () => {
     return allExercises.every((exercise) => {
-      const exerciseId = exercise._id as string
-      return completedExercisesMap[exerciseId]?.completed
-    })
-  }
+      const exerciseId = exercise._id as string;
+      return completedExercisesMap[exerciseId]?.completed;
+    });
+  };
 
   // Handle exercise completion
   const handleExerciseComplete = async (exerciseId: string, answer: string) => {
-    if (!userId) return
+    if (!userId) return;
 
-    const isMultipleChoiceExercise = currentExercise?.type === 'multiple_choice'
-    
+    const isMultipleChoiceExercise =
+      currentExercise?.type === "multiple_choice";
+
     // For multiple choice, show feedback immediately
     if (isMultipleChoiceExercise) {
-      setShowCorrectAnswer(true)
+      setShowCorrectAnswer(true);
     }
 
     try {
@@ -121,84 +122,84 @@ export default function ExerciseContent({
         id: exerciseId,
         exerciseId: exerciseId,
         answer: answer,
-      })
+      });
 
-      const isCorrect = response.message === "Correct answer"
+      const isCorrect = response.message === "Correct answer";
 
       if (isCorrect) {
         if (!isPracticeMode) {
-          await fetchUserExercises()
-          if (setSidebarRefreshKey) setSidebarRefreshKey(prev => prev + 1)
+          await fetchUserExercises();
+          if (setSidebarRefreshKey) setSidebarRefreshKey((prev) => prev + 1);
         }
 
         if (!isPracticeMode) {
           const allCompleted = allExercises.every((exercise) => {
-            const exId = exercise._id as string
-            return completedExercisesMap[exId]?.completed
-          })
+            const exId = exercise._id as string;
+            return completedExercisesMap[exId]?.completed;
+          });
 
           if (allCompleted) {
-            setShowCorrectAnswer(true)
+            setShowCorrectAnswer(true);
           } else {
-            const nextIndex = findNextIncompleteExercise()
+            const nextIndex = findNextIncompleteExercise();
             if (nextIndex !== -1) {
-              setCurrentExerciseIndex(nextIndex)
-              setShowCorrectAnswer(false)
+              setCurrentExerciseIndex(nextIndex);
+              setShowCorrectAnswer(false);
             } else {
-              setShowCorrectAnswer(true)
+              setShowCorrectAnswer(true);
             }
           }
         } else {
-          setShowCorrectAnswer(true)
+          setShowCorrectAnswer(true);
         }
       } else {
         if (!isMultipleChoiceExercise) {
-          setShowCorrectAnswer(true)
+          setShowCorrectAnswer(true);
         }
       }
     } catch (error) {
-      console.error("Failed to submit exercise:", error)
+      console.error("Failed to submit exercise:", error);
       if (isMultipleChoiceExercise) {
-        setShowCorrectAnswer(true)
+        setShowCorrectAnswer(true);
       }
     }
-  }
+  };
 
   // Handle clicking correct answer to continue
   const handleContinueToNext = () => {
     if (isPracticeMode) {
       if (currentExerciseIndex < total - 1) {
-        setCurrentExerciseIndex(currentExerciseIndex + 1)
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
       } else {
-        setCurrentExerciseIndex(0)
+        setCurrentExerciseIndex(0);
       }
-      setShowCorrectAnswer(false)
+      setShowCorrectAnswer(false);
       if (currentExercise) {
-        handleSelect(currentExercise._id as string, "")
+        handleSelect(currentExercise._id as string, "");
       }
     } else {
-      const nextIndex = findNextIncompleteExercise()
+      const nextIndex = findNextIncompleteExercise();
       if (nextIndex !== -1) {
-        setCurrentExerciseIndex(nextIndex)
-        setShowCorrectAnswer(false)
+        setCurrentExerciseIndex(nextIndex);
+        setShowCorrectAnswer(false);
       } else {
-        setShowCorrectAnswer(false)
+        setShowCorrectAnswer(false);
         if (currentExercise) {
-          handleSelect(currentExercise._id as string, "")
+          handleSelect(currentExercise._id as string, "");
         }
       }
     }
-  }
+  };
 
   // Handle practice again
   const handlePracticeAgain = () => {
-    setIsPracticeMode(true)
-    setCurrentExerciseIndex(0)
-    setShowCorrectAnswer(false)
+    setIsPracticeMode(true);
+    setCurrentExerciseIndex(0);
+    setShowCorrectAnswer(false);
     Object.keys(state.selectedAnswers).forEach((key) => {
-      handleSelect(key, "")
-    })
-  }
+      handleSelect(key, "");
+    });
+  };
 
   if (state.loading)
     return (
@@ -213,16 +214,23 @@ export default function ExerciseContent({
       >
         <p>Loading exercises...</p>
       </ContentSlideIn>
-    )
+    );
 
   if (!allExercises.length)
     return (
       <ContentSlideIn keyValue={`${lessonId}-empty`} isLoading={false}>
         <p>No exercises found.</p>
       </ContentSlideIn>
-    )
+    );
 
-  const isAllCompleted = allExercisesCompleted()
+  if (!allExercises.length) {
+    return (
+      <ContentSlideIn keyValue={`${lessonId}-empty`} isLoading={false}>
+        <p>No exercises found.</p>
+      </ContentSlideIn>
+    );
+  }
+  const isAllCompleted = allExercisesCompleted();
 
   return (
     <div className="h-[calc(100vh-275px)] flex flex-col gap-5">
@@ -250,10 +258,7 @@ export default function ExerciseContent({
               <p className="text-sm subtext mb-6">
                 You have completed all exercises in this lesson.
               </p>
-              <button
-                className="button-blue"
-                onClick={handlePracticeAgain}
-              >
+              <button className="button-blue" onClick={handlePracticeAgain}>
                 Practice Again
               </button>
             </div>
@@ -261,24 +266,32 @@ export default function ExerciseContent({
             <ExerciseQuestion
               exercise={currentExercise}
               index={currentExerciseIndex + 1}
-              selectedAnswer={
-                (() => {
-                  const val = state.selectedAnswers[currentExercise._id as string];
-                  if (Array.isArray(val)) return val[0] || "";
-                  return val || "";
-                })()
-              }
+              selectedAnswer={(() => {
+                const val =
+                  state.selectedAnswers[currentExercise._id as string];
+                if (Array.isArray(val)) return val[0] || "";
+                return val || "";
+              })()}
               onSelect={handleSelect}
               hasSubmitted={showCorrectAnswer}
               onAutoSubmit={handleExerciseComplete}
               isCompleted={
-                isPracticeMode ? false : completedExercisesMap[currentExercise._id as string]?.completed
+                isPracticeMode
+                  ? false
+                  : completedExercisesMap[currentExercise._id as string]
+                      ?.completed
               }
               userAnswer={
-                isPracticeMode ? undefined : completedExercisesMap[currentExercise._id as string]?.userAnswer
+                isPracticeMode
+                  ? undefined
+                  : completedExercisesMap[currentExercise._id as string]
+                      ?.userAnswer
               }
               isCorrect={
-                isPracticeMode ? undefined : completedExercisesMap[currentExercise._id as string]?.isCorrect
+                isPracticeMode
+                  ? undefined
+                  : completedExercisesMap[currentExercise._id as string]
+                      ?.isCorrect
               }
               showCorrectAnswer={showCorrectAnswer}
               onContinueToNext={handleContinueToNext}
@@ -289,5 +302,5 @@ export default function ExerciseContent({
         </ContentSlideIn>
       </div>
     </div>
-  )
+  );
 }

@@ -11,7 +11,7 @@ interface CreateLessonData {
 
 // Lesson CRUD operations
 export const getAllLessons = async (): Promise<Lesson[]> => {
-  const response = await api.get('/api/lessons');
+  const response = await api.get("/api/lessons");
   return response.data.data;
 };
 
@@ -23,16 +23,19 @@ export const getLessonById = async (lessonId: string): Promise<Lesson> => {
 export const createLesson = async (lessonData: FormData): Promise<Lesson> => {
   // Convert FormData to proper object
   const data: CreateLessonData = {
-    courseId: lessonData.get('courseId') as string,
-    name: lessonData.get('name') as string,
-    description: lessonData.get('description') as string
+    courseId: lessonData.get("courseId") as string,
+    name: lessonData.get("name") as string,
+    description: lessonData.get("description") as string,
   };
-  
-  const response = await api.post('/api/lessons', data);
+
+  const response = await api.post("/api/lessons", data);
   return response.data.lesson;
 };
 
-export const updateLesson = async (lessonId: string, lessonData: FormData): Promise<Lesson> => {
+export const updateLesson = async (
+  lessonId: string,
+  lessonData: FormData
+): Promise<Lesson> => {
   const response = await api.patch(`/api/lessons/${lessonId}`, lessonData);
   return response.data.lesson;
 };
@@ -55,21 +58,26 @@ export const getTestById = async (testId: string): Promise<Test> => {
 export const createTest = async (testData: FormData): Promise<Test> => {
   // Convert FormData to regular object
   const formDataObj = Object.fromEntries(testData.entries());
-  
+
   // Create the data object with proper types
   const data = {
     name: formDataObj.name as string,
     description: formDataObj.description as string,
     totalQuestions: Number(formDataObj.totalQuestions),
     courseId: formDataObj.courseId as string,
-    lessonIds: formDataObj.lessonIds ? JSON.parse(formDataObj.lessonIds as string) : []
+    lessonIds: formDataObj.lessonIds
+      ? JSON.parse(formDataObj.lessonIds as string)
+      : [],
   };
-  
-  const response = await api.post('/api/tests', data);
+
+  const response = await api.post("/api/tests", data);
   return response.data.test;
 };
 
-export const updateTest = async (testId: string, testData: FormData): Promise<Test> => {
+export const updateTest = async (
+  testId: string,
+  testData: FormData
+): Promise<Test> => {
   const response = await api.patch(`/api/tests/${testId}`, testData);
   return response.data.test;
 };
@@ -79,31 +87,44 @@ export const deleteTest = async (testId: string): Promise<void> => {
 };
 
 // Exercise CRUD operations
-export const getExercisesByLessonId = async (lessonId: string): Promise<IExercise[]> => {
+export const getExercisesByLessonId = async (
+  lessonId: string
+): Promise<IExercise[]> => {
   const response = await api.get(`/api/exercises/${lessonId}/lesson`);
   return response.data.exercises;
 };
 
-export const getExerciseById = async (exerciseId: string): Promise<IExercise> => {
+export const getExerciseById = async (
+  exerciseId: string
+): Promise<IExercise> => {
   const response = await api.get(`/api/exercises/${exerciseId}`);
   return response.data.exercise;
 };
 
-export const createExercise = async (exerciseData: FormData): Promise<IExercise> => {
-  const response = await api.post('/api/exercises', exerciseData, {
+export const createExercise = async (
+  exerciseData: FormData
+): Promise<IExercise> => {
+  const response = await api.post("/api/exercises", exerciseData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   });
   return response.data.exercise;
 };
 
-export const updateExercise = async (exerciseId: string, exerciseData: FormData): Promise<IExercise> => {
-  const response = await api.patch(`/api/exercises/${exerciseId}`, exerciseData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+export const updateExercise = async (
+  exerciseId: string,
+  exerciseData: FormData
+): Promise<IExercise> => {
+  const response = await api.patch(
+    `/api/exercises/${exerciseId}`,
+    exerciseData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
   return response.data.exercise;
 };
 
@@ -111,14 +132,21 @@ export const deleteExercise = async (exerciseId: string): Promise<void> => {
   await api.delete(`/api/exercises/${exerciseId}`);
 };
 
-export const getAllLessonsByCourseId = async (courseId: string): Promise<Lesson[]> => {
-  const allLessons = await getAllLessons();
-  return allLessons.filter(lesson => lesson.courseId === courseId);
+export const getAllLessonsByCourseId = async (
+  courseId: string
+): Promise<Lesson[]> => {
+  //use seperate api, the other api is for admin, requires admin role => not for user
+  const response = await api.get(`/api/courses/${courseId}/lessons`);
+  return response.data.data;
 };
 
-export const getAllExercisesByLessonId = async (lessonId: string): Promise<IExercise[]> => {
+export const getAllExercisesByLessonId = async (
+  lessonId: string
+): Promise<IExercise[]> => {
   // Use a very large size to get all exercises in one request, if your backend supports pagination
-  const response = await api.get(`/api/exercises/${lessonId}/lesson?page=1&size=1000`);
+  const response = await api.get(
+    `/api/exercises/${lessonId}/lesson?page=1&size=1000`
+  );
   return response.data.data;
 };
 
@@ -127,7 +155,9 @@ export const getVocabulariesByLessonId = async (
   page = 1,
   size = 10
 ) => {
-  const response = await api.get(`/api/lessons/${lessonId}/vocabularies?page=${page}&size=${size}`);
+  const response = await api.get(
+    `/api/lessons/${lessonId}/vocabularies?page=${page}&size=${size}`
+  );
   return response.data;
 };
 
@@ -136,116 +166,8 @@ export const getGrammarsByLessonId = async (
   page = 1,
   size = 10
 ) => {
-  const response = await api.get(`/api/lessons/${lessonId}/grammars?page=${page}&size=${size}`);
+  const response = await api.get(
+    `/api/lessons/${lessonId}/grammars?page=${page}&size=${size}`
+  );
   return response.data;
 };
-=======
-
-interface CreateLessonData {
-  courseId: string;
-  name: string;
-  description: string;
-}
-
-// Lesson CRUD operations
-export const getAllLessons = async (): Promise<Lesson[]> => {
-  const response = await api.get('/api/lessons');
-  return response.data.data;
-};
-
-export const getLessonById = async (lessonId: string): Promise<Lesson> => {
-  const response = await api.get(`/api/lessons/${lessonId}`);
-  return response.data.lesson;
-};
-
-export const createLesson = async (lessonData: FormData): Promise<Lesson> => {
-  // Convert FormData to proper object
-  const data: CreateLessonData = {
-    courseId: lessonData.get('courseId') as string,
-    name: lessonData.get('name') as string,
-    description: lessonData.get('description') as string
-  };
-  
-  const response = await api.post('/api/lessons', data);
-  return response.data.lesson;
-};
-
-export const updateLesson = async (lessonId: string, lessonData: FormData): Promise<Lesson> => {
-  const response = await api.patch(`/api/lessons/${lessonId}`, lessonData);
-  return response.data.lesson;
-};
-
-export const deleteLesson = async (lessonId: string): Promise<void> => {
-  await api.delete(`/api/lessons/${lessonId}`);
-};
-
-// Test CRUD operations
-export const getTestsByLessonId = async (lessonId: string): Promise<Test[]> => {
-  const response = await api.get(`/api/tests/lesson/${lessonId}`);
-  return response.data.tests;
-};
-
-export const getTestById = async (testId: string): Promise<Test> => {
-  const response = await api.get(`/api/tests/${testId}`);
-  return response.data.test;
-};
-
-export const createTest = async (testData: FormData): Promise<Test> => {
-  // Convert FormData to regular object
-  const formDataObj = Object.fromEntries(testData.entries());
-  
-  // Create the data object with proper types
-  const data = {
-    name: formDataObj.name as string,
-    description: formDataObj.description as string,
-    totalQuestions: Number(formDataObj.totalQuestions),
-    courseId: formDataObj.courseId as string,
-    lessonIds: formDataObj.lessonIds ? JSON.parse(formDataObj.lessonIds as string) : []
-  };
-  
-  const response = await api.post('/api/tests', data);
-  return response.data.test;
-};
-
-export const updateTest = async (testId: string, testData: FormData): Promise<Test> => {
-  const response = await api.patch(`/api/tests/${testId}`, testData);
-  return response.data.test;
-};
-
-export const deleteTest = async (testId: string): Promise<void> => {
-  await api.delete(`/api/tests/${testId}`);
-};
-
-// Exercise CRUD operations
-export const getExercisesByLessonId = async (lessonId: string): Promise<IExercise[]> => {
-  const response = await api.get(`/api/exercises/${lessonId}/lesson`);
-  return response.data.exercises;
-};
-
-export const getExerciseById = async (exerciseId: string): Promise<IExercise> => {
-  const response = await api.get(`/api/exercises/${exerciseId}`);
-  return response.data.exercise;
-};
-
-export const createExercise = async (exerciseData: FormData): Promise<IExercise> => {
-  const response = await api.post('/api/exercises', exerciseData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data.exercise;
-};
-
-export const updateExercise = async (exerciseId: string, exerciseData: FormData): Promise<IExercise> => {
-  const response = await api.patch(`/api/exercises/${exerciseId}`, exerciseData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data.exercise;
-};
-
-export const deleteExercise = async (exerciseId: string): Promise<void> => {
-  await api.delete(`/api/exercises/${exerciseId}`);
-};
-
