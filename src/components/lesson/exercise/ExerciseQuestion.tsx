@@ -80,21 +80,16 @@ export default function ExerciseQuestion({
     <div className="flex flex-col">
       <ExerciseHeader index={index} type={exercise.type} />
 
-      <div
-        className={`bg-[#2B2B2B] border border-[#1D1D1D] border-t-[#2B2B2B] rounded-b-[5px] p-5 pl-[60px] pr-[45px]${
-          isCompleted ? "opacity-90" : ""
-        }`}
-      >
+      <div className="bg-[#2B2B2B] border border-[#1D1D1D] border-t-[#2B2B2B] rounded-b-[5px] p-5">
         <p className="mb-5 text-white">{exercise.question}</p>
 
-       
-          {exercise.image && (
-            <img
-              src={exercise.image}
-              alt="Exercise"
-              className="mb-5 rounded-[5px] object-contain max-h-48"
-            />
-          )}
+        {exercise.image && (
+          <img
+            src={exercise.image}
+            alt="Exercise"
+            className="mb-5 rounded-[5px] object-contain max-h-48"
+          />
+        )}
 
         <MultipleChoiceOptions
           exercise={exercise}

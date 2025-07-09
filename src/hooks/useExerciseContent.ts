@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { IExercise } from "@/types/models/IExercise";
 import {
   ExerciseContentState,
@@ -7,7 +7,6 @@ import {
 import {
   getExercisesByLessonId,
   getAllExercisesByLessonId,
-  PaginatedExercisesResponse,
 } from "@/services/lessonService";
 import {
   createUserExercise,
@@ -45,24 +44,30 @@ export const useExerciseContent = ({
   });
 
   const [isBatchSubmitting, setIsBatchSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserExercises = useCallback(async () => {
-    if (!userId) return;
-
+    if (!userId || !lessonId) return;
     try {
-      const data = await getUserExercise(userId);
+      // Use the lesson-specific API
+      const data = await getUserExercisesByLessonId(userId, lessonId);
+      console.log('Fetched user exercises for lesson:', data);
       setState((prev) => ({ ...prev, userExercises: data }));
+      return true;
     } catch (err) {
       console.error("Failed to fetch user exercises", err);
+      return false;
     }
-  }, [userId]);
+  }, [userId, lessonId]);
 
   const fetchAllExercises = useCallback(async () => {
     try {
       const data = await getAllExercisesByLessonId(lessonId);
       setState((prev) => ({ ...prev, allExercises: data }));
+      return true;
     } catch (error) {
       console.error("Failed to fetch all exercises", error);
+      return false;
     }
   }, [lessonId]);
 
@@ -70,26 +75,24 @@ export const useExerciseContent = ({
     setState((prev) => ({ ...prev, loading: true }));
 
     try {
-      const data: PaginatedExercisesResponse = await getExercisesByLessonId(
-        lessonId,
-        state.page,
-        itemsPerPage
-      );
+      const data = await getExercisesByLessonId(lessonId);
       setState((prev) => ({
         ...prev,
-        exercises: data?.data || [],
-        totalPages: data?.totalPages || 1,
+        exercises: data || [],
+        totalPages: 1,
         loading: false,
       }));
     } catch (error) {
       console.error("Failed to fetch exercises", error);
       setState((prev) => ({ ...prev, loading: false }));
     }
-  }, [lessonId, state.page, itemsPerPage]);
+  }, [lessonId]);
 
   // Filter user exercises to only include those for the current lesson
   const lessonUserExercises = useMemo(() => {
-    return filterUserExercisesByLesson(state.userExercises, state.allExercises);
+    const filtered = filterUserExercisesByLesson(state.userExercises, state.allExercises);
+    console.log('lessonUserExercises:', filtered);
+    return filtered;
   }, [state.allExercises, state.userExercises]);
 
   // Create a map of completed exercises with their details
@@ -103,27 +106,18 @@ export const useExerciseContent = ({
         completedAt?: Date;
       }
     > = {};
-    lessonUserExercises.forEach((userExercise) => {
+    state.userExercises.forEach((userExercise: any) => {
       const exerciseId = userExercise.exerciseId;
-      const exercise = state.allExercises.find((ex) => ex._id === exerciseId);
-      // Only add if userExercise has the right properties
-      if (
-        exercise &&
-        typeof (userExercise as any).completed !== "undefined" &&
-        typeof (userExercise as any).createdAt !== "undefined"
-      ) {
-        map[exerciseId] = {
-          completed: (userExercise as any).completed || false,
-          userAnswer: undefined,
-          isCorrect: (userExercise as any).completed || false,
-          completedAt: (userExercise as any).createdAt
-            ? new Date((userExercise as any).createdAt)
-            : undefined,
-        };
-      }
+      // Use the completed property directly from the API
+      map[exerciseId] = {
+        completed: !!userExercise.completed,
+        userAnswer: userExercise.userAnswer,
+        isCorrect: !!userExercise.completed,
+        completedAt: userExercise.createdAt ? new Date(userExercise.createdAt) : undefined,
+      };
     });
     return map;
-  }, [lessonUserExercises, state.allExercises]);
+  }, [state.userExercises]);
 
   const completedIds = useMemo(
     () =>
@@ -264,6 +258,16 @@ export const useExerciseContent = ({
     setState((prev) => ({ ...prev, page: newPage }));
   }, []);
 
+  // Fetch both user exercises and all exercises before calculating progress
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    Promise.all([fetchUserExercises(), fetchAllExercises()]).then(() => {
+      if (isMounted) setLoading(false);
+    });
+    return () => { isMounted = false; };
+  }, [userId, lessonId, fetchUserExercises, fetchAllExercises]);
+
   return {
     state,
     total,
@@ -281,5 +285,6 @@ export const useExerciseContent = ({
     handleAutoSubmit,
     handleBatchSubmit,
     handlePageChange,
+    loading,
   };
 };

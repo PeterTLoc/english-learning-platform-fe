@@ -8,24 +8,35 @@ import ExerciseProgressBar from "./exercise/ExerciseProgressBar";
 import { createUserExercise } from "@/services/userExerciseService";
 import ContentSlideIn from "@/components/ui/ContentSlideIn";
 import { isAnswerCorrect } from "@/utils/exerciseUtils";
+import Link from "next/link";
+import { getLessonById } from "@/services/lessonService";
+import { ChevronRight } from "lucide-react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface ExerciseContentProps {
+  courseId: string;
   lessonId: string;
   itemsPerPage?: number;
   setSidebarRefreshKey?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function ExerciseContent({
+  courseId,
   lessonId,
   itemsPerPage = 5,
   setSidebarRefreshKey,
 }: ExerciseContentProps) {
   const { user } = useAuth();
+  const router = useRouter();
   const userId = user?._id;
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [isPracticeMode, setIsPracticeMode] = useState(false);
   const hasInitialized = useRef(false);
+  const [lessonName, setLessonName] = useState<string>("");
+  const [progressKey, setProgressKey] = useState(0); // Force progress bar re-render
 
   const {
     state,
@@ -49,6 +60,14 @@ export default function ExerciseContent({
       fetchExercises();
     }
   }, [userId, lessonId, fetchUserExercises, fetchAllExercises, fetchExercises]);
+
+  // Reset initialization when lessonId changes (route navigation)
+  useEffect(() => {
+    hasInitialized.current = false;
+    setCurrentExerciseIndex(0);
+    setShowCorrectAnswer(false);
+    setProgressKey(prev => prev + 1);
+  }, [lessonId]);
 
   // Initialize to first incomplete exercise
   useEffect(() => {
@@ -129,6 +148,8 @@ export default function ExerciseContent({
       if (isCorrect) {
         if (!isPracticeMode) {
           await fetchUserExercises();
+          // Force progress bar update
+          setProgressKey(prev => prev + 1);
           if (setSidebarRefreshKey) setSidebarRefreshKey((prev) => prev + 1);
         }
 
@@ -196,25 +217,28 @@ export default function ExerciseContent({
     setIsPracticeMode(true);
     setCurrentExerciseIndex(0);
     setShowCorrectAnswer(false);
+    setProgressKey(prev => prev + 1);
     Object.keys(state.selectedAnswers).forEach((key) => {
       handleSelect(key, "");
     });
   };
 
-  if (state.loading)
+  // Handle navigation back to lesson overview
+  const handleBackToLesson = () => {
+    router.push(`/courses/${courseId}/lessons/${lessonId}`);
+  };
+
+  useEffect(() => {
+    getLessonById(lessonId).then((lesson) => setLessonName(lesson?.name || ""));
+  }, [lessonId]);
+
+  if (state.loading || !lessonName) {
     return (
-      <ContentSlideIn
-        keyValue={`${lessonId}-loading`}
-        isLoading={true}
-        loadingComponent={
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#4CC2FF]"></div>
-          </div>
-        }
-      >
-        <p>Loading exercises...</p>
-      </ContentSlideIn>
-    );
+      <div className="mt-[74px]">
+        <LoadingSpinner size="small" />
+      </div>
+    )
+  }
 
   if (!allExercises.length)
     return (
@@ -232,75 +256,97 @@ export default function ExerciseContent({
   }
   const isAllCompleted = allExercisesCompleted();
 
-  return (
-    <div className="h-[calc(100vh-275px)] flex flex-col gap-5">
-      {/* Progress Bar */}
-      <div>
-        <ExerciseProgressBar
-          completed={completed}
-          total={total}
-          percent={percent}
-        />
-      </div>
+  // Debug logs for progress bar
+  console.log('allExercises:', allExercises);
+  console.log('completedExercisesMap:', completedExercisesMap);
+  console.log('completed:', completed, 'total:', total, 'percent:', percent);
+  console.log('isAllCompleted:', isAllCompleted);
 
-      {/* Exercise Content */}
-      <div className="flex-1 overflow-y-auto text-sm">
-        <ContentSlideIn
-          keyValue={`${lessonId}-${currentExerciseIndex}`}
-          isLoading={false}
-        >
-          {isAllCompleted && !isPracticeMode ? (
-            <div className="text-center py-8">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-[17px] font-bold text-white mb-2">
-                Congratulations!
-              </h2>
-              <p className="text-sm subtext mb-6">
-                You have completed all exercises in this lesson.
-              </p>
-              <button className="button-blue" onClick={handlePracticeAgain}>
-                Practice Again
-              </button>
-            </div>
-          ) : currentExercise ? (
-            <ExerciseQuestion
-              exercise={currentExercise}
-              index={currentExerciseIndex + 1}
-              selectedAnswer={(() => {
-                const val =
-                  state.selectedAnswers[currentExercise._id as string];
-                if (Array.isArray(val)) return val[0] || "";
-                return val || "";
-              })()}
-              onSelect={handleSelect}
-              hasSubmitted={showCorrectAnswer}
-              onAutoSubmit={handleExerciseComplete}
-              isCompleted={
-                isPracticeMode
-                  ? false
-                  : completedExercisesMap[currentExercise._id as string]
-                      ?.completed
-              }
-              userAnswer={
-                isPracticeMode
-                  ? undefined
-                  : completedExercisesMap[currentExercise._id as string]
-                      ?.userAnswer
-              }
-              isCorrect={
-                isPracticeMode
-                  ? undefined
-                  : completedExercisesMap[currentExercise._id as string]
-                      ?.isCorrect
-              }
-              showCorrectAnswer={showCorrectAnswer}
-              onContinueToNext={handleContinueToNext}
-            />
-          ) : (
-            <p>Loading exercise...</p>
-          )}
-        </ContentSlideIn>
+  return (
+    <>
+      <div className="title flex items-center gap-5 mb-4">
+        <Link href={`/courses/${courseId}/lessons/${lessonId}`} className="text-[#AAAAAA] transition-colors duration-200 hover:text-white">
+          {lessonName}
+        </Link>
+        <ChevronRight size={20} strokeWidth={3} className="subtext" />
+        <span>Exercise</span>
       </div>
-    </div>
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <div className="h-[calc(100vh-275px)] flex flex-col gap-5">
+          {/* Progress Bar */}
+          <div>
+            <ExerciseProgressBar
+              key={`progress-${progressKey}-${lessonId}`}
+              completed={completed}
+              total={total}
+              percent={percent}
+            />
+          </div>
+
+          {/* Exercise Content */}
+          <div className="flex-1 overflow-y-auto text-sm">
+            {isAllCompleted && !isPracticeMode ? (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">🎉</div>
+                <h2 className="text-[17px] font-bold text-white mb-2">
+                  Congratulations!
+                </h2>
+                <p className="text-sm subtext mb-6">
+                  You have completed all exercises in this lesson.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button className="button-blue" onClick={handlePracticeAgain}>
+                    Practice Again
+                  </button>
+                  <button className="button" onClick={handleBackToLesson}>
+                    Back to Lesson
+                  </button>
+                </div>
+              </div>
+            ) : currentExercise ? (
+              <ExerciseQuestion
+                exercise={currentExercise}
+                index={currentExerciseIndex + 1}
+                selectedAnswer={(() => {
+                  const val =
+                    state.selectedAnswers[currentExercise._id as string];
+                  if (Array.isArray(val)) return val[0] || "";
+                  return val || "";
+                })()}
+                onSelect={handleSelect}
+                hasSubmitted={showCorrectAnswer}
+                onAutoSubmit={handleExerciseComplete}
+                isCompleted={
+                  isPracticeMode
+                    ? false
+                    : completedExercisesMap[currentExercise._id as string]
+                        ?.completed
+                }
+                userAnswer={
+                  isPracticeMode
+                    ? undefined
+                    : completedExercisesMap[currentExercise._id as string]
+                        ?.userAnswer
+                }
+                isCorrect={
+                  isPracticeMode
+                    ? undefined
+                    : completedExercisesMap[currentExercise._id as string]
+                        ?.isCorrect
+                }
+                showCorrectAnswer={showCorrectAnswer}
+                onContinueToNext={handleContinueToNext}
+              />
+            ) : (
+              <p>Loading exercise...</p>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </>
   );
 }

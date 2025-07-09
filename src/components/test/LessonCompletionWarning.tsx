@@ -16,7 +16,7 @@ export default function LessonCompletionWarning({
       direction="bottom"
     >
       {/* Warning text section */}
-      <div className="text-center py-8">
+      <div className="flex flex-col items-center py-8">
         <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-8 h-8 text-black"

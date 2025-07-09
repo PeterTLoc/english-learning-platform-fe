@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/context/AuthContext"
 import { getAllUserCourses } from "@/services/userCourseService"
 
@@ -29,10 +29,10 @@ export const useCourse = () => {
 }
 
 export const CourseProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
   const [userCourses, setUserCourses] = useState<UserCourseMap>({})
 
-  const fetchAllCourses = async () => {
+  const fetchAllCourses = useCallback(async () => {
     if (!user?._id) return
 
     try {
@@ -40,7 +40,7 @@ export const CourseProvider = ({ children }: { children: React.ReactNode }) => {
       const map: UserCourseMap = {}
 
       for (const uc of userCourseList) {
-        map[uc.courseId] = {
+        map[String(uc.courseId)] = {
           id: uc.id,
           status: uc.status,
           currentOrder: uc.currentOrder,
@@ -51,7 +51,14 @@ export const CourseProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err) {
       console.error("Failed to fetch user courses", err)
     }
-  }
+  }, [user?._id])
+
+  // Automatically fetch user courses when user is available and auth is loaded
+  useEffect(() => {
+    if (!loading && user?._id) {
+      fetchAllCourses()
+    }
+  }, [user?._id, loading, fetchAllCourses])
 
   const setCourseStatus = (courseId: string, status: CourseStatus) => {
     setUserCourses((prev) => ({
