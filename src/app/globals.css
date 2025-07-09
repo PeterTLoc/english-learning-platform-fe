@@ -260,3 +260,44 @@ input[type="number"]::-webkit-inner-spin-button {
 .multiple-choice-option.incorrect-answer.disabled:hover {
   border-color: #ef4444 !important;
 }
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes shine {
+  0% {
+    left: -33%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+.animate-shine {
+  animation: shine 1.2s linear infinite;
+}
+.drop-shadow-glow {
+  filter: drop-shadow(0 0 6px #ec4899) drop-shadow(0 0 2px #a21caf);
+}
+.animate-bounce-bar {
+  animation: bounce-bar 1.2s infinite alternate
+    cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+@keyframes bounce-bar {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.08);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}

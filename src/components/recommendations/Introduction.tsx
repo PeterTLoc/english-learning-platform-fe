@@ -12,31 +12,35 @@ import React from "react";
 export default function Introduction({
   isLoading,
   handleContinue,
+  disabled,
 }: {
   isLoading: boolean;
   handleContinue: () => void;
+  disabled: boolean;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-[rgb(32,32,32)] to-gray-800 p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto w-full">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="flex justify-center mb-4">
             <div className="bg-blue-600 rounded-full p-3">
               <Brain className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            AI-Powered Learning Enhancement
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-2">
+            <span className=" bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg tracking-tight">
+              AI-Powered Learning Enhancement
+            </span>
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto">
             Your learning data helps us provide personalized feedback and
             improve your English learning experience
           </p>
         </div>
 
         {/* Main Content Card */}
-        <div className="bg-gray-800 rounded-lg shadow-lg p-8 mb-6">
+        <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8 mb-6">
           <div className="flex items-start space-x-4 mb-6">
             <div className="bg-blue-900 rounded-full p-2 flex-shrink-0">
               <Info className="h-5 w-5 text-blue-400" />
@@ -56,7 +60,7 @@ export default function Introduction({
           </div>
 
           {/* Benefits Grid */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="flex items-start space-x-3">
               <div className="bg-green-900 rounded-full p-2 flex-shrink-0">
                 <TrendingUp className="h-5 w-5 text-green-400" />
@@ -117,7 +121,7 @@ export default function Introduction({
           </div>
 
           {/* What Data We Collect */}
-          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
               Data We Analyze
             </h3>
@@ -162,11 +166,50 @@ export default function Introduction({
               our AI analyze your data to enhance your learning experience.
             </p>
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-              disabled={isLoading}
+              className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 
+                hover:from-blue-500 hover:via-purple-500 hover:to-pink-500
+                text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-2xl 
+                text-base sm:text-lg
+                transition-all duration-500 ease-out
+                shadow-2xl shadow-blue-500/30 hover:shadow-purple-500/50
+                transform hover:scale-105 active:scale-95
+                border border-white/20 hover:border-white/40
+                overflow-hidden
+                disabled:opacity-50 disabled:cursor-not-allowed
+                before:absolute before:inset-0 before:bg-gradient-to-r 
+                before:from-transparent before:via-white/20 before:to-transparent
+                before:translate-x-[-100%] hover:before:translate-x-[100%]
+                before:transition-transform before:duration-700"
+              disabled={disabled}
               onClick={handleContinue}
             >
-              Continue
+              <span className="relative z-10 flex items-center justify-center space-x-2">
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg tracking-wide">Continue</span>
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                      <svg
+                        className="w-3 h-3 text-white transform group-hover:translate-x-0.5 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </>
+                )}
+              </span>
             </button>
           </div>
         </div>

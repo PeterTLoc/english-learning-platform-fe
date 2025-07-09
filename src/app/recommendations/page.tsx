@@ -2,7 +2,7 @@ import RecommendationWrapper from "@/components/recommendations/RecommendationWr
 
 export default function Page() {
   return (
-    <div>
+    <div className="flex justify-center items-center">
       <RecommendationWrapper />
     </div>
   );
