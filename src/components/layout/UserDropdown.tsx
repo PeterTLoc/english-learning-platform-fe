@@ -19,8 +19,13 @@ const UserDropdown = () => {
       await logout();
       showToast("Logged out successfully", "success");
       router.push("/login");
-    } catch (error: any) {
-      showToast(error?.message || "Logout failed. Please try again.", "error");
+    } catch (error) {
+      showToast(
+        error instanceof Error
+          ? error.message
+          : "Logout failed. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -29,6 +34,9 @@ const UserDropdown = () => {
       ? [{ label: "Admin Dashboard", href: "/admin" }]
       : []),
     { label: "Profile", href: `/profile/${user._id}` },
+    ...(user.role === UserRole.USER
+      ? [{ label: "Recommendations", href: "/recommendations" }]
+      : []),
     { label: "Logout", onClick: handleLogout },
   ];
 

@@ -7,7 +7,7 @@ class AiService {
   }
 
   async getPersonalRecommendationFromAi(id: string) {
-    const response = await api.get(`/api/ai/recommendation/${id}/user`);
+    const response = await api.get(`/api/ai/recommentdations/${id}/user`);
     return response.data;
   }
 }
