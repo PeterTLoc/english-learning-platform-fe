@@ -13,6 +13,7 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: '#4CC2FF',
       },
       fontFamily: {
         mulish: ['var(--font-mulish)', 'sans-serif'],

@@ -1,5 +1,4 @@
 import { getCourseById } from "@/services/courseService";
-import CourseDetail from "../../../components/course/CourseDetail";
 import { notFound } from "next/navigation";
 
 export default async function Page({
@@ -12,5 +11,5 @@ export default async function Page({
 
   if (!course) notFound();
 
-  return <CourseDetail course={course} />;
+  return <>Hi</>;
 }

@@ -48,24 +48,24 @@ export default function ExerciseTextInput({
         onBlur={() => setIsFocused(false)}
         disabled={disabled}
         placeholder="Type your answer..."
-        className={`w-full h-[44px] p-5 bg-[#373737] border border-[#3F3F3F] rounded-[5px] text-[#AAAAAA] text-sm placeholder-[#AAAAAA] focus:outline-none transition-colors ${getBorderColor()}`}
+        className={`max-w-[365px] w-full h-[34px] bg-[#373737] border border-[#3F3F3F] rounded-[5px] text-sm placeholder-[#AAAAAA] focus:outline-none transition-colors ${getBorderColor()}`}
       />
       {!hideSubmitAndHint && !disabled && !validationResult && (
         <>
-          <div className="flex items-center gap-1 text-xs mt-1" style={{ color: '#AAAAAA' }}>
+          <div className="flex items-center gap-1 text-xs mt-2" style={{ color: '#AAAAAA' }}>
             <Info className="w-3 h-3" style={{ color: '#AAAAAA' }} />
             <span>Press Enter or click Submit</span>
           </div>
         </>
       )}
       {!hideSubmitAndHint && disabled && validationResult === 'correct' && (
-        <div className="flex items-center gap-1 text-xs mt-1" style={{ color: '#22c55e' }}>
+        <div className="flex items-center gap-1 text-xs mt-2" style={{ color: '#22c55e' }}>
           <CheckCircle className="w-3 h-3" style={{ color: '#22c55e' }} />
           <span>Correct</span>
         </div>
       )}
       {!hideSubmitAndHint && disabled && validationResult === 'incorrect' && (
-        <div className="flex items-center gap-1 text-xs mt-1" style={{ color: '#ef4444' }}>
+        <div className="flex items-center gap-1 text-xs mt-2" style={{ color: '#ef4444' }}>
           <XCircle className="w-3 h-3" style={{ color: '#ef4444' }} />
           <span>Incorrect</span>
         </div>

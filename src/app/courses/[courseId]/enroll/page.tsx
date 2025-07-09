@@ -1,7 +1,7 @@
 import { getCourseById } from "@/services/courseService";
 import { notFound } from "next/navigation";
-import EnrollButton from "@/components/course/EnrollButton";
-import CourseContent from "@/components/course/CourseContent";
+import EnrollButton from "@/components/course/enroll/EnrollButton";
+import CourseContent from "@/components/course/enroll/CourseOverview";
 
 export default async function Page({
   params,

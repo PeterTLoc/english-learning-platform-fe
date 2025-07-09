@@ -7,9 +7,9 @@ interface CourseCompletionStatusProps {
   loading?: boolean
 }
 
-export default function CourseCompletionStatus({ 
-  isCompleted, 
-  loading = false 
+export default function CourseCompletionStatus({
+  isCompleted,
+  loading = false,
 }: CourseCompletionStatusProps) {
   if (loading) {
     return (
@@ -28,14 +28,16 @@ export default function CourseCompletionStatus({
   }
 
   return (
-    <div className="bg-green-900/20 border border-green-500/30 rounded-[5px] p-5 h-[69px] flex items-center gap-5 mt-5">
-      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-green-500">
-        <CheckCircle size={16} className="text-white" />
-      </div>
-      <div>
-        <p className="text-sm text-green-400 font-semibold">Course Completed!</p>
-        <p className="text-xs subtext">Congratulations! You have successfully completed all lessons and tests in this course.</p>
+    <div className="container flex items-center gap-5 h-[69px]">
+      <CheckCircle size={20} className="text-green-500" />
+
+      <div className="flex flex-col">
+        <span className="text-sm">Course Completed!</span>
+        <span className="text-xs subtext">
+          You have completed the course, go back and practice or try different
+          courses.
+        </span>
       </div>
     </div>
   )
-} 
+}

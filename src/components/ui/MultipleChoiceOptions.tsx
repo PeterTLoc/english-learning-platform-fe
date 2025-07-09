@@ -24,7 +24,11 @@ export default function MultipleChoiceOptions({
 
   const getOptionStyle = (option: string) => {
     const isSelected = selectedAnswer === option
-    const isCorrect = exercise.answer.includes(option)
+    const isCorrect = Array.isArray(exercise.answer)
+      ? exercise.answer.includes(option)
+      : exercise.answer
+      ? exercise.answer === option
+      : false
     const isSubmitted = hasSubmitted || showCorrectAnswer
 
     if (isSubmitted) {
@@ -43,18 +47,23 @@ export default function MultipleChoiceOptions({
   }
 
   return (
-    <div className="flex flex-col gap-2 mb-5">
-      {exercise.options?.map((option, idx) => (
-        <button
-          key={option}
-          type="button"
-          disabled={isSubmitted}
-          onClick={() => onOptionClick(option)}
-          className={`w-[340px] h-[44px] p-5 text-left border rounded-[5px] overflow-hidden transition-colors flex items-center text-sm ${getOptionStyle(option)}`}
-        >
-          {option}
-        </button>
-      ))}
+    <>
+      <div className="flex flex-col gap-2">
+        {exercise.options?.map((option, idx) => (
+          <button
+            key={option}
+            type="button"
+            disabled={isSubmitted}
+            onClick={() => onOptionClick(option)}
+            className={`w-[365px] h-[34px] px-5 text-left border rounded-[5px] overflow-hidden transition-colors flex items-center text-sm ${getOptionStyle(
+              option
+            )}`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+
       {showCorrectAnswer && onContinueToNext && (
         <div className="mt-8">
           <button
@@ -66,6 +75,6 @@ export default function MultipleChoiceOptions({
           </button>
         </div>
       )}
-    </div>
+    </>
   )
-} 
+}

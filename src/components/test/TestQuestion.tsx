@@ -1,7 +1,7 @@
 import { IExercise } from "@/types/models/IExercise"
-import ExerciseTextInput from "../exercise/ExerciseTextInput"
-import ExerciseImage from "../exercise/ExerciseImage"
-import ExerciseHeader from "../exercise/ExerciseHeader"
+import ExerciseTextInput from "../lesson/exercise/ExerciseTextInput"
+import ExerciseImage from "../lesson/exercise/ExerciseImage"
+import ExerciseHeader from "../lesson/exercise/ExerciseHeader"
 import MultipleChoiceOptions from "@/components/ui/MultipleChoiceOptions"
 
 interface TestQuestionProps {
@@ -36,7 +36,7 @@ export default function TestQuestion({
   return (
     <div className="flex flex-col">
       <ExerciseHeader index={index} type={exercise.type} />
-      <div className="bg-[#2B2B2B] border border-[#1D1D1D] border-t-[#2B2B2B] rounded-b-[5px] p-5 pl-[60px] pr-[45px]">
+      <div className="bg-[#2B2B2B] border border-[#1D1D1D] border-t-[#2B2B2B] rounded-b-[5px] p-5">
         <p className="mb-5 text-white text-sm">{exercise.question}</p>
         {exercise.image && (
           <ExerciseImage image={exercise.image} />
