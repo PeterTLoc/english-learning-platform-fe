@@ -73,9 +73,13 @@ export default function CourseModal({
       }
 
       await onSubmit(formData);
+      console.log("This is called");
       onClose();
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "An error occurred", "error");
+      showToast(
+        error instanceof Error ? error.message : "An error occurred",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -111,22 +115,39 @@ export default function CourseModal({
             <h2 className="text-2xl font-bold text-white">
               {mode === "edit" ? "Edit Course" : "Create Course"}
             </h2>
-            <button onClick={onClose} className="text-[#CFCFCF] hover:text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <button
+              onClick={onClose}
+              className="text-[#CFCFCF] hover:text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form id="courseForm" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-[#CFCFCF] mb-1">Name</label>
               <input
                 type="text"
-                value={formState.name || ''}
-                onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                value={formState.name || ""}
+                onChange={(e) =>
+                  setFormState({ ...formState, name: e.target.value })
+                }
                 className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
                 required
               />
@@ -134,8 +155,10 @@ export default function CourseModal({
             <div>
               <label className="block text-[#CFCFCF] mb-1">Description</label>
               <textarea
-                value={formState.description || ''}
-                onChange={(e) => setFormState({ ...formState, description: e.target.value })}
+                value={formState.description || ""}
+                onChange={(e) =>
+                  setFormState({ ...formState, description: e.target.value })
+                }
                 className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white h-32"
                 required
               />
@@ -143,8 +166,13 @@ export default function CourseModal({
             <div>
               <label className="block text-[#CFCFCF] mb-1">Level</label>
               <select
-                value={formState.level || ''}
-                onChange={(e) => setFormState({ ...formState, level: e.target.value as CourseLevelEnum })}
+                value={formState.level || ""}
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    level: e.target.value as CourseLevelEnum,
+                  })
+                }
                 className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
                 required
               >
@@ -160,8 +188,13 @@ export default function CourseModal({
             <div>
               <label className="block text-[#CFCFCF] mb-1">Type</label>
               <select
-                value={formState.type || ''}
-                onChange={(e) => setFormState({ ...formState, type: e.target.value as CourseTypeEnum })}
+                value={formState.type || ""}
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    type: e.target.value as CourseTypeEnum,
+                  })
+                }
                 className="w-full p-2 bg-[#2D2D2D] border border-[#1D1D1D] rounded-md text-white"
                 required
               >
@@ -209,26 +242,27 @@ export default function CourseModal({
                 </div>
               )}
             </div>
-          </form>
-        </div>
 
-        <div className="p-4 border-t border-[#1D1D1D] flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-[#CFCFCF] hover:text-white transition-colors"
-            disabled={loading}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="courseForm"
-            className="px-4 py-2 bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors disabled:opacity-50"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : mode === "edit" ? "Update" : "Create"}
-          </button>
+            {/*submit button need to be inside the form => work */}
+            <div className="p-4 border-t border-[#1D1D1D] flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-[#CFCFCF] hover:text-white transition-colors"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="courseForm"
+                className="px-4 py-2 bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : mode === "edit" ? "Update" : "Create"}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
