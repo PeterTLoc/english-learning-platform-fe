@@ -27,7 +27,8 @@ const CourseManagementPage = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
-  const [selectedCourseForDetails, setSelectedCourseForDetails] = useState<Course | null>(null);
+  const [selectedCourseForDetails, setSelectedCourseForDetails] =
+    useState<Course | null>(null);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -219,10 +220,11 @@ const CourseManagementPage = () => {
   const handleConfirmDelete = async (courseId: string) => {
     const confirmed = await showConfirmation({
       title: "Delete Course",
-      message: "Are you sure you want to delete this course? This action cannot be undone.",
+      message:
+        "Are you sure you want to delete this course? This action cannot be undone.",
       confirmText: "Delete",
       cancelText: "Cancel",
-      variant: "danger"
+      variant: "danger",
     });
 
     if (confirmed) {
@@ -268,7 +270,9 @@ const CourseManagementPage = () => {
             </label>
             <select
               value={levelFilter}
-              onChange={(e) => setLevelFilter(e.target.value as CourseLevelEnum)}
+              onChange={(e) =>
+                setLevelFilter(e.target.value as CourseLevelEnum)
+              }
               className="w-full bg-[#2D2D2D] border border-[#1D1D1D] rounded-md p-2"
             >
               <option value="">All Levels</option>
@@ -411,7 +415,9 @@ const CourseManagementPage = () => {
                           "Unknown Type"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">{course.totalLessons || 0}</td>
+                    <td className="px-6 py-4 text-center">
+                      {course.totalLessons || 0}
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2 py-1 rounded text-sm ${
@@ -482,9 +488,12 @@ const CourseManagementPage = () => {
           course={selectedCourse}
           isOpen={isModalOpen}
           onClose={closeModal}
-          onSubmit={modalMode === "create" 
-            ? handleCreateCourse 
-            : (formData: FormData) => handleUpdateCourse(selectedCourse?._id || '', formData)}
+          onSubmit={
+            modalMode === "create"
+              ? handleCreateCourse
+              : (formData: FormData) =>
+                  handleUpdateCourse(selectedCourse?._id || "", formData)
+          }
         />
       )}
 
