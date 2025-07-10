@@ -11,7 +11,7 @@ import { validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 import { UserRole } from "@/components/guards/RoleGuard";
 
-export default function LoginPage() {
+const page = () => {
   const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -56,21 +56,15 @@ export default function LoginPage() {
       await login(form);
       showToast("Login successful!", "success");
     } catch (error: any) {
-      // Show error toast with the actual error message
-      const errorMessage = error?.message || "Login failed. Please check your credentials and try again.";
-      showToast(errorMessage, "error", 5000);
-      
-      // Optionally set form errors if the backend returns specific field errors
-      if (error?.response?.data?.errors) {
-        setErrors(error.response.data.errors);
-      }
+      console.error("Login error:", error);
+      showToast(error.message || "Login failed. Please check your credentials and try again.", "error", 5000);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Show loading state while checking auth status
-  if (authLoading && !user) {
+  if (authLoading) {
     return (
       <div className="bg-[url(https://wallpapercrafter.com/desktop/269688-knowledge.jpg)] flex flex-col items-center justify-center min-h-screen">
         <div className="bg-black/70 p-5 rounded-md">
@@ -96,4 +90,6 @@ export default function LoginPage() {
       />
     </div>
   );
-}
+};
+
+export default page;
