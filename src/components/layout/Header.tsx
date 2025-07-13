@@ -1,22 +1,22 @@
-import { useAuth } from "@/context/AuthContext"
-import { CircleUserRound } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import React from "react"
-import UserDropdown from "./UserDropdown"
+import { useAuth } from "@/context/AuthContext";
+import { CircleUserRound } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import UserDropdown from "./UserDropdown";
 
 const Header = () => {
-  const pathname = usePathname()
-  const { user, loading } = useAuth()
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
 
   const links = [
     { href: "/", label: "Home" },
     { href: "/courses", label: "Courses" },
-    { href: "/flashcards", label: "Flashcards" },
+    { href: "/flashcard-sets", label: "Flashcards" },
     { href: "/membership", label: "Membership" },
     { href: "/achievements", label: "Achievements" },
     { href: "/blog", label: "Blogs" },
-  ]
+  ];
 
   return (
     // <nav className="sticky top-0 z-50 h-[84px] bg-[#202020] shadow-lg shadow-[#ffffff80]">
@@ -119,7 +119,7 @@ const Header = () => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

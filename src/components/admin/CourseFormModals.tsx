@@ -29,7 +29,7 @@ interface FormModalProps {
   type: "lesson" | "test" | "exercise" | "vocabulary" | "grammar";
   mode: "create" | "edit";
   data?: any;
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (formData: FormData | object) => void;
   onCancel: () => void;
   courseDetails?: {
     level: string;
@@ -215,10 +215,18 @@ export default function CourseFormModal({
         const formData = new FormData();
         formData.append("name", formState.name);
         formData.append("description", formState.description);
-        formData.append("courseId", formState.courseId);
+        // formData.append("description", formState.description);
         formData.append("totalQuestions", formState.totalQuestions.toString());
         formData.append("lessonIds", JSON.stringify(selectedLessons));
-        await onSubmit(formData);
+
+        const data = {
+          name: formState.name,
+          description: formState.description,
+          totalQuestions: formState.totalQuestions.toString(),
+          lessonIds: selectedLessons,
+        };
+
+        await onSubmit(data);
       } else if (type === "exercise") {
         // Validate exercise fields
         if (

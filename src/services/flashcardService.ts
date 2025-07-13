@@ -106,20 +106,20 @@ class FlashcardService {
   // Get flashcards for a specific set
   getFlashcards = async (flashcardSetId: string): Promise<Flashcard[]> => {
     const response = await api.get(
-      `/api/flashcard/${flashcardSetId}/flashcard-sets`
+      `/api/flashcards/${flashcardSetId}/flashcard-set`
     );
     return response.data;
   };
 
   // Get a specific flashcard by ID
   getFlashcard = async (id: string): Promise<Flashcard> => {
-    const response = await api.get(`/api/flashcard/${id}`);
+    const response = await api.get(`/api/flashcards/${id}`);
     return response.data;
   };
 
   // Create a new flashcard
   createFlashcard = async (data: Partial<Flashcard>): Promise<Flashcard> => {
-    const response = await api.post("/api/flashcard", data);
+    const response = await api.post("/api/flashcards", data);
     return response.data;
   };
 
@@ -128,13 +128,13 @@ class FlashcardService {
     id: string,
     data: Partial<Flashcard>
   ): Promise<Flashcard> => {
-    const response = await api.patch(`/api/flashcard/${id}`, data);
+    const response = await api.patch(`/api/flashcards/${id}`, data);
     return response.data;
   };
 
   // Delete a flashcard
   deleteFlashcard = async (id: string): Promise<void> => {
-    await api.delete(`/api/flashcard/${id}`);
+    await api.delete(`/api/flashcards/${id}`);
   };
 }
 
