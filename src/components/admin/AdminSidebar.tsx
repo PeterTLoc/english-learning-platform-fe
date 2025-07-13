@@ -12,6 +12,7 @@ import {
   User2,
   Users,
   FileText,
+  Trophy,
 } from "lucide-react";
 
 interface SidebarItem {
@@ -53,6 +54,11 @@ export default function AdminSidebar() {
       name: "Flashcard Sets",
       path: "/admin/flashcard-sets",
       icon: <FileText className="w-5 h-5" />,
+    },
+    {
+      name: "Achievements",
+      path: "/admin/achievements",
+      icon: <Trophy className="w-5 h-5" />,
     },
     {
       name: "Site Settings",

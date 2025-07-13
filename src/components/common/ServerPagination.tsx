@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface ServerPaginationProps {
   currentPage: number;
@@ -11,8 +13,10 @@ export default function ServerPagination({
   totalPages,
   pageSize,
 }: ServerPaginationProps) {
+  const searchParams = useSearchParams();
+
   const getPageUrl = (page: number) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
     params.set("page", page.toString());
     params.set("size", pageSize.toString());
     return `?${params.toString()}`;
