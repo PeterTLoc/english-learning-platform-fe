@@ -50,7 +50,7 @@ export default function FlashcardSetList({
       );
       setFlashcardSets(response.data);
       setTotalPages(response.totalPages);
-      setTotal(response.total)
+      setTotal(response.total);
       setLoading(false);
     };
 
@@ -94,7 +94,10 @@ export default function FlashcardSetList({
       <div className="mb-8">
         <div className="flex justify-center">
           <div className="w-full">
-            <FilterBox onSearch={onSearch} />
+            <FilterBox
+              placeholder="Search flashcard sets..."
+              onSearch={onSearch}
+            />
           </div>
         </div>
       </div>
@@ -109,8 +112,7 @@ export default function FlashcardSetList({
             </h2>
           </div>
           <p className="text-slate-300 text-sm sm:text-base">
-            {total} {total === 1 ? "set" : "sets"}{" "}
-            available
+            {total} {total === 1 ? "set" : "sets"} available
           </p>
         </div>
 

@@ -5,10 +5,12 @@ import { Search, Calendar, SortAsc, SortDesc, Filter } from "lucide-react";
 
 export default function FilterBox({
   onSearch,
+  placeholder,
   initialSort = "date",
   initialOrder = "desc",
 }: {
   onSearch: (search: string, sort: string, order: string) => void;
+  placeholder?: string;
   initialSort?: string;
   initialOrder?: string;
 }) {
@@ -32,7 +34,7 @@ export default function FilterBox({
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search flashcard sets..."
+                placeholder={placeholder}
                 className="w-full h-12 p-3 pl-10 pr-4 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 placeholder-slate-400 transition-all duration-300 text-sm sm:text-base backdrop-blur-sm"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -97,7 +99,9 @@ export default function FilterBox({
         {/* Quick Filter Tags - Centered */}
         <div className="mt-6 flex flex-col items-center">
           <div className="flex flex-wrap justify-center gap-3">
-            <span className="text-sm text-slate-300 mb-2 w-full text-center">Quick filters:</span>
+            <span className="text-sm text-slate-300 mb-2 w-full text-center">
+              Quick filters:
+            </span>
             <button
               type="button"
               onClick={() => {
