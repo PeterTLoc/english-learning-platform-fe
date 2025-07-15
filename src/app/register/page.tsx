@@ -1,112 +1,112 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/context/AuthContext"
-import { useToast } from "@/context/ToastContext"
-import { parseAxiosError } from "@/utils/apiErrors"
-import { useRouter } from "next/navigation"
-import React, { useState } from "react"
-import { RegisterErrors, RegisterFormData } from "@/types/auth/auth"
-import LoadingSpinner from "@/components/ui/LoadingSpinner"
-import { Eye, EyeOff } from "lucide-react"
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { parseAxiosError } from "@/utils/apiErrors";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { RegisterErrors, RegisterFormData } from "@/types/auth/auth";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { Eye, EyeOff } from "lucide-react";
 
 const initialFormData: RegisterFormData = {
   name: "",
   email: "",
   password: "",
   confirmPassword: "",
-}
+};
 
 const validate = (form: RegisterFormData): RegisterErrors => {
-  const errors: RegisterErrors = {}
+  const errors: RegisterErrors = {};
 
   const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const isValidPassword = (password: string) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,50}$/.test(password)
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,50}$/.test(password);
 
   if (!form.name) {
-    errors.name = "Name is required"
+    errors.name = "Name is required";
   }
 
   if (!form.email) {
-    errors.email = "Email is required"
+    errors.email = "Email is required";
   } else if (!isValidEmail(form.email)) {
-    errors.email = "Email is invalid"
+    errors.email = "Email is invalid";
   }
 
   if (!form.password) {
-    errors.password = "Password is required"
+    errors.password = "Password is required";
   } else if (!isValidPassword(form.password)) {
     errors.password =
-      "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-50 characters long"
+      "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-50 characters long";
   }
 
   if (!form.confirmPassword) {
-    errors.confirmPassword = "Please confirm your password"
+    errors.confirmPassword = "Please confirm your password";
   } else if (form.password !== form.confirmPassword) {
-    errors.confirmPassword = "Passwords do not match"
+    errors.confirmPassword = "Passwords do not match";
   }
 
-  return errors
-}
+  return errors;
+};
 
-const page = () => {
-  const [form, setForm] = useState<RegisterFormData>(initialFormData)
-  const [errors, setErrors] = useState<RegisterErrors>({})
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+const Page = () => {
+  const [form, setForm] = useState<RegisterFormData>(initialFormData);
+  const [errors, setErrors] = useState<RegisterErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const router = useRouter()
-  const { register } = useAuth()
-  const { showToast } = useToast()
+  const router = useRouter();
+  const { register } = useAuth();
+  const { showToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword)
-  }
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const validationErrors = validate(form)
+    const validationErrors = validate(form);
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      return
+      setErrors(validationErrors);
+      return;
     }
 
-    setErrors({})
-    setIsLoading(true)
+    setErrors({});
+    setIsLoading(true);
 
     try {
-      await register(form)
-      showToast("Registration successful! Please log in.", "success")
-      router.push("/login")
+      await register(form);
+      showToast("Registration successful! Please log in.", "success");
+      router.push("/login");
     } catch (error: unknown) {
-      const { message } = parseAxiosError(error)
-      showToast(message, "error", 5000)
-      
+      const { message } = parseAxiosError(error);
+      showToast(message, "error", 5000);
+
       // Optionally set form errors if the backend returns specific field errors
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as any;
         if (axiosError.response?.data?.errors) {
           setErrors(axiosError.response.data.errors);
         }
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -163,8 +163,8 @@ const page = () => {
               onChange={handleChange}
               required
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200"
               onClick={togglePasswordVisibility}
             >
@@ -191,8 +191,8 @@ const page = () => {
               onChange={handleChange}
               required
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200"
               onClick={toggleConfirmPasswordVisibility}
             >
@@ -226,7 +226,7 @@ const page = () => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

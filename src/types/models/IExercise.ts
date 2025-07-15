@@ -10,7 +10,7 @@ export interface IExercise extends Document {
   explanation?: string;
   focus: string;
   image?: string;
-  order: Number;
+  order: number;
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
