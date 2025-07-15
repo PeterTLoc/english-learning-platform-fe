@@ -11,7 +11,7 @@ import { validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 import { UserRole } from "@/components/guards/RoleGuard";
 
-const page = () => {
+const Page = () => {
   const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ const page = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      router.push(user.role === UserRole.ADMIN ? '/admin' : '/');
+      router.push(user.role === UserRole.ADMIN ? "/admin" : "/");
     }
   }, [user, authLoading, router]);
 
@@ -32,7 +32,7 @@ const page = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (errors[name as keyof LoginErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -57,7 +57,12 @@ const page = () => {
       showToast("Login successful!", "success");
     } catch (error: any) {
       console.error("Login error:", error);
-      showToast(error.message || "Login failed. Please check your credentials and try again.", "error", 5000);
+      showToast(
+        error.message ||
+          "Login failed. Please check your credentials and try again.",
+        "error",
+        5000
+      );
     } finally {
       setIsLoading(false);
     }
@@ -92,4 +97,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
