@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from "react"
-import Carousel from "@/components/ui/Carousel"
-import CourseCard from "@/components/course/CourseCard"
-import { Course } from "@/types/course/course"
-import { getAllCourses } from "@/services/courseService"
-import LoadingSpinner from "@/components/ui/LoadingSpinner"
-import { parseAxiosError } from "@/utils/apiErrors"
+import React, { useEffect, useState } from "react";
+import Carousel from "@/components/ui/Carousel";
+import CourseCard from "@/components/course/CourseCard";
+import { Course } from "@/types/course/course";
+import { getAllCourses } from "@/services/courseService";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { parseAxiosError } from "@/utils/apiErrors";
 
 const renderCourseCard = (course: Course) => (
   <CourseCard
@@ -20,41 +20,41 @@ const renderCourseCard = (course: Course) => (
     }
     ctaLabel={`${course.totalLessons ?? 0} Lessons`}
   />
-)
+);
 
-const page = () => {
-  const [courses, setCourses] = useState<Course[]>([])
-  const [loading, setLoading] = useState(true)
+const Page = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCourses = async () => {
       try {
-        const  { data: courseList } = await getAllCourses({})
-        setCourses(courseList)
+        const { data: courseList } = await getAllCourses({});
+        setCourses(courseList);
       } catch (error) {
-        const parsed = parseAxiosError(error)
+        const parsed = parseAxiosError(error);
 
-        console.error("Login failed:", parsed.message)
-        throw new Error(parsed.message)
+        console.error("Login failed:", parsed.message);
+        throw new Error(parsed.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadCourses()
-  }, [])
+    loadCourses();
+  }, []);
 
-  if (loading) return <LoadingSpinner fullScreen />
+  if (loading) return <LoadingSpinner fullScreen />;
 
   const coursesByLevel = courses.reduce<Record<string, Course[]>>(
     (acc, course) => {
-      const level = course.level || "Unknown"
-      if (!acc[level]) acc[level] = []
-      acc[level].push(course)
-      return acc
+      const level = course.level || "Unknown";
+      if (!acc[level]) acc[level] = [];
+      acc[level].push(course);
+      return acc;
     },
     {}
-  )
+  );
 
   return (
     <div className="flex flex-col">
@@ -68,7 +68,7 @@ const page = () => {
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

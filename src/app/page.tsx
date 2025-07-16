@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import StatsSection from "@/components/home/StatsSection";
 import AnimatedTitle from "@/components/home/AnimatedTitle";
 import FeatureCard from "@/components/home/FeatureCard";
+import SimpleLeaderboard from "@/components/home/SimpleLeaderboard";
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
@@ -108,7 +109,7 @@ export default function Home() {
               delay={600}
             />
           </div>
-
+          <SimpleLeaderboard />
           {/* Enhanced Call to Action Section */}
           {!user && (
             <div className="relative">

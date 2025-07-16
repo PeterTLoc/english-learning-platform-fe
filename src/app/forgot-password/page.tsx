@@ -1,44 +1,49 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { useToast } from "@/context/ToastContext"
-import { sendResetPasswordPin } from "@/services/authService"
+import React, { useState } from "react";
+import { useToast } from "@/context/ToastContext";
+import { sendResetPasswordPin } from "@/services/authService";
 
-const page = () => {
-  const [email, setEmail] = useState("")
-  const [errors, setErrors] = useState<{ email?: string }>({})
-  const [isLoading, setIsLoading] = useState(false)
-  const { showToast } = useToast()
+const Page = () => {
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState<{ email?: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useToast();
 
   const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const errors: { email?: string } = {}
+    const errors: { email?: string } = {};
 
     if (!email) {
-      errors.email = "Email is required"
+      errors.email = "Email is required";
     } else if (!validateEmail(email)) {
-      errors.email = "Invalid email address"
+      errors.email = "Invalid email address";
     }
 
-    setErrors(errors)
+    setErrors(errors);
 
-    if (Object.keys(errors).length > 0) return
+    if (Object.keys(errors).length > 0) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      await sendResetPasswordPin(email)
-      showToast("Password reset PIN sent to your email.", "success", 5000)
+      await sendResetPasswordPin(email);
+      showToast("Password reset PIN sent to your email.", "success", 5000);
     } catch (error: any) {
-      showToast(error.response?.data?.message || "Failed to send reset PIN. Please try again.", "error", 5000)
+      showToast(
+        error.response?.data?.message ||
+          "Failed to send reset PIN. Please try again.",
+        "error",
+        5000
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -70,7 +75,7 @@ const page = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

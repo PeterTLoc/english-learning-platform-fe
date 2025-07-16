@@ -11,7 +11,7 @@ import { validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 import { UserRole } from "@/components/guards/RoleGuard";
 
-const page = () => {
+const Page = () => {
   const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
   const [errors, setErrors] = useState<LoginErrors>({});
 
@@ -31,7 +31,7 @@ const page = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (errors[name as keyof LoginErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -90,4 +90,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
