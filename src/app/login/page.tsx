@@ -14,7 +14,6 @@ import { UserRole } from "@/components/guards/RoleGuard";
 const page = () => {
   const [form, setForm] = useState<LoginFormData>(initialLoginFormData);
   const [errors, setErrors] = useState<LoginErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const { login, user, loading: authLoading } = useAuth();
@@ -24,7 +23,7 @@ const page = () => {
   useEffect(() => {
     if (user && !authLoading) {
       router.push(user.role === UserRole.ADMIN ? '/admin' : '/');
-    }
+    } 
   }, [user, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,11 +35,10 @@ const page = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     // Prevent multiple submissions
-    if (isLoading) return;
+    if (authLoading) return;
 
     const validationErrors = validateLoginForm(form);
 
@@ -50,16 +48,16 @@ const page = () => {
     }
 
     setErrors({});
-    setIsLoading(true);
 
     try {
       await login(form);
       showToast("Login successful!", "success");
     } catch (error: any) {
-      console.error("Login error:", error);
-      showToast(error.message || "Login failed. Please check your credentials and try again.", "error", 5000);
+      const parsedError = parseAxiosError(error);
+      showToast(parsedError.message, "error");
+      console.log("test")
     } finally {
-      setIsLoading(false);
+      // No local loading state to set
     }
   };
 
@@ -84,7 +82,7 @@ const page = () => {
       <LoginForm
         form={form}
         errors={errors}
-        isLoading={isLoading}
+        isLoading={authLoading}
         onChange={handleChange}
         onSubmit={handleSubmit}
       />

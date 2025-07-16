@@ -86,9 +86,9 @@ export default function LessonList({
   }
 
   return lessons.length === 0 ? (
-    <p className="container text-sm text-center subtext">No lessons found for this course.</p>
+    <p className="container text-md text-center subtext">No lessons found for this course.</p>
   ) : (
-    <ul className="flex flex-col gap-1">
+    <ul className="flex flex-col gap-2">
       {/* Lesson Items */}
       {lessons.map((lesson: Lesson) => (
         <li
@@ -99,9 +99,9 @@ export default function LessonList({
           <div className="flex items-center gap-5">
             <BookOpen size={20} className="text-white" />
             <div>
-              <h3 className="text-sm">{lesson.name}</h3>
+              <h3 className="text-md">{lesson.name}</h3>
 
-              <div className="text-xs subtext flex gap-[10px]">
+              <div className="text-sm subtext flex gap-[10px]">
                 {lesson.length.map((item, index) => (
                   <div key={item.for} className="flex items-center gap-1">
                     <p>{item.amount}</p>

@@ -139,23 +139,24 @@ export default function CourseContent({ courseId }: CourseContentProps) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-16">
+      <div className="flex flex-col items-center justify-center gap-4 h-full mt-5">
         <LoadingSpinner size="medium" />
+        <p className="text-lg">Loading course content...</p>
       </div>
     )
   }
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 flex flex-col gap-4">
       <CourseCompletionStatus isCompleted={isCourseCompleted} loading={false} />
 
-      <h2 className="subtitle">Lessons</h2>
+      <h1 className="text-lg">Lessons</h1>
       <LessonList
         lessons={lessons}
         preloadedLessonCompletion={lessonCompletion}
       />
 
-      <h2 className="subtitle">Tests</h2>
+      <h2 className="text-lg">Tests</h2>
       <TestList
         courseId={courseId}
         tests={tests}

@@ -20,20 +20,20 @@ export default async function Page({
         <div className="absolute inset-0 bg-gradient-to-b from-[#0063B1] to-[#202020] z-0" />
 
         {/* Main Content */}
-        <div className="relative z-20 px-5 pt-[86px] pb-10">
-          <div className="max-w-[1000px] mx-auto">
-            <h1 className="font-bold text-3xl mb-4">{course.name}</h1>
+        <div className="relative z-20 pt-[86px] pb-10">
+          <div className="max-w-[1000px] mx-auto flex flex-col gap-6">
+            <h1 className="font-bold text-4xl">{course.name}</h1>
 
-            <div className="flex text-sm gap-1">
+            <div className="flex text-md gap-1">
               <p className="px-2 py-1 bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]">
                 Level {course.level}
               </p>
               <p className="px-2 py-1 bg-[#2B2B2B] border border-[#1D1D1D] rounded-[5px]">
-                Lessons {course.totalLessons}
+                {course.totalLessons} Lessons
               </p>
             </div>
 
-            <p className="text-sm mt-8 mb-[14px]">{course.description}</p>
+            <p className="text-md">{course.description}</p>
 
             <div>
               <EnrollButton courseId={course._id} />

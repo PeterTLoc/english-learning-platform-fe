@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import FlashcardService from "@/services/flashcardService";
 import { IFlashcard } from "@/types/models/IFlashcard";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import { AxiosError } from "axios";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import CreateFlashcardModal from "./CreateFlashcardModal";
@@ -33,6 +33,7 @@ export default function FlashcardList({
   const [totalPages, setTotalPages] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(page);
+  const { showToast } = useToast();
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
@@ -50,10 +51,11 @@ export default function FlashcardList({
         setCurrentPage(response.page);
         setLoading(false);
       } catch (error) {
-        toast.error(
+        showToast(
           error instanceof AxiosError
-            ? error.response?.data.message
-            : "Failed to fetch flashcards"
+            ? error.response?.data?.message || "Failed to fetch flashcards"
+            : "Failed to fetch flashcards",
+          "error"
         );
         setLoading(false);
       }
@@ -72,14 +74,15 @@ export default function FlashcardList({
         id
       );
 
-      setFlashcards([...flashcards, response.flashcard]);
+      setFlashcards([...flashcards, response.data.flashcard]);
       setIsCreateModalOpen(false);
-      toast.success("Flashcard created successfully");
+      showToast("Flashcard created successfully", "success");
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
-          ? error.response?.data.message
-          : "Failed to create flashcard"
+          ? error.response?.data?.message || "Failed to create flashcard"
+          : "Failed to create flashcard",
+        "error"
       );
     }
   };
@@ -89,12 +92,13 @@ export default function FlashcardList({
       await flashcardService.deleteFlashcard(id);
       setFlashcards(flashcards.filter((card) => card._id !== id));
       setDeleteTarget(null);
-      toast.success("Flashcard deleted successfully");
+      showToast("Flashcard deleted successfully", "success");
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
-          ? error.response?.data.message
-          : "Failed to delete flashcard"
+          ? error.response?.data?.message || "Failed to delete flashcard"
+          : "Failed to delete flashcard",
+        "error"
       );
     }
   };
@@ -111,14 +115,15 @@ export default function FlashcardList({
         vietnameseContent
       );
       setFlashcards(
-        flashcards.map((card) => (card._id === id ? response.flashcard : card))
+        flashcards.map((card) => (card._id === id ? response.data.flashcard : card))
       );
-      toast.success("Flashcard updated successfully");
+      showToast("Flashcard updated successfully", "success");
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
-          ? error.response?.data.message
-          : "Failed to update flashcard"
+          ? error.response?.data?.message || "Failed to update flashcard"
+          : "Failed to update flashcard",
+        "error"
       );
     }
   };

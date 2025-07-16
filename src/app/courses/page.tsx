@@ -57,7 +57,7 @@ const page = () => {
   )
 
   return (
-    <div className="flex flex-col gap-[27px]">
+    <div className="flex flex-col">
       {Object.entries(coursesByLevel).map(([level, levelCourses]) => (
         <Carousel
           key={level}

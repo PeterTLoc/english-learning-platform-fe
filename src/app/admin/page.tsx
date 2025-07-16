@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { BarChart3, DollarSign, Users, BookOpen } from 'lucide-react'
 import { statisticService } from '@/services/statisticService'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 interface StatsCard {
   title: string
@@ -48,6 +49,14 @@ export default function AdminDashboard() {
 
   const [revenueHistory, setRevenueHistory] = useState<number[]>([])
   const [usersHistory, setUsersHistory] = useState<number[]>([])
+
+  // Chart filter state
+  const [userGrowthFilter, setUserGrowthFilter] = useState({ time: 'month', value: 12 })
+  const [revenueFilter, setRevenueFilter] = useState({ time: 'month', value: 12 })
+  const [userGrowthData, setUserGrowthData] = useState<any[]>([])
+  const [revenueData, setRevenueData] = useState<any[]>([])
+  const [userGrowthLoading, setUserGrowthLoading] = useState(false)
+  const [revenueLoading, setRevenueLoading] = useState(false)
 
   // Use useEffect with a cleanup function to prevent double fetching
   useEffect(() => {
@@ -109,6 +118,28 @@ export default function AdminDashboard() {
     }
   }, []) // Empty dependency array means this effect runs once on mount
 
+  // Fetch user growth data
+  useEffect(() => {
+    setUserGrowthLoading(true)
+    statisticService.getNewUsersOverTime(userGrowthFilter.time, userGrowthFilter.value)
+      .then(res => {
+        // Assume res.newUserOverTime is an array of { label, value }
+        setUserGrowthData(res.newUserOverTime || [])
+      })
+      .finally(() => setUserGrowthLoading(false))
+  }, [userGrowthFilter])
+
+  // Fetch revenue data
+  useEffect(() => {
+    setRevenueLoading(true)
+    statisticService.getRevenueOverTime(revenueFilter.time, revenueFilter.value)
+      .then(res => {
+        // Assume res.revenue is an array of { label, value }
+        setRevenueData(res.revenue || [])
+      })
+      .finally(() => setRevenueLoading(false))
+  }, [revenueFilter])
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4 justify-center items-center h-screen">
@@ -148,19 +179,76 @@ export default function AdminDashboard() {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+        {/* User Growth Chart */}
         <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg shadow p-5">
           <h4 className="text-lg font-semibold text-white mb-3">User Growth</h4>
+          <div className="flex gap-2 mb-4">
+            <select value={userGrowthFilter.time} onChange={e => setUserGrowthFilter(f => ({ ...f, time: e.target.value }))} className="bg-[#232323] text-white rounded px-2 py-1">
+              <option value="month">Month</option>
+              <option value="year">Year</option>
+            </select>
+            <input
+              type="number"
+              min={1}
+              max={userGrowthFilter.time === 'month' ? 12 : 5}
+              value={userGrowthFilter.value}
+              onChange={e => setUserGrowthFilter(f => ({ ...f, value: Number(e.target.value) }))}
+              className="bg-[#232323] text-white rounded px-2 py-1 w-20"
+            />
+          </div>
           <div className="w-full h-64 bg-[#373737] rounded-lg flex items-center justify-center">
-            {/* TODO: Add chart component using usersHistory data */}
-            <p className="text-[#CFCFCF]">Chart will render here</p>
+            {userGrowthLoading ? (
+              <LoadingSpinner />
+            ) : userGrowthData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={userGrowthData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="label" stroke="#CFCFCF" />
+                  <YAxis stroke="#CFCFCF" allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="value" stroke="#4CC2FF" strokeWidth={3} dot={{ r: 4 }} name="New Users" />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-[#CFCFCF]">No data available</p>
+            )}
           </div>
         </div>
-
+        {/* Revenue Chart */}
         <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg shadow p-5">
           <h4 className="text-lg font-semibold text-white mb-3">Revenue Trends</h4>
+          <div className="flex gap-2 mb-4">
+            <select value={revenueFilter.time} onChange={e => setRevenueFilter(f => ({ ...f, time: e.target.value }))} className="bg-[#232323] text-white rounded px-2 py-1">
+              <option value="month">Month</option>
+              <option value="year">Year</option>
+            </select>
+            <input
+              type="number"
+              min={1}
+              max={revenueFilter.time === 'month' ? 12 : 5}
+              value={revenueFilter.value}
+              onChange={e => setRevenueFilter(f => ({ ...f, value: Number(e.target.value) }))}
+              className="bg-[#232323] text-white rounded px-2 py-1 w-20"
+            />
+          </div>
           <div className="w-full h-64 bg-[#373737] rounded-lg flex items-center justify-center">
-            {/* TODO: Add chart component using revenueHistory data */}
-            <p className="text-[#CFCFCF]">Chart will render here</p>
+            {revenueLoading ? (
+              <LoadingSpinner />
+            ) : revenueData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={revenueData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="label" stroke="#CFCFCF" />
+                  <YAxis stroke="#CFCFCF" allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="value" stroke="#4CC2FF" strokeWidth={3} dot={{ r: 4 }} name="Revenue" />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-[#CFCFCF]">No data available</p>
+            )}
           </div>
         </div>
       </div>

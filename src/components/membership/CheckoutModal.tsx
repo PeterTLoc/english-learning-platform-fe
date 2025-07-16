@@ -1,9 +1,10 @@
 "use client";
 import { IMembership } from "@/types/membership/membership";
-import React from "react";
+import React, { useState } from "react";
 import MembershipCard from "./MembershipCard";
 import { baseShadow, membershipColorPalette, toRGBA } from "@/utils/colorUtils";
 import Image from "next/image";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function CheckoutModal({
   isOpen,
@@ -20,9 +21,10 @@ export default function CheckoutModal({
   index: number;
   paymentMethod: string;
   setPaymentMethod: (value: string) => void;
-  checkout: (membershipId: string) => void;
+  checkout: (membershipId: string) => Promise<void> | void;
 }) {
   const { name, price } = membership;
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -133,9 +135,17 @@ export default function CheckoutModal({
           </div>
           <button
             className="mt-8 w-full px-6 py-3 bg-[#4CC2FF] hover:bg-[#48B2E9] text-white rounded-lg shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#4CC2FF] focus:ring-opacity-50 font-semibold"
-            onClick={() => checkout(membership._id as string)}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                await checkout(membership._id as string);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
           >
-            Proceed to Payment
+            {loading ? <LoadingSpinner size="small" /> : "Proceed to Payment"}
           </button>
         </div>
       </div>

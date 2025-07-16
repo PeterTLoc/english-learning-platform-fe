@@ -12,7 +12,7 @@ interface CourseLayoutProps {
 export default function CourseLayout({ children, params }: CourseLayoutProps) {
   return (
     <SidebarRefreshProvider>
-      <div className="flex">
+      <div className="flex mt-8">
         <div className="max-w-[280px] w-full m-5">
           <CourseSidebar courseId={params.courseId} />
         </div>

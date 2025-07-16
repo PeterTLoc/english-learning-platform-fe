@@ -32,17 +32,17 @@ export default function LessonCompletionWarning({
             />
           </svg>
         </div>
-        <h2 className="text-[17px] font-bold text-white mb-2">
+        <h2 className="text-lg font-bold text-white mb-2">
           Complete all lessons
         </h2>
-        <p className="text-sm subtext mb-6">
+        <p className="text-md mb-6">
           You need to complete all lessons before you can take tests.
         </p>
         <button
-          className="button-blue"
+          className="button-blue p-2"
           onClick={onStartLearning}
         >
-          Start learning
+          <span className="text-md">Start learning</span>
         </button>
       </div>
     </ContentSlideIn>

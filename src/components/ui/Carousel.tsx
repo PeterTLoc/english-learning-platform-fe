@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, ChevronLeft } from "lucide-react"
 
 export interface CarouselProps<T> {
   items: T[]
@@ -50,12 +50,12 @@ export default function Carousel<T>({
     >
       {/* Header */}
       <header className="flex justify-between items-center px-1">
-        <div className="px-2 pt-1 pb-2 rounded-[5px] flex items-center gap-1 group cursor-pointer hover:text-[#4CC2FF] hover:bg-[#373737] transition-all">
+        <div className="px-2 pt-1 pb-2 rounded-[5px] flex items-center justify-center gap-1 group cursor-pointer hover:text-[#4CC2FF] hover:bg-[#373737] transition-all">
           <h2 className="text-xl font-bold">{title}</h2>
           <ChevronRight
             size={18}
             strokeWidth={3}
-            className="mt-[5px] text-[#4CC2FF] group-hover:translate-x-1 transition-transform"
+            className="text-[#4CC2FF] group-hover:translate-x-1 transition-transform"
           />
         </div>
 
@@ -66,7 +66,7 @@ export default function Carousel<T>({
             className="w-8 h-8 rounded-full bg-[#2B2B2B] text-white flex items-center justify-center disabled:opacity-50 hover:bg-[#3B3B3B] transition"
             aria-label="Previous"
           >
-            ◀
+            <ChevronLeft size={20} />
           </button>
           <button
             onClick={handleNext}
@@ -74,7 +74,7 @@ export default function Carousel<T>({
             className="w-8 h-8 rounded-full bg-[#2B2B2B] text-white flex items-center justify-center disabled:opacity-50 hover:bg-[#3B3B3B] transition"
             aria-label="Next"
           >
-            ▶
+            <ChevronRight size={20} />
           </button>
         </div>
       </header>
@@ -82,7 +82,7 @@ export default function Carousel<T>({
       {/* Carousel items */}
       <div className="overflow-hidden">
         <div
-          className="flex transition-transform duration-500 ease-in-out"
+          className="flex gap-2 transition-transform duration-500 ease-in-out"
           style={{
             transform: `translateX(-${(100 / visibleCount) * currentIndex}%)`,
           }}

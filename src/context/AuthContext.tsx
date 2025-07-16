@@ -50,8 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(userData)
     } catch (error) {
       const parsed = parseAxiosError(error)
-      console.error("Login failed:", parsed.message)
-      // Ensure the error is thrown so it can be caught by the login page
       throw new Error(parsed.message)
     } finally {
       setLoading(false)
@@ -65,8 +63,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(user)
     } catch (error) {
       const parsed = parseAxiosError(error)
-
-      console.error("Register failed:", parsed.message)
       throw new Error(parsed.message)
     } finally {
       setLoading(false)
@@ -81,7 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Redirect to home page after logout
       router.push('/')
     } catch (error) {
-      console.error("Logout failed: ", error)
     }
   }
 
@@ -106,20 +101,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [])
 
   // Handle redirects based on user role
-  useEffect(() => {
-    if (user && !loading) {
-      const pathname = window.location.pathname
-      if (pathname === '/login' || pathname === '/register') {
-        // If user is admin, redirect to admin dashboard
-        if (user.role === UserRole.ADMIN) {
-          router.push('/admin')
-        } else {
-          // If regular user, redirect to home page
-          router.push('/')
-        }
-      }
-    }
-  }, [user, loading, router])
 
   // Always render children, even while loading
   return (
