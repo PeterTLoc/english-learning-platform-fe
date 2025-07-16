@@ -4,6 +4,8 @@ interface PageProps {
   params: { courseId: string; testId: string };
 }
 
-export default function Page({ params }: PageProps) {
-  return <TestContent courseId={params.courseId} lessonId={params.testId} />;
+export default async function Page({ params }: PageProps) {
+  const { courseId, testId } = await params;
+
+  return <TestContent courseId={courseId} lessonId={testId} />;
 }

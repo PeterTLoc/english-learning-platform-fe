@@ -20,21 +20,16 @@ export const getLessonById = async (lessonId: string): Promise<Lesson> => {
   return response.data.lesson;
 };
 
-export const createLesson = async (lessonData: FormData): Promise<Lesson> => {
-  // Convert FormData to proper object
-  const data: CreateLessonData = {
-    courseId: lessonData.get("courseId") as string,
-    name: lessonData.get("name") as string,
-    description: lessonData.get("description") as string,
-  };
-
-  const response = await api.post("/api/lessons", data);
+export const createLesson = async (
+  lessonData: FormData | object
+): Promise<Lesson> => {
+  const response = await api.post("/api/lessons", lessonData);
   return response.data.lesson;
 };
 
 export const updateLesson = async (
   lessonId: string,
-  lessonData: FormData
+  lessonData: FormData | object | object
 ): Promise<Lesson> => {
   const response = await api.patch(`/api/lessons/${lessonId}`, lessonData);
   return response.data.lesson;
@@ -55,28 +50,16 @@ export const getTestById = async (testId: string): Promise<Test> => {
   return response.data.test;
 };
 
-export const createTest = async (testData: FormData): Promise<Test> => {
-  // Convert FormData to regular object
-  const formDataObj = Object.fromEntries(testData.entries());
-
-  // Create the data object with proper types
-  const data = {
-    name: formDataObj.name as string,
-    description: formDataObj.description as string,
-    totalQuestions: Number(formDataObj.totalQuestions),
-    courseId: formDataObj.courseId as string,
-    lessonIds: formDataObj.lessonIds
-      ? JSON.parse(formDataObj.lessonIds as string)
-      : [],
-  };
-
-  const response = await api.post("/api/tests", data);
+export const createTest = async (
+  testData: FormData | object
+): Promise<Test> => {
+  const response = await api.post("/api/tests", testData);
   return response.data.test;
 };
 
 export const updateTest = async (
   testId: string,
-  testData: FormData
+  testData: FormData | object
 ): Promise<Test> => {
   const response = await api.patch(`/api/tests/${testId}`, testData);
   return response.data.test;
@@ -102,7 +85,7 @@ export const getExerciseById = async (
 };
 
 export const createExercise = async (
-  exerciseData: FormData
+  exerciseData: FormData | object
 ): Promise<IExercise> => {
   const response = await api.post("/api/exercises", exerciseData, {
     headers: {
@@ -114,7 +97,7 @@ export const createExercise = async (
 
 export const updateExercise = async (
   exerciseId: string,
-  exerciseData: FormData
+  exerciseData: FormData | object
 ): Promise<IExercise> => {
   const response = await api.patch(
     `/api/exercises/${exerciseId}`,
