@@ -234,8 +234,9 @@ export default function ExerciseContent({
 
   if (state.loading || !lessonName) {
     return (
-      <div className="mt-[74px]">
-        <LoadingSpinner size="small" />
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <LoadingSpinner size="medium" />
+        <p className="text-lg">Loading exercise content...</p>
       </div>
     )
   }
@@ -243,17 +244,18 @@ export default function ExerciseContent({
   if (!allExercises.length)
     return (
       <ContentSlideIn keyValue={`${lessonId}-empty`} isLoading={false}>
-        <p>No exercises found.</p>
+        <div className="title flex items-center gap-5 mb-4">
+          <Link href={`/courses/${courseId}/lessons/${lessonId}`} className="text-[#AAAAAA] transition-colors duration-200 hover:text-white">
+            {lessonName}
+          </Link>
+          <ChevronRight size={20} strokeWidth={3} className="subtext" />
+          <span>Exercise</span>
+        </div>
+        <div className="flex flex-col bg-[#2B2B2B] border border-[#1D1D1D] rounded-lg p-5">
+          <p className="text-lg">No exercise available.</p>
+        </div>
       </ContentSlideIn>
     );
-
-  if (!allExercises.length) {
-    return (
-      <ContentSlideIn keyValue={`${lessonId}-empty`} isLoading={false}>
-        <p>No exercises found.</p>
-      </ContentSlideIn>
-    );
-  }
   const isAllCompleted = allExercisesCompleted();
 
   // Debug logs for progress bar
@@ -288,14 +290,14 @@ export default function ExerciseContent({
           </div>
 
           {/* Exercise Content */}
-          <div className="flex-1 overflow-y-auto text-sm">
+          <div className="flex-1 overflow-y-auto text-md">
             {isAllCompleted && !isPracticeMode ? (
               <div className="text-center py-8">
                 <div className="text-6xl mb-4">🎉</div>
                 <h2 className="text-[17px] font-bold text-white mb-2">
                   Congratulations!
                 </h2>
-                <p className="text-sm subtext mb-6">
+                <p className="text-md subtext mb-6">
                   You have completed all exercises in this lesson.
                 </p>
                 <div className="flex gap-3 justify-center">

@@ -16,7 +16,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   // Size mappings
   const sizeClasses = {
     small: 'h-6 w-6 border-2',
-    medium: 'h-12 w-12 border-t-2 border-b-2',
+    medium: 'h-12 w-12 border-2',
     large: 'h-16 w-16 border-4',
   }
 

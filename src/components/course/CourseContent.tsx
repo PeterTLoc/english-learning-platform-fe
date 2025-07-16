@@ -13,7 +13,7 @@ import { BookOpen, FileText, Dumbbell, ChevronRight, Info } from "lucide-react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/context/AuthContext"
 import CourseInfoModal from "@/components/course/CourseInfoModal"
-import { toast } from "react-toastify"
+import { useToast } from "@/context/ToastContext"
 import {
   getUserLessonByLessonId,
   updateUserLesson,
@@ -44,6 +44,7 @@ export default function LessonOverview({
   const [isLessonCompleted, setIsLessonCompleted] = useState(false)
   const [marking, setMarking] = useState(false)
   const { refreshSidebar } = useSidebarRefresh()
+  const { showToast } = useToast();
 
   // Check if user is enrolled in this course
   useEffect(() => {
@@ -99,17 +100,17 @@ export default function LessonOverview({
     try {
       const res = await getUserLessonByLessonId(lessonId)
       if (res.userLesson.status === "completed") {
-        toast.info("Lesson already completed")
+        showToast("Lesson already completed", "info")
         setIsLessonCompleted(true)
         setMarking(false)
         return
       }
       await updateUserLesson(res.userLesson._id.toString(), "completed")
-      toast.success("Lesson marked as completed")
+      showToast("Lesson marked as completed", "success")
       setIsLessonCompleted(true)
       refreshSidebar() // <-- trigger sidebar refresh
     } catch (error) {
-      toast.error("Failed to mark lesson as completed")
+      showToast("Failed to mark lesson as completed", "error")
     } finally {
       setMarking(false)
     }
@@ -130,24 +131,25 @@ export default function LessonOverview({
   //Loading spinner
   if (!lesson || exerciseLoading)
     return (
-      <div className="mt-[74px]">
-        <LoadingSpinner size="small" />
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <LoadingSpinner size="medium" />
+        <p className="text-lg">Loading lesson content...</p>
       </div>
     )
 
   //Content
   return (
-    <>
+    <div>
       <h2 className="title">{lesson.name}</h2>
       <div className="flex justify-between items-center mb-[27px]">
         <button
           onClick={() => setIsInfoModalOpen(true)}
           className="flex gap-4 items-center hover:bg-[#2D2D2D] px-2 pt-[6px] pb-[7px] rounded-[5px]"
         >
-          <Info size={20} className="text-[#4CC2FF]" />
+          <Info size={40} className="text-[#4CC2FF]" />
           <div className="text-left">
-            <p className="text-sm mb-[3px]">Info</p>
-            <p className="text-xs subtext">Course information</p>
+            <p className="text-lg mb-[3px]">Info</p>
+            <p className="text-md subtext">Course information</p>
           </div>
         </button>
         <button
@@ -161,11 +163,13 @@ export default function LessonOverview({
           onClick={handleMarkAsCompleted}
           disabled={isLessonCompleted || marking}
         >
+          <span className="text-md font-medium p-2">
           {isLessonCompleted
             ? "Lesson already completed"
             : marking
             ? "Marking..."
             : "Mark as Completed"}
+            </span>
         </button>
       </div>
       <CourseInfoModal
@@ -188,8 +192,8 @@ export default function LessonOverview({
               <div className="flex items-center gap-5">
                 <BookOpen size={20} />
                 <div className="flex flex-col">
-                  <span className="text-sm">Vocabulary</span>
-                  <span className="text-xs subtext">
+                  <span className="text-md">Vocabulary</span>
+                  <span className="text-sm subtext">
                     Practice and review key words for this lesson.
                   </span>
                 </div>
@@ -205,8 +209,8 @@ export default function LessonOverview({
               <div className="flex items-center gap-5">
                 <FileText size={20} />
                 <div className="flex flex-col">
-                  <span className="text-sm">Grammar</span>
-                  <span className="text-xs subtext">
+                  <span className="text-md">Grammar</span>
+                  <span className="text-sm subtext">
                     Learn the grammar rules for this lesson.
                   </span>
                 </div>
@@ -222,15 +226,15 @@ export default function LessonOverview({
               <div className="flex items-center gap-5">
                 <Dumbbell size={20} />
                 <div className="flex flex-col">
-                  <span className="text-sm">Exercise</span>
-                  <span className="text-xs subtext">
+                  <span className="text-md">Exercise</span>
+                  <span className="text-sm subtext">
                     Test your understanding with exercises.
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                  className="flex items-center gap-2 px-2 py-0.5 rounded-full text-sm font-medium"
                   style={{
                     background: isExerciseCompleted
                       ? "rgba(34,197,94,0.12)"
@@ -242,7 +246,9 @@ export default function LessonOverview({
                       isExerciseCompleted ? "bg-green-500" : "bg-[#AAAAAA]"
                     }`}
                   ></span>
-                  {isExerciseCompleted ? "Completed" : "Ongoing"}
+                  <span className="text-sm">
+                    {isExerciseCompleted ? "Completed" : "Ongoing"}
+                  </span>
                 </span>
                 <ChevronRight size={20} />
               </div>
@@ -250,6 +256,6 @@ export default function LessonOverview({
           </li>
         </ul>
       </motion.div>
-    </>
+    </div>
   )
 }

@@ -54,8 +54,9 @@ export default function GrammarContent({
 
   if (isLoading || !lessonName) {
     return (
-      <div className="mt-[74px]">
-        <LoadingSpinner size="small" />
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <LoadingSpinner size="medium" />
+        <p className="text-lg">Loading grammar content...</p>
       </div>
     )
   }
@@ -76,7 +77,9 @@ export default function GrammarContent({
         className="flex-1 overflow-y-auto"
       >
         {grammars.length === 0 ? (
-          <p>No grammar available.</p>
+          <div className="flex flex-col bg-[#2B2B2B] border border-[#1D1D1D] rounded-lg p-5">
+            <p className="text-lg">No grammar available.</p>
+          </div>
         ) : (
           <>
             {grammars.map((grammar, index) => (

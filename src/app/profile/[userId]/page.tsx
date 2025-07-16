@@ -430,8 +430,19 @@ export default function UserProfilePage() {
                         </span>
                       </div>
                     </div>
+                    {/* Membership Field */}
+                    {user.activeUntil && (
+                      <div className="flex items-center gap-4">
+                        <div className="w-6 h-6 flex items-center justify-center">
+                          <Star className="w-5 h-5 text-yellow-400" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-yellow-300 font-semibold">Premium Member</span>
+                          <span className="text-gray-300 ml-2">until {formatDate(user.activeUntil)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-
                   {/* Save/Cancel Buttons - Only show when there are changes */}
                   {hasChanges && (
                     <div className="flex gap-3 mt-6 pt-4 border-t border-gray-600 justify-end">
@@ -460,6 +471,46 @@ export default function UserProfilePage() {
                       </button>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Membership Card */}
+              <div className="mt-8">
+                <div className="rounded-xl shadow-lg bg-gradient-to-br from-[#232b3b] to-[#1a1a1a] border border-[#333] p-6 flex flex-col sm:flex-row items-center gap-6">
+                  <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full bg-yellow-400/20">
+                    <Star className="w-10 h-10 text-yellow-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-yellow-300 mb-1">
+                      {user.activeUntil ? "Premium Membership" : "No Membership"}
+                    </h3>
+                    {user.activeUntil ? (
+                      <>
+                        <p className="text-gray-200">
+                          Status: <span className="font-semibold text-green-400">Active</span>
+                        </p>
+                        <p className="text-gray-400">
+                          Expires on: <span className="text-white">{formatDate(user.activeUntil)}</span>
+                        </p>
+                        <p className="text-gray-300 mt-2">
+                          Enjoy unlimited access to all courses, premium content, and exclusive features designed to accelerate your English learning journey.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-gray-400 mb-2">You are not a premium member yet.</p>
+                        <p className="text-gray-300 mb-2">
+                          Upgrade to premium to unlock all courses, advanced exercises, and special member-only resources!
+                        </p>
+                        <Link
+                          href="/membership"
+                          className="inline-block mt-2 px-4 py-2 bg-[#4CC2FF] hover:bg-[#48B2E9] text-black font-semibold rounded-lg transition"
+                        >
+                          Upgrade to Premium
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

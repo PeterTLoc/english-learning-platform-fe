@@ -340,8 +340,9 @@ export default function TestContent({
     !testName
   ) {
     return (
-      <div className="mt-[74px] flex justify-center items-center">
-        <LoadingSpinner size="small" />
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <LoadingSpinner size="medium" />
+        <p className="text-lg">Loading test...</p>
       </div>
     );
   }

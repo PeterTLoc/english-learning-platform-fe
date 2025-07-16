@@ -42,7 +42,7 @@ export default function TestList({
   if (loading) return <LoadingSpinner size="small" />
   if (tests.length === 0)
     return (
-      <p className="container text-sm text-center subtext">
+      <p className="container text-md text-center subtext">
         No tests found for this course.
       </p>
     )
@@ -61,8 +61,8 @@ export default function TestList({
             <div className="flex items-center gap-5">
               <FileText size={20} className="text-white" />
               <div>
-                <h3 className="text-sm">{test.name}</h3>
-                <p className="text-xs subtext">
+                <h3 className="text-md">{test.name}</h3>
+                <p className="text-sm subtext">
                   Final assessment for the course
                 </p>
               </div>

@@ -227,7 +227,6 @@ export default function CourseFormModal({
         const formData = new FormData();
         formData.append("name", formState.name);
         formData.append("description", formState.description);
-        // formData.append("description", formState.description);
         formData.append("totalQuestions", formState.totalQuestions.toString());
         formData.append("lessonIds", JSON.stringify(selectedLessons));
 

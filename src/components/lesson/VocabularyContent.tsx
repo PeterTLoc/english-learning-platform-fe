@@ -54,8 +54,9 @@ export default function VocabularyContent({
 
   if (isLoading || !lessonName) {
     return (
-      <div className="mt-[74px]">
-        <LoadingSpinner size="small" />
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <LoadingSpinner size="medium" />
+        <p className="text-lg">Loading vocabulary content...</p>
       </div>
     )
   }
@@ -75,7 +76,9 @@ export default function VocabularyContent({
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         {vocabularies.length === 0 ? (
-          <p>No vocabulary available.</p>
+          <div className="flex flex-col bg-[#2B2B2B] border border-[#1D1D1D] rounded-lg p-5">
+            <p className="text-lg">No vocabulary available.</p>
+          </div>
         ) : (
           <div className="flex flex-col">
             <ul>

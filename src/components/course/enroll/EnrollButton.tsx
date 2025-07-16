@@ -7,6 +7,9 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { getAllLessonsByCourseId } from "@/services/lessonService"
+import { useToast } from "@/context/ToastContext"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import { parseAxiosError } from "@/utils/apiErrors"
 
 export default function EnrollButton({ courseId }: { courseId: string }) {
   const { user } = useAuth()
@@ -14,6 +17,7 @@ export default function EnrollButton({ courseId }: { courseId: string }) {
   const [loading, setLoading] = useState(false)
   const [checkingEnrollment, setCheckingEnrollment] = useState(true)
   const router = useRouter()
+  const { showToast } = useToast()
 
   useEffect(() => {
     if (user && !userCourses[courseId]) {
@@ -43,10 +47,11 @@ export default function EnrollButton({ courseId }: { courseId: string }) {
     try {
       const userCourse = await enrollCourse(user._id, courseId)
       setCourseStatus(courseId, userCourse.status)
+      showToast("Enrollment success!", "success")
       router.refresh()
     } catch (err) {
-      console.error("Enrollment failed", err)
-      alert("Enrollment failed")
+      const parsedError = parseAxiosError(err);
+      showToast(parsedError.message || "Enrollment failed", "error")
     } finally {
       setLoading(false)
     }
@@ -71,17 +76,17 @@ export default function EnrollButton({ courseId }: { courseId: string }) {
   return isEnrolled ? (
     <button
       onClick={handleGoToCourse}
-      className="button-blue font-bold flex justify-center items-center text-black"
+      className="button-blue font-medium p-2 flex justify-center items-center text-black"
     >
-      Go to Course
+      <span className="text-lg">Go to Course</span>
     </button>
   ) : (
     <button
       onClick={handleEnroll}
       disabled={loading}
-      className="button-blue font-bold flex justify-center items-center text-black"
+      className="button-blue font-medium p-2 flex justify-center items-center text-black min-w-[100px]"
     >
-      {loading ? "Enrolling..." : "Enroll"}
+      {loading ? <LoadingSpinner size="small" /> : <span className="text-lg">Enroll</span>}
     </button>
   )
 }

@@ -132,18 +132,21 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ courseId }) => {
     <nav>
       {/* Lessons Section */}
       <div className="mb-4">
-        <div className="subtitle-top text-[#AAAAAA]">Lessons</div>
+        <div className="text-[#AAAAAA] text-lg mb-2">Lessons</div>
         {loadingLessons || loadingCompletion ? (
-          <LoadingSpinner size="small" />
+          <div className="flex flex-col items-center justify-center gap-2 h-full">
+            <LoadingSpinner size="small" />
+            <p className="text-md">Loading lesson list...</p>
+          </div>
         ) : lessons.length === 0 ? (
-          <span className="text-gray-400">No lessons found.</span>
+          <span className="text-gray-400 text-lg">No lessons found.</span>
         ) : (
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-3">
               {lessons.map((lesson) => {
                 const href = `/courses/${courseId}/lessons/${lesson._id}`
                 const isActive = pathname.startsWith(href)
@@ -152,11 +155,11 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ courseId }) => {
                   <li key={lesson._id} className="list-none">
                     <Link href={href} className="block">
                       <div
-                        className={`relative flex items-center group w-full text-[13px] px-3 gap-3 rounded transition-colors duration-150 cursor-pointer`}
+                        className={`relative flex items-center group w-full text-md px-3 gap-3 rounded transition-colors duration-150 cursor-pointer`}
                         style={{
                           background: isActive ? "#2D2D2D" : undefined,
-                          minHeight: 36,
-                          height: 36,
+                          minHeight: 50,
+                          height: 50,
                         }}
                         onMouseOver={(e) =>
                           (e.currentTarget.style.background = "#2D2D2D")
@@ -206,11 +209,14 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ courseId }) => {
       </div>
       {/* Tests Section */}
       <div>
-        <div className="subtitle text-[#AAAAAA]">Tests</div>
+        <div className="text-lg text-[#AAAAAA] mb-2">Tests</div>
         {loadingLessons || loadingTests ? (
-          <LoadingSpinner size="small" />
+          <div className="flex flex-col items-center justify-center gap-2 h-full">
+            <LoadingSpinner size="small" />
+            <p className="text-md">Loading test list...</p>
+          </div>
         ) : tests.length === 0 ? (
-          <span className="text-gray-400">No tests found.</span>
+          <span className="text-gray-400 text-lg mb-2">No tests found.</span>
         ) : (
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -226,11 +232,11 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ courseId }) => {
                   <li key={test._id} className="list-none">
                     <Link href={href} className="block">
                       <div
-                        className={`relative flex items-center group w-full text-[13px] px-3 gap-3 rounded transition-colors duration-150 cursor-pointer`}
+                        className={`relative flex items-center group w-full text-md px-3 gap-3 rounded transition-colors duration-150 cursor-pointer`}
                         style={{
                           background: isActive ? "#2D2D2D" : undefined,
-                          minHeight: 36,
-                          height: 36,
+                          minHeight: 50,
+                          height: 50,
                         }}
                         onMouseOver={(e) =>
                           (e.currentTarget.style.background = "#2D2D2D")

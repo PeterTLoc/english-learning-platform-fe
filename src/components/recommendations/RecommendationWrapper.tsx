@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import type { UserProgress } from "./DetailDataModal";
 import Introduction from "./Introduction";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import LoadingBars from "./LoadingBars";
 import DetailDataModal from "./DetailDataModal";
 import AnalyticResponse from "./AnalyticResponse";
@@ -13,6 +13,7 @@ import AiService from "@/services/aiService";
 const aiService = new AiService();
 export default function RecommendationWrapper() {
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   // Loading states
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,7 @@ export default function RecommendationWrapper() {
   const handleContinue = async () => {
     try {
       if (!user?._id) {
-        toast.error("This feature is only available for logged in users");
+        showToast("This feature is only available for logged in users", "error");
         return;
       }
 
@@ -64,10 +65,11 @@ export default function RecommendationWrapper() {
 
       setIsApiComplete(true);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error.response?.data.message
-          : "Something went wrong"
+          : "Something went wrong",
+        "error"
       );
       setIsLoading(false);
       setIsSuccess(false);
