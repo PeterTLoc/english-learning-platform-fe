@@ -21,14 +21,23 @@ export default function FlashcardManagementModal({
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { showToast } = useToast();
-  const [editingFlashcard, setEditingFlashcard] = useState<IFlashcard | null>(null);
+  const [editingFlashcard, setEditingFlashcard] = useState<IFlashcard | null>(
+    null
+  );
 
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
     const fetchFlashcards = async () => {
       try {
-        const response = await flashcardService.getFlashcards(setId, 1, 100, "desc", "date", "");
+        const response = await flashcardService.getFlashcards(
+          setId,
+          1,
+          100,
+          "desc",
+          "date",
+          ""
+        );
         setFlashcards(response.data);
         setLoading(false);
       } catch (error) {
@@ -49,11 +58,11 @@ export default function FlashcardManagementModal({
     vietnameseContent: string
   ) => {
     try {
-      const response = await flashcardService.createFlashcard(
+      const response = await flashcardService.createFlashcard({
         englishContent,
         vietnameseContent,
-        setId
-      );
+        flashcardSetId: setId,
+      });
       setFlashcards([...flashcards, response.flashcard]);
       setIsCreateModalOpen(false);
       showToast("Flashcard created successfully", "success");
@@ -94,8 +103,7 @@ export default function FlashcardManagementModal({
     try {
       const response = await flashcardService.updateFlashcard(
         editingFlashcard._id as string,
-        englishContent,
-        vietnameseContent
+        { englishContent, vietnameseContent }
       );
       setFlashcards(
         flashcards.map((card) =>
@@ -120,7 +128,9 @@ export default function FlashcardManagementModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-white">Manage Flashcards</h2>
+          <h2 className="text-xl font-semibold text-white">
+            Manage Flashcards
+          </h2>
           <button
             onClick={onClose}
             className="text-[#CFCFCF] hover:text-white transition-colors"
@@ -154,10 +164,26 @@ export default function FlashcardManagementModal({
         ) : !flashcards.length ? (
           <div className="flex flex-col items-center justify-center min-h-[200px] py-8">
             <div className="w-20 h-20 mb-6 bg-slate-700 rounded-full flex items-center justify-center">
-              <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+              <svg
+                className="w-10 h-10 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                />
+              </svg>
             </div>
-            <h3 className="text-xl font-semibold text-slate-200 mb-3">No flashcards found</h3>
-            <p className="text-slate-400 text-base mb-8">Try creating your first flashcard for this set!</p>
+            <h3 className="text-xl font-semibold text-slate-200 mb-3">
+              No flashcards found
+            </h3>
+            <p className="text-slate-400 text-base mb-8">
+              Try creating your first flashcard for this set!
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -167,7 +193,9 @@ export default function FlashcardManagementModal({
                 className="bg-[#2D2D2D] border border-[#1D1D1D] rounded-lg p-4"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-[#CFCFCF] font-medium">Flashcard #{index + 1}</span>
+                  <span className="text-sm text-[#CFCFCF] font-medium">
+                    Flashcard #{index + 1}
+                  </span>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditClick(card)}
@@ -186,12 +214,18 @@ export default function FlashcardManagementModal({
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
                     <div className="text-[#CFCFCF] text-xs mb-1">English</div>
-                    <div className="text-white text-lg">{card.englishContent}</div>
+                    <div className="text-white text-lg">
+                      {card.englishContent}
+                    </div>
                   </div>
                   <div className="hidden md:block w-px bg-white/30"></div>
                   <div className="flex-1">
-                    <div className="text-[#CFCFCF] text-xs mb-1">Vietnamese</div>
-                    <div className="text-white text-lg">{card.vietnameseContent}</div>
+                    <div className="text-[#CFCFCF] text-xs mb-1">
+                      Vietnamese
+                    </div>
+                    <div className="text-white text-lg">
+                      {card.vietnameseContent}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -215,4 +249,4 @@ export default function FlashcardManagementModal({
       </div>
     </div>
   );
-} 
+}

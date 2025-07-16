@@ -9,6 +9,7 @@ import CreateFlashcardModal from "./CreateFlashcardModal";
 import ServerPagination from "@/components/common/ServerPagination";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import DeleteConfirmModal from "@/components/admin/blogs/DeleteConfirmModal";
+import mongoose from "mongoose";
 
 const flashcardService = new FlashcardService();
 
@@ -68,11 +69,16 @@ export default function FlashcardList({
     vietnameseContent: string
   ) => {
     try {
-      const response = await flashcardService.createFlashcard(
-        englishContent,
-        vietnameseContent,
-        id
-      );
+      console.log({
+        englishContent: englishContent,
+        vietnameseContent: vietnameseContent,
+        flashcardSetId: id,
+      });
+      const response = await flashcardService.createFlashcard({
+        englishContent: englishContent,
+        vietnameseContent: vietnameseContent,
+        flashcardSetId: id,
+      });
 
       setFlashcards([...flashcards, response.data.flashcard]);
       setIsCreateModalOpen(false);
@@ -109,11 +115,10 @@ export default function FlashcardList({
     vietnameseContent: string
   ) => {
     try {
-      const response = await flashcardService.updateFlashcard(
-        id,
+      const response = await flashcardService.updateFlashcard(id, {
         englishContent,
-        vietnameseContent
-      );
+        vietnameseContent,
+      });
       setFlashcards(
         flashcards.map((card) => (card._id === id ? response.data.flashcard : card))
       );
@@ -140,10 +145,26 @@ export default function FlashcardList({
       <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
         <div className="w-20 h-20 mb-6 bg-slate-700 rounded-full flex items-center justify-center">
           {/* Use a book or search icon from lucide-react or similar */}
-          <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+          <svg
+            className="w-10 h-10 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+            />
+          </svg>
         </div>
-        <h3 className="text-xl font-semibold text-slate-200 mb-3">No flashcards found</h3>
-        <p className="text-slate-400 text-base mb-8">Try creating your first flashcard for this set!</p>
+        <h3 className="text-xl font-semibold text-slate-200 mb-3">
+          No flashcards found
+        </h3>
+        <p className="text-slate-400 text-base mb-8">
+          Try creating your first flashcard for this set!
+        </p>
         <button
           className="px-4 py-2 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-slate-700"
           onClick={() => setIsCreateModalOpen(true)}
@@ -181,10 +202,18 @@ export default function FlashcardList({
             className="bg-[#2D2D2D] border border-[#1D1D1D] rounded-lg p-4"
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-[#CFCFCF] font-medium">Flashcard #{index + 1}</span>
+              <span className="text-sm text-[#CFCFCF] font-medium">
+                Flashcard #{index + 1}
+              </span>
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleUpdateFlashcard(card._id as string, card.englishContent, card.vietnameseContent)}
+                  onClick={() =>
+                    handleUpdateFlashcard(
+                      card._id as string,
+                      card.englishContent,
+                      card.vietnameseContent
+                    )
+                  }
                   className="px-3 py-1 text-sm bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors"
                 >
                   Edit
@@ -204,7 +233,9 @@ export default function FlashcardList({
               </div>
               <div>
                 <div className="text-[#CFCFCF] text-xs mb-1">Vietnamese</div>
-                <div className="text-white text-lg">{card.vietnameseContent}</div>
+                <div className="text-white text-lg">
+                  {card.vietnameseContent}
+                </div>
               </div>
             </div>
           </div>

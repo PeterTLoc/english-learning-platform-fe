@@ -84,7 +84,7 @@ export default function CourseDetailsModal({
 
   const handleCreate = async (
     type: "lesson" | "test" | "exercise" | "vocabulary" | "grammar",
-    data: FormData,
+    data: FormData | object,
     parentId?: string
   ) => {
     try {
@@ -116,7 +116,7 @@ export default function CourseDetailsModal({
   const handleUpdate = async (
     type: "lesson" | "test" | "exercise" | "vocabulary" | "grammar",
     id: string,
-    data: FormData
+    data: FormData | object
   ) => {
     try {
       if (type === "lesson") {
