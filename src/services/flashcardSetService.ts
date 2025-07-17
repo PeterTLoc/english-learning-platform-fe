@@ -60,7 +60,7 @@ class FlashcardSetService {
   }
 
   async updateFlashcardSet(id: string, name: string, description: string) {
-    const response = await api.put(`/api/flashcard-sets/${id}`, {
+    const response = await api.patch(`/api/flashcard-sets/${id}`, {
       name,
       description,
     });

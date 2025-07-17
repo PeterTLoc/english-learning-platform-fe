@@ -30,7 +30,9 @@ export default function FlashcardList({
   const [flashcards, setFlashcards] = useState<IFlashcard[]>([]);
   const [loading, setLoading] = useState(false);
   const [isFlashcardModalOpen, setIsFlashcardModalOpen] = useState(false);
-  const [selectedFlashcard, setSelectedFlashcard] = useState<IFlashcard | null>(null);
+  const [selectedFlashcard, setSelectedFlashcard] = useState<IFlashcard | null>(
+    null
+  );
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
 
   const fetchFlashcards = async () => {
@@ -52,13 +54,12 @@ export default function FlashcardList({
     }
   }, [isOpen, flashcardSetId]);
 
-  const handleCreateFlashcard = async (data: { englishContent: string; vietnameseContent: string }) => {
+  const handleCreateFlashcard = async (data: {
+    englishContent: string;
+    vietnameseContent: string;
+  }) => {
     try {
-      await flashcardService.createFlashcard(
-        data.englishContent,
-        data.vietnameseContent,
-        flashcardSetId
-      );
+      await flashcardService.createFlashcard({ ...data, flashcardSetId });
       showToast("Flashcard created successfully", "success");
       setIsFlashcardModalOpen(false);
       fetchFlashcards();
@@ -69,15 +70,17 @@ export default function FlashcardList({
     }
   };
 
-  const handleUpdateFlashcard = async (data: { englishContent: string; vietnameseContent: string }) => {
+  const handleUpdateFlashcard = async (data: {
+    englishContent: string;
+    vietnameseContent: string;
+  }) => {
     if (!selectedFlashcard) return;
-    
+
     try {
-      await flashcardService.updateFlashcard(
-        String(selectedFlashcard._id),
-        data.englishContent,
-        data.vietnameseContent
-      );
+      await flashcardService.updateFlashcard(String(selectedFlashcard._id), {
+        ...data,
+        flashcardSetId,
+      });
       showToast("Flashcard updated successfully", "success");
       setIsFlashcardModalOpen(false);
       setSelectedFlashcard(null);
@@ -91,10 +94,11 @@ export default function FlashcardList({
   const handleDeleteFlashcard = async (flashcardId: string) => {
     const confirmed = await showConfirmation({
       title: "Delete Flashcard",
-      message: "Are you sure you want to delete this flashcard? This action cannot be undone.",
+      message:
+        "Are you sure you want to delete this flashcard? This action cannot be undone.",
       confirmText: "Delete",
       cancelText: "Cancel",
-      variant: "danger"
+      variant: "danger",
     });
 
     if (confirmed) {
@@ -188,14 +192,16 @@ export default function FlashcardList({
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDeleteFlashcard(String(flashcard._id))}
+                      onClick={() =>
+                        handleDeleteFlashcard(String(flashcard._id))
+                      }
                       className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                     >
                       Delete
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
@@ -205,7 +211,7 @@ export default function FlashcardList({
                       {flashcard.englishContent}
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
                       Vietnamese Content
@@ -217,15 +223,19 @@ export default function FlashcardList({
                 </div>
 
                 <div className="mt-3 text-xs text-[#CFCFCF]">
-                  Order: {flashcard.order || 0} | 
-                  Created: {flashcard.createdAt ? new Date(flashcard.createdAt).toLocaleString() : "N/A"}
+                  Order: {flashcard.order || 0} | Created:{" "}
+                  {flashcard.createdAt
+                    ? new Date(flashcard.createdAt).toLocaleString()
+                    : "N/A"}
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-8">
-            <p className="text-[#CFCFCF] mb-4">No flashcards found in this set.</p>
+            <p className="text-[#CFCFCF] mb-4">
+              No flashcards found in this set.
+            </p>
             <button
               onClick={openCreateModal}
               className="px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded-md hover:bg-[#3AA0DB] transition-colors"
@@ -243,12 +253,14 @@ export default function FlashcardList({
             flashcardSetId={flashcardSetId}
             isOpen={isFlashcardModalOpen}
             onClose={closeFlashcardModal}
-            onSubmit={modalMode === "create" 
-              ? handleCreateFlashcard 
-              : handleUpdateFlashcard}
+            onSubmit={
+              modalMode === "create"
+                ? handleCreateFlashcard
+                : handleUpdateFlashcard
+            }
           />
         )}
       </div>
     </div>
   );
-} 
+}

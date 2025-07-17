@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { IFlashcard } from "@/types/models/IFlashcard";
 
 // Flashcard Set Types
 export interface FlashcardSet {
@@ -104,7 +105,22 @@ class FlashcardService {
   };
 
   // Get flashcards for a specific set
-  getFlashcards = async (flashcardSetId: string): Promise<Flashcard[]> => {
+  getFlashcards = async (
+    flashcardSetId: string,
+    page?: number,
+    size?: number,
+    order?: string,
+    sortBy?: string,
+    search?: string
+  ): Promise<{
+    data: IFlashcard[];
+    totalPages: number;
+    page: number;
+    message: string;
+  }> => {
+    const query = new URLSearchParams();
+    if (page) query.set("page", page.toString());
+
     const response = await api.get(
       `/api/flashcards/${flashcardSetId}/flashcard-set`
     );
@@ -118,7 +134,9 @@ class FlashcardService {
   };
 
   // Create a new flashcard
-  createFlashcard = async (data: Partial<Flashcard>): Promise<Flashcard> => {
+  createFlashcard = async (
+    data: Partial<IFlashcard>
+  ): Promise<{ flashcard: IFlashcard; message: string }> => {
     const response = await api.post("/api/flashcards", data);
     return response.data;
   };
@@ -126,8 +144,8 @@ class FlashcardService {
   // Update a flashcard
   updateFlashcard = async (
     id: string,
-    data: Partial<Flashcard>
-  ): Promise<Flashcard> => {
+    data: Partial<IFlashcard>
+  ): Promise<{ flashcard: IFlashcard; message: string }> => {
     const response = await api.patch(`/api/flashcards/${id}`, data);
     return response.data;
   };

@@ -69,11 +69,13 @@ export default function MembershipCard({
       <div className="space-y-2 mb-5">
         <div className="flex justify-between text-[#CFCFCF]">
           <span className="font-medium">Duration:</span>
-          <span>{duration} months</span>
+          <span>{Math.floor(duration / 30)} months</span>
         </div>
         <div className="flex justify-between text-[#CFCFCF]">
           <span className="font-medium">Price:</span>
-          <span className="font-medium text-white">{price.toLocaleString("vi-VN")}₫</span>
+          <span className="font-medium text-white">
+            {price.toLocaleString("vi-VN")}₫
+          </span>
         </div>
       </div>
 

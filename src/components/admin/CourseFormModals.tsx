@@ -195,7 +195,19 @@ export default function CourseFormModal({
         data.append("name", formState.name);
         data.append("description", formState.description);
         data.append("courseId", formState.courseId);
-        await onSubmit(data);
+
+        //no form data
+        const dataObject: {
+          name?: string;
+          description?: string;
+          courseId?: string;
+        } = {
+          name: formState.name,
+          description: formState.description,
+          courseId: formState.courseId,
+        };
+
+        await onSubmit(dataObject);
       } else if (type === "test") {
         // Validate test fields
         if (
