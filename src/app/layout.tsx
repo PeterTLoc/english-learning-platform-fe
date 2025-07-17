@@ -4,7 +4,6 @@ import { Mulish } from "next/font/google";
 import ClientProviders from "@/components/layout/ClientProviders";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { ToastContainer } from "react-toastify";
 
 
 const mulish = Mulish({
@@ -26,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={mulish.variable}>
       <body className={`font-mulish antialiased`}>
-        <ToastContainer />
         <Suspense fallback={<LoadingSpinner fullScreen size="large" />}>
           <ClientProviders>{children}</ClientProviders>
         </Suspense>

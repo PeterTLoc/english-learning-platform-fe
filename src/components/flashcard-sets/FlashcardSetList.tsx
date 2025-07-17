@@ -7,7 +7,7 @@ import { ObjectId } from "mongoose";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import ServerPagination from "../common/ServerPagination";
 import CreateFlashcardSetModal from "./CreateFlashcardSetModal";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import FilterBox from "../common/FilterBox";
@@ -31,6 +31,7 @@ export default function FlashcardSetList({
   userId: string;
 }) {
   const router = useRouter();
+  const { showToast } = useToast();
 
   const [flashcardSets, setFlashcardSets] = useState<IFlashcardSet[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,18 +41,22 @@ export default function FlashcardSetList({
 
   useEffect(() => {
     const fetchFlashcardSets = async () => {
-      const response = await flashcardSetService.getFlashcardSets(
-        page,
-        size,
-        search,
-        sort,
-        order,
-        userId
-      );
-      setFlashcardSets(response.data);
-      setTotalPages(response.totalPages);
-      setTotal(response.total);
-      setLoading(false);
+      try {
+        const response = await flashcardSetService.getFlashcardSets(
+          page,
+          size,
+          search,
+          sort,
+          order,
+          userId
+        );
+        setFlashcardSets(response.data);
+        setTotalPages(response.totalPages);
+        setTotal(response.total);
+        setLoading(false);
+      } catch (error) {
+        showToast("Failed to fetch flashcard sets", "error");
+      }
     };
 
     fetchFlashcardSets();
@@ -76,10 +81,11 @@ export default function FlashcardSetList({
       setFlashcardSets([...flashcardSets, response.flashcardSet]);
       setIsCreateModalOpen(false);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error.response?.data.message
-          : "Failed to create flashcard set"
+          : "Failed to create flashcard set",
+        "error"
       );
     }
   };

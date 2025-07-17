@@ -9,7 +9,7 @@ import CreateBlogModal from "./CreateBlogModal";
 import { ObjectId } from "mongoose";
 import BlogFilter from "./BlogFilter";
 import DeleteConfirmModal from "./DeleteConfirmModal";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import { AxiosError } from "axios";
 import { BlogStatusEnum } from "@/enums/BlogStatusEnum";
 import EditBlogModal from "./EditBlogModal";
@@ -23,6 +23,7 @@ export default function BlogList({
   page: number;
   size: number;
 }) {
+  const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<string>("desc");
@@ -70,13 +71,14 @@ export default function BlogList({
             }
           : prev
       );
-      toast.success("Blog updated successfully");
+      showToast("Blog updated successfully", "success");
       setEditTarget(null);
     } catch (err) {
-      toast.error(
+      showToast(
         err instanceof AxiosError
           ? err.response?.data.message
-          : "Failed to update blog"
+          : "Failed to update blog",
+        "error"
       );
     }
   };
@@ -92,13 +94,14 @@ export default function BlogList({
             }
           : prev
       );
-      toast.success("Blog deleted successfully");
+      showToast("Blog deleted successfully", "success");
       setDeleteTarget(null);
     } catch (err) {
-      toast.error(
+      showToast(
         err instanceof AxiosError
           ? err.response?.data.message
-          : "Failed to delete blog"
+          : "Failed to delete blog",
+        "error"
       );
     }
   };
@@ -126,13 +129,14 @@ export default function BlogList({
             }
           : prev
       );
-      toast.success("Blog created successfully");
+      showToast("Blog created successfully", "success");
       setCreateModalOpen(false);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error.response?.data?.message
-          : "An error occurred"
+          : "An error occurred",
+        "error"
       );
     }
   };

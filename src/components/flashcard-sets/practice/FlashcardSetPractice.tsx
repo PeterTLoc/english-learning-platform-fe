@@ -1,7 +1,7 @@
 "use client";
 import { IFlashcard } from "@/types/models/IFlashcard";
 import React, { useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import { AxiosError } from "axios";
 import FlashcardService from "@/services/flashcardService";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -24,6 +24,7 @@ export default function FlashcardSetPractice({
   page: number;
 }) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [totalPages, setTotalPages] = useState(1);
   const [flashcards, setFlashcards] = useState<IFlashcard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,10 +40,11 @@ export default function FlashcardSetPractice({
         setTotalPages(response.totalPages);
         setLoading(false);
       } catch (error) {
-        toast.error(
+        showToast(
           error instanceof AxiosError
             ? error.response?.data.message
-            : "Failed to fetch flashcards"
+            : "Failed to fetch flashcards",
+          "error"
         );
         setLoading(false);
       }
@@ -85,8 +87,12 @@ export default function FlashcardSetPractice({
 
   useEffect(() => {
     const fetchFlashcardSet = async () => {
-      const response = await flashcardSetService.getFlashcardSetById(id);
-      setFlashcardSet(response.flashcardSet);
+      try {
+        const response = await flashcardSetService.getFlashcardSetById(id);
+        setFlashcardSet(response.flashcardSet);
+      } catch (error) {
+        showToast("Failed to fetch flashcard set", "error");
+      }
     };
     fetchFlashcardSet();
   }, [id]);
