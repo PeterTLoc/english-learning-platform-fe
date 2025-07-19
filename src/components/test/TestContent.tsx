@@ -22,7 +22,8 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TestResults from "./TestResults";
 import LessonCompletionWarning from "./LessonCompletionWarning";
 import TestTaking from "./TestTaking";
-
+import { useToast } from "@/context/ToastContext";
+import { AxiosError } from "axios";
 interface TestContentProps {
   courseId: string;
   lessonId: string; // this is testId
@@ -63,6 +64,7 @@ export default function TestContent({
   const [allLessonIds, setAllLessonIds] = useState<string[]>([]);
   const [forceRetake, setForceRetake] = useState(false);
 
+  const { showToast } = useToast();
   // Memoize allLessonIds to prevent unnecessary re-renders
   const memoizedAllLessonIds = useMemo(
     () => allLessonIds,
@@ -78,9 +80,29 @@ export default function TestContent({
         setTestName(fetchedTest.name || "");
         setAllLessonIds(fetchedTest.lessonIds || []);
       } catch (err) {
-        setTest(null);
-        setTestName("");
-        setAllLessonIds([]);
+        if (err instanceof AxiosError && err.response?.status === 403) {
+          setCompletionStatus(false);
+          setLoading(false);
+
+          setUserTestStatusLoading(false);
+          setCompletionStatus(false);
+          setTestName("failed");
+        } else {
+          setTest(null);
+          setTestName("failed");
+          setAllLessonIds([]);
+          showToast(
+            err instanceof AxiosError
+              ? err.response?.data?.message
+              : "Failed to fetch test",
+            "error"
+          );
+          setLoading(false);
+
+          setUserTestStatusLoading(false);
+          setCompletionStatus(false);
+          setTestName("");
+        }
       }
     }
     fetchTest();
@@ -200,8 +222,9 @@ export default function TestContent({
       const fullTest = await getTestById(test._id);
 
       if (!fullTest.exercises || fullTest.exercises.length === 0) {
-        alert(
-          "This test has no exercises available. Please contact an administrator."
+        showToast(
+          "This test has no exercises available. Please contact an administrator.",
+          "error"
         );
         return;
       }
@@ -214,7 +237,7 @@ export default function TestContent({
       setCompletedQuestions(0);
     } catch (error) {
       console.error("Failed to start test", error);
-      alert("Failed to load test. Please try again.");
+      showToast("Failed to load test. Please try again.", "error");
     } finally {
       setLoading(false);
     }
