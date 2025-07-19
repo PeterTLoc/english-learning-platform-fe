@@ -556,55 +556,60 @@ export default function UserProfilePage() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {userCourses.map((uc) => (
-                    <div
+                    <Link
+                      href={`/courses/${uc.courseId.toString()}/enroll`}
                       key={uc._id}
-                      className="bg-[#2b2b2b] hover:scale-105 rounded-lg shadow p-5 flex flex-col gap-4"
                     >
-                      {uc.course?.coverImage && (
-                        <div className="w-full h-36 rounded-md overflow-hidden mb-2">
-                          <Image
-                            src={uc.course.coverImage}
-                            alt={uc.course.name}
-                            width={400}
-                            height={144}
-                            className="object-cover w-full h-full"
-                          />
-                        </div>
-                      )}
-                      <div className="flex flex-col gap-2 flex-1">
-                        <h3 className="text-lg font-bold text-white mb-1 truncate">
-                          {uc.course?.name || "Unknown Course"}
-                        </h3>
-                        <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
-                          <span className="bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded">
-                            {uc.course?.level || "Unknown Level"}
-                          </span>
-                          <span className="bg-purple-900/40 text-purple-300 px-2 py-0.5 rounded">
-                            {uc.course?.type || "Unknown type"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-300 mb-2">
-                          <span>Progress:</span>
-                          <span className="font-semibold text-white">
-                            {uc.lessonFinished} / {uc.course?.totalLessons || 0}{" "}
-                            lessons
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <span
-                            className={`px-2 py-0.5 rounded-full font-semibold ${
-                              uc.status === "completed"
-                                ? "bg-green-700 text-green-200"
-                                : uc.status === "ongoing"
-                                ? "bg-yellow-700 text-yellow-200"
-                                : "bg-gray-700 text-gray-300"
-                            }`}
-                          >
-                            {capitalizeStatus(uc.status)}
-                          </span>
+                      <div
+                        key={uc._id}
+                        className="bg-[#2b2b2b] hover:scale-105 rounded-lg shadow p-5 flex flex-col gap-4"
+                      >
+                        {uc.course?.coverImage && (
+                          <div className="w-full h-36 rounded-md overflow-hidden mb-2">
+                            <Image
+                              src={uc.course.coverImage}
+                              alt={uc.course.name}
+                              width={400}
+                              height={144}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-2 flex-1">
+                          <h3 className="text-lg font-bold text-white mb-1 truncate">
+                            {uc.course?.name || "Unknown Course"}
+                          </h3>
+                          <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
+                            <span className="bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded">
+                              {uc.course?.level || "Unknown Level"}
+                            </span>
+                            <span className="bg-purple-900/40 text-purple-300 px-2 py-0.5 rounded">
+                              {uc.course?.type || "Unknown type"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+                            <span>Progress:</span>
+                            <span className="font-semibold text-white">
+                              {uc.lessonFinished} /{" "}
+                              {uc.course?.totalLessons || 0} lessons
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span
+                              className={`px-2 py-0.5 rounded-full font-semibold ${
+                                uc.status === "completed"
+                                  ? "bg-green-700 text-green-200"
+                                  : uc.status === "ongoing"
+                                  ? "bg-yellow-700 text-yellow-200"
+                                  : "bg-gray-700 text-gray-300"
+                              }`}
+                            >
+                              {capitalizeStatus(uc.status)}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

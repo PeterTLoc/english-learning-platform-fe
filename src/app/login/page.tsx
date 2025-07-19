@@ -22,8 +22,8 @@ const Page = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      router.push(user.role === UserRole.ADMIN ? '/admin' : '/');
-    } 
+      router.push(user.role === UserRole.ADMIN ? "/admin" : "/");
+    }
   }, [user, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,12 +55,15 @@ const Page = () => {
     } catch (error: any) {
       const parsedError = parseAxiosError(error);
       showToast(parsedError.message, "error");
-      console.log("test")
+      console.log("test");
     } finally {
       // No local loading state to set
     }
   };
 
+  const loginGoogle = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`;
+  };
   // Show loading state while checking auth status
   if (authLoading) {
     return (
@@ -85,6 +88,7 @@ const Page = () => {
         isLoading={authLoading}
         onChange={handleChange}
         onSubmit={handleSubmit}
+        onGoogleLogin={loginGoogle}
       />
     </div>
   );
