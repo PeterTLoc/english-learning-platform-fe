@@ -108,7 +108,7 @@ export default function AchievementWrapper({
   ) => {
     try {
       if (!name || !description || !type || !goal) {
-        showToast("All fields are required", "warn");
+        showToast("All fields are required", "warning");
       }
       const response = await achievementService.createAchievement(
         name,

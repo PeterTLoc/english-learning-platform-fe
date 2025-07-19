@@ -9,12 +9,16 @@ interface CourseLayoutProps {
   };
 }
 
-export default function CourseLayout({ children, params }: CourseLayoutProps) {
+export default async function CourseLayout({
+  children,
+  params,
+}: CourseLayoutProps) {
+  const { courseId } = await params;
   return (
     <SidebarRefreshProvider>
       <div className="flex mt-8">
         <div className="max-w-[280px] w-full m-5">
-          <CourseSidebar courseId={params.courseId} />
+          <CourseSidebar courseId={courseId} />
         </div>
         <div className="flex-1 flex justify-center">
           <div className="max-w-[1000px] w-full mx-5 mb-5">{children}</div>
@@ -22,4 +26,4 @@ export default function CourseLayout({ children, params }: CourseLayoutProps) {
       </div>
     </SidebarRefreshProvider>
   );
-} 
+}

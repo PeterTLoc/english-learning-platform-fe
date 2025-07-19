@@ -1,9 +1,12 @@
-import GrammarContent from "@/components/lesson/GrammarContent"
+import GrammarContent from "@/components/lesson/GrammarContent";
 
 interface PageProps {
-  params: { courseId: string; lessonId: string }
+  params: { courseId: string; lessonId: string };
 }
 
-export default function Page({ params }: PageProps) {
-  return <GrammarContent courseId={params.courseId} lessonId={params.lessonId} itemsPerPage={1} />
+export default async function Page({ params }: PageProps) {
+  const { courseId, lessonId } = await params;
+  return (
+    <GrammarContent courseId={courseId} lessonId={lessonId} itemsPerPage={1} />
+  );
 }
