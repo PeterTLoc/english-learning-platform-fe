@@ -1,9 +1,12 @@
-import ExerciseContent from "@/components/lesson/ExerciseContent"
+import ExerciseContent from "@/components/lesson/ExerciseContent";
 
 interface PageProps {
-  params: { courseId: string; lessonId: string }
+  params: { courseId: string; lessonId: string };
 }
 
-export default function Page({ params }: PageProps) {
-  return <ExerciseContent courseId={params.courseId} lessonId={params.lessonId} itemsPerPage={1} />
+export default async function Page({ params }: PageProps) {
+  const { courseId, lessonId } = await params;
+  return (
+    <ExerciseContent courseId={courseId} lessonId={lessonId} itemsPerPage={1} />
+  );
 }
