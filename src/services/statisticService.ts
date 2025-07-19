@@ -7,22 +7,27 @@ interface RevenueData {
 
 interface NewUsersData {
   Date: string
-  Count: number
-}
-
-interface StatisticResponse {
-  revenue: RevenueData[]
-  message: string
-}
-
-interface NewUsersResponse {
-  newUserOverTime: NewUsersData[]
-  message: string
+  newUsers: number
 }
 
 interface CompletionRateResponse {
   completionRate: number
   message: string
+}
+
+interface PeriodBreakdown<T> {
+  breakdown: T[];
+  total: number;
+}
+
+interface RevenuePeriod {
+  current: PeriodBreakdown<RevenueData>;
+  previous: PeriodBreakdown<RevenueData>;
+}
+
+interface NewUsersPeriod {
+  current: PeriodBreakdown<NewUsersData>;
+  previous: PeriodBreakdown<NewUsersData>;
 }
 
 // Time type enum to match backend
@@ -35,15 +40,14 @@ export const TimeType = {
 
 export type TimeType = typeof TimeType[keyof typeof TimeType]
 
-export const statisticService = {
-  getRevenueOverTime: async (time: TimeType, value: number) => {
-    const response = await api.get<StatisticResponse>(`/api/statistics/revenue?time=${time}&value=${value}`)
-    return response.data
+const statisticService = {
+  getRevenueOverTime: async (time: string, value: number): Promise<{ revenue: RevenuePeriod; message: string }> => {
+    const response = await api.get(`/api/statistics/revenue?time=${time}&value=${value}`);
+    return response.data;
   },
-
-  getNewUsers: async (time: TimeType, value: number) => {
-    const response = await api.get<NewUsersResponse>(`/api/statistics/new-users?time=${time}&value=${value}`)
-    return response.data
+  getNewUsersOverTime: async (time: string, value: number): Promise<{ newUserOverTime: NewUsersPeriod; message: string }> => {
+    const response = await api.get(`/api/statistics/new-users?time=${time}&value=${value}`);
+    return response.data;
   },
 
   getCompletionRate: async () => {
@@ -51,27 +55,32 @@ export const statisticService = {
     return response.data
   },
 
+  getActiveCourseCount: async (): Promise<number> => {
+    const response = await api.get('/api/statistics/active-courses');
+    return response.data.activeCourseCount;
+  },
+
   getDashboardStats: async () => {
-    // Get last 30 days data
+    // Get last 12 months data
     const [revenueResponse, usersResponse, completionResponse] = await Promise.all([
-      api.get<StatisticResponse>(`/api/statistics/revenue?time=${TimeType.DAY}&value=30`),
-      api.get<NewUsersResponse>(`/api/statistics/new-users?time=${TimeType.DAY}&value=30`),
+      api.get(`/api/statistics/revenue?time=${TimeType.MONTH}&value=12`),
+      api.get(`/api/statistics/new-users?time=${TimeType.MONTH}&value=12`),
       api.get<CompletionRateResponse>('/api/statistics/completion-rate')
     ])
 
-    const revenue = revenueResponse.data.revenue
-    const users = usersResponse.data.newUserOverTime
+    const revenue = (revenueResponse.data as { revenue: RevenuePeriod }).revenue.current.breakdown;
+    const users = (usersResponse.data as { newUserOverTime: NewUsersPeriod }).newUserOverTime.current.breakdown;
 
-    // Calculate trends
-    const currentRevenue = revenue[revenue.length - 1]?.Revenue || 0
-    const lastRevenue = revenue[revenue.length - 2]?.Revenue || 0
-    const revenueTrend = lastRevenue ? ((currentRevenue - lastRevenue) / lastRevenue) * 100 : 0
+    // Calculate trends using the current period total vs previous period total
+    const currentRevenue = (revenueResponse.data as { revenue: RevenuePeriod }).revenue.current.total;
+    const previousRevenue = (revenueResponse.data as { revenue: RevenuePeriod }).revenue.previous.total;
+    const revenueTrend = previousRevenue ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
 
-    const currentUsers = users[users.length - 1]?.Count || 0
-    const lastUsers = users[users.length - 2]?.Count || 0
-    const usersTrend = lastUsers ? ((currentUsers - lastUsers) / lastUsers) * 100 : 0
+    const currentUsers = (usersResponse.data as { newUserOverTime: NewUsersPeriod }).newUserOverTime.current.total;
+    const previousUsers = (usersResponse.data as { newUserOverTime: NewUsersPeriod }).newUserOverTime.previous.total;
+    const usersTrend = previousUsers ? ((currentUsers - previousUsers) / previousUsers) * 100 : 0;
 
-    const totalUsers = users.reduce((acc, curr) => acc + (curr.Count || 0), 0)
+    const totalUsers = users.reduce((acc, curr) => acc + (curr.newUsers || 0), 0)
     const completionRate = completionResponse.data.completionRate
 
     return {
@@ -81,7 +90,9 @@ export const statisticService = {
       usersTrend: isFinite(usersTrend) ? usersTrend : 0,
       completionRate,
       revenueHistory: revenue.map(r => r.Revenue),
-      usersHistory: users.map(u => u.Count)
+      usersHistory: users.map(u => u.newUsers)
     }
   }
-} 
+}
+
+export { statisticService }; 

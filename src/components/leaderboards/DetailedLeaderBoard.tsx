@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { Trophy, Medal, Award, User, Calendar, Flame } from "lucide-react";
 import { IUser } from "@/types/models/IUser";
 import UserService from "@/services/userService";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import { AxiosError } from "axios";
 
 const userService = new UserService();
 export default function DetailedLeaderboard() {
+  const { showToast } = useToast();
   const [topUsers, setTopUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -18,10 +19,11 @@ export default function DetailedLeaderboard() {
       setTopUsers(response.users);
       setLoading(false);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error?.response?.data?.message
-          : "Failed to fetch leaderboard"
+          : "Failed to fetch leaderboard data",
+        "error"
       );
     }
   };

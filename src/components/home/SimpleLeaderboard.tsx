@@ -2,7 +2,7 @@
 import { IUser } from "@/types/models/IUser";
 import { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import UserService from "@/services/userService";
 import { Award, Flame, Medal, Trophy, User as UserIcon } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +12,7 @@ const userService = new UserService();
 type PodiumUser = IUser & { position: number };
 
 export default function SimpleLeaderboard() {
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [top3, setTop3] = useState<PodiumUser[]>([]);
 
@@ -23,10 +24,11 @@ export default function SimpleLeaderboard() {
 
       setLoading(false);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error?.response?.data?.message
-          : "Failed to fetch leaderboard"
+          : "Failed to fetch leaderboard data",
+        "error"
       );
       setLoading(false);
     }

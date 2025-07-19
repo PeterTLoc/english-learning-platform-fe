@@ -303,7 +303,7 @@ export default function UserProfilePage() {
               User Not Found
             </h1>
             <p className="text-gray-400">
-              The user you&apos;re looking for doesn&apos;t exist.
+              The user you&aposre looking for doesn&apost exist.
             </p>
           </div>
         </div>
@@ -437,8 +437,12 @@ export default function UserProfilePage() {
                           <Star className="w-5 h-5 text-yellow-400" />
                         </div>
                         <div className="flex-1">
-                          <span className="text-yellow-300 font-semibold">Premium Member</span>
-                          <span className="text-gray-300 ml-2">until {formatDate(user.activeUntil)}</span>
+                          <span className="text-yellow-300 font-semibold">
+                            Premium Member
+                          </span>
+                          <span className="text-gray-300 ml-2">
+                            until {formatDate(user.activeUntil)}
+                          </span>
                         </div>
                       </div>
                     )}
@@ -482,25 +486,38 @@ export default function UserProfilePage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-yellow-300 mb-1">
-                      {user.activeUntil ? "Premium Membership" : "No Membership"}
+                      {user.activeUntil
+                        ? "Premium Membership"
+                        : "No Membership"}
                     </h3>
                     {user.activeUntil ? (
                       <>
                         <p className="text-gray-200">
-                          Status: <span className="font-semibold text-green-400">Active</span>
+                          Status:{" "}
+                          <span className="font-semibold text-green-400">
+                            Active
+                          </span>
                         </p>
                         <p className="text-gray-400">
-                          Expires on: <span className="text-white">{formatDate(user.activeUntil)}</span>
+                          Expires on:{" "}
+                          <span className="text-white">
+                            {formatDate(user.activeUntil)}
+                          </span>
                         </p>
                         <p className="text-gray-300 mt-2">
-                          Enjoy unlimited access to all courses, premium content, and exclusive features designed to accelerate your English learning journey.
+                          Enjoy unlimited access to all courses, premium
+                          content, and exclusive features designed to accelerate
+                          your English learning journey.
                         </p>
                       </>
                     ) : (
                       <>
-                        <p className="text-gray-400 mb-2">You are not a premium member yet.</p>
+                        <p className="text-gray-400 mb-2">
+                          You are not a premium member yet.
+                        </p>
                         <p className="text-gray-300 mb-2">
-                          Upgrade to premium to unlock all courses, advanced exercises, and special member-only resources!
+                          Upgrade to premium to unlock all courses, advanced
+                          exercises, and special member-only resources!
                         </p>
                         <Link
                           href="/membership"

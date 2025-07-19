@@ -80,7 +80,7 @@ export default function FlashcardList({
         flashcardSetId: id,
       });
 
-      setFlashcards([...flashcards, response.data.flashcard]);
+      setFlashcards([...flashcards, response.flashcard]);
       setIsCreateModalOpen(false);
       showToast("Flashcard created successfully", "success");
     } catch (error) {
@@ -120,7 +120,7 @@ export default function FlashcardList({
         vietnameseContent,
       });
       setFlashcards(
-        flashcards.map((card) => (card._id === id ? response.data.flashcard : card))
+        flashcards.map((card) => (card._id === id ? response.flashcard : card))
       );
       showToast("Flashcard updated successfully", "success");
     } catch (error) {

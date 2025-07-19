@@ -1,7 +1,5 @@
 "use client";
 
-import { statisticService, TimeType } from "@/services/statisticService";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useState, useEffect } from "react";
 import {
   BarChart3,
@@ -11,19 +9,29 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+import { statisticService } from "@/services/statisticService";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { Line } from "react-chartjs-2";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  ResponsiveContainer,
   Legend,
-  Area,
-  AreaChart,
-  ReferenceLine,
-} from "recharts";
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface StatsCard {
   title: string;
@@ -33,24 +41,29 @@ interface StatsCard {
   trend: "up" | "down";
 }
 
-// Custom tooltip component
-const CustomTooltip = ({ active, payload, label, formatter }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-[#1a1a1a] border border-[#4CC2FF]/20 rounded-lg p-3 shadow-lg backdrop-blur-sm">
-        <p className="text-[#CFCFCF] text-sm font-medium">{`Date: ${label}`}</p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-[#4CC2FF] text-sm font-semibold">
-            {`${entry.name}: ${
-              formatter ? formatter(entry.value) : entry.value
-            }`}
-          </p>
-        ))}
-      </div>
-    );
+const getYearsList = () => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let y = currentYear; y >= 2000; y--) {
+    years.push(y);
   }
-  return null;
+  return years;
 };
+
+const months = [
+  { value: 1, label: "January" },
+  { value: 2, label: "February" },
+  { value: 3, label: "March" },
+  { value: 4, label: "April" },
+  { value: 5, label: "May" },
+  { value: 6, label: "June" },
+  { value: 7, label: "July" },
+  { value: 8, label: "August" },
+  { value: 9, label: "September" },
+  { value: 10, label: "October" },
+  { value: 11, label: "November" },
+  { value: 12, label: "December" },
+];
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -72,7 +85,7 @@ export default function AdminDashboard() {
     {
       title: "Active Courses",
       value: "0",
-      change: "0%",
+      change: "",
       icon: <BookOpen className="w-8 h-8 text-[#4CC2FF]" />,
       trend: "up",
     },
@@ -87,8 +100,6 @@ export default function AdminDashboard() {
 
   const [revenueHistory, setRevenueHistory] = useState<number[]>([]);
   const [usersHistory, setUsersHistory] = useState<number[]>([]);
-
-  // Chart filter state
   const [userGrowthFilter, setUserGrowthFilter] = useState({
     time: "month",
     value: 12,
@@ -97,14 +108,36 @@ export default function AdminDashboard() {
     time: "month",
     value: 12,
   });
-  const [userGrowthData, setUserGrowthData] = useState<any[]>([]);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [userGrowthData, setUserGrowthData] = useState<
+    { label: string; value: number }[]
+  >([]);
+  const [revenueData, setRevenueData] = useState<
+    { label: string; value: number }[]
+  >([]);
   const [userGrowthLoading, setUserGrowthLoading] = useState(false);
   const [revenueLoading, setRevenueLoading] = useState(false);
+  const [activeCourseCount, setActiveCourseCount] = useState<number>(0);
 
   const currentYear = new Date().getFullYear();
-  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
-  const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i);
+  const currentMonth = new Date().getMonth() + 1;
+
+  // New: filter type state
+  const [userGrowthType, setUserGrowthType] = useState<"year" | "month">(
+    "year"
+  );
+  const [userGrowthYear, setUserGrowthYear] = useState(currentYear);
+  const [userGrowthMonth, setUserGrowthMonth] = useState(currentMonth);
+
+  const [revenueType, setRevenueType] = useState<"year" | "month">("year");
+  const [revenueYear, setRevenueYear] = useState(currentYear);
+  const [revenueMonth, setRevenueMonth] = useState(currentMonth);
+
+  const [userGrowthPeriod, setUserGrowthPeriod] = useState<any>(null);
+  const [revenuePeriod, setRevenuePeriod] = useState<any>(null);
+  const [userGrowthPercent, setUserGrowthPercent] = useState<number | null>(
+    null
+  );
+  const [revenuePercent, setRevenuePercent] = useState<number | null>(null);
 
   // Use useEffect with a cleanup function to prevent double fetching
   useEffect(() => {
@@ -113,7 +146,7 @@ export default function AdminDashboard() {
     const fetchDashboardData = async () => {
       try {
         const stats = await statisticService.getDashboardStats();
-
+        const activeCourses = await statisticService.getActiveCourseCount();
         if (!mounted) return;
 
         setStatsCards([
@@ -133,15 +166,15 @@ export default function AdminDashboard() {
           },
           {
             title: "Active Courses",
-            value: "124", // TODO: Add API endpoint for course stats
-            change: "+24%",
+            value: activeCourses.toLocaleString(),
+            change: "",
             icon: <BookOpen className="w-8 h-8 text-[#4CC2FF]" />,
             trend: "up",
           },
           {
             title: "Completion Rate",
             value: `${stats.completionRate.toFixed(1)}%`,
-            change: "0%", // TODO: Add trend calculation for completion rate
+            change: "0%",
             icon: <BarChart3 className="w-8 h-8 text-[#4CC2FF]" />,
             trend: "up",
           },
@@ -170,15 +203,22 @@ export default function AdminDashboard() {
   useEffect(() => {
     setUserGrowthLoading(true);
     statisticService
-      .getNewUsers(userGrowthFilter.time as TimeType, userGrowthFilter.value)
+      .getNewUsersOverTime(userGrowthFilter.time, userGrowthFilter.value)
       .then((res) => {
-        // Map API data to chart format
-        setUserGrowthData(
-          (res.newUserOverTime || []).map((item: any) => ({
-            label: item.Date,
-            value: item.newUsers,
-          }))
-        );
+        if (res.newUserOverTime) {
+          setUserGrowthPeriod(res.newUserOverTime);
+          // Calculate growth percent
+          const curr = res.newUserOverTime.current.total;
+          const prev = res.newUserOverTime.previous.total;
+          let percent = null;
+          if (prev === 0 && curr > 0) percent = 100;
+          else if (prev === 0 && curr === 0) percent = 0;
+          else percent = ((curr - prev) / Math.abs(prev)) * 100;
+          setUserGrowthPercent(percent);
+        } else {
+          setUserGrowthPeriod(null);
+          setUserGrowthPercent(null);
+        }
       })
       .finally(() => setUserGrowthLoading(false));
   }, [userGrowthFilter]);
@@ -187,17 +227,43 @@ export default function AdminDashboard() {
   useEffect(() => {
     setRevenueLoading(true);
     statisticService
-      .getRevenueOverTime(revenueFilter.time as TimeType, revenueFilter.value)
+      .getRevenueOverTime(revenueFilter.time, revenueFilter.value)
       .then((res) => {
-        setRevenueData(
-          (res.revenue || []).map((item: any) => ({
-            label: item.Date,
-            value: item.Revenue,
-          }))
-        );
+        if (res.revenue) {
+          setRevenuePeriod(res.revenue);
+          // Calculate growth percent
+          const curr = res.revenue.current.total;
+          const prev = res.revenue.previous.total;
+          let percent = null;
+          if (prev === 0 && curr > 0) percent = 100;
+          else if (prev === 0 && curr === 0) percent = 0;
+          else percent = ((curr - prev) / Math.abs(prev)) * 100;
+          setRevenuePercent(percent);
+        } else {
+          setRevenuePeriod(null);
+          setRevenuePercent(null);
+        }
       })
       .finally(() => setRevenueLoading(false));
   }, [revenueFilter]);
+
+  // Update filter logic for user growth
+  useEffect(() => {
+    if (userGrowthType === "year") {
+      setUserGrowthFilter({ time: "year", value: userGrowthYear });
+    } else {
+      setUserGrowthFilter({ time: "month", value: userGrowthMonth });
+    }
+  }, [userGrowthType, userGrowthYear, userGrowthMonth]);
+
+  // Update filter logic for revenue
+  useEffect(() => {
+    if (revenueType === "year") {
+      setRevenueFilter({ time: "year", value: revenueYear });
+    } else {
+      setRevenueFilter({ time: "month", value: revenueMonth });
+    }
+  }, [revenueType, revenueYear, revenueMonth]);
 
   if (loading) {
     return (
@@ -252,268 +318,241 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Enhanced Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* User Growth Chart */}
-        <div className="bg-gradient-to-br from-[#242424] to-[#1e1e1e] border border-[#333] rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-6">
-            <h4 className="text-xl font-semibold text-white">User Growth</h4>
-            <div className="flex gap-3">
+      {/* Charts Section */}
+      <div className="flex flex-col gap-4 mb-8">
+        {/* User Growth Chart with Filters */}
+        <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg shadow p-5">
+          <h4 className="text-lg font-semibold text-white mb-3">User Growth</h4>
+          <div className="flex gap-2 mb-4">
+            {/* Select List A */}
+            <select
+              value={userGrowthType}
+              onChange={(e) =>
+                setUserGrowthType(e.target.value as "year" | "month")
+              }
+              className="bg-[#232323] text-white rounded px-2 py-1"
+            >
+              <option value="year">Year</option>
+              <option value="month">Month</option>
+            </select>
+            {/* If year is selected, show Select List B and C */}
+            {userGrowthType === "year" && (
+              <>
+                <select
+                  value={userGrowthYear}
+                  onChange={(e) => setUserGrowthYear(Number(e.target.value))}
+                  className="bg-[#232323] text-white rounded px-2 py-1"
+                >
+                  {getYearsList().map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={userGrowthMonth}
+                  onChange={(e) => setUserGrowthMonth(Number(e.target.value))}
+                  className="bg-[#232323] text-white rounded px-2 py-1"
+                >
+                  {months.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            {/* If month is selected, show only Select List C */}
+            {userGrowthType === "month" && (
               <select
-                value={userGrowthFilter.time}
-                onChange={(e) => {
-                  const newTime = e.target.value;
-                  setUserGrowthFilter((f) => ({
-                    time: newTime,
-                    value:
-                      newTime === "month"
-                        ? new Date().getMonth() + 1
-                        : currentYear,
-                  }));
-                }}
-                className="bg-[#333] text-white rounded-lg px-3 py-2 text-sm border border-[#444] hover:border-[#4CC2FF]/50 transition-colors"
+                value={userGrowthMonth}
+                onChange={(e) => setUserGrowthMonth(Number(e.target.value))}
+                className="bg-[#232323] text-white rounded px-2 py-1"
               >
-                <option value="month">Month</option>
-                <option value="year">Year</option>
+                {months.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.label}
+                  </option>
+                ))}
               </select>
-              {userGrowthFilter.time === "month" ? (
-                <select
-                  value={userGrowthFilter.value}
-                  onChange={(e) =>
-                    setUserGrowthFilter((f) => ({
-                      ...f,
-                      value: Number(e.target.value),
-                    }))
-                  }
-                  className="bg-[#333] text-white rounded-lg px-3 py-2 text-sm border border-[#444] hover:border-[#4CC2FF]/50 transition-colors"
-                >
-                  {monthOptions.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <select
-                  value={userGrowthFilter.value}
-                  onChange={(e) =>
-                    setUserGrowthFilter((f) => ({
-                      ...f,
-                      value: Number(e.target.value),
-                    }))
-                  }
-                  className="bg-[#333] text-white rounded-lg px-3 py-2 text-sm border border-[#444] hover:border-[#4CC2FF]/50 transition-colors"
-                >
-                  {yearOptions.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
+            )}
           </div>
-          <div className="w-full h-80 bg-gradient-to-br from-[#2a2a2a] to-[#1e1e1e] rounded-lg p-4 border border-[#333]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={userGrowthData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
-                <defs>
-                  <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4CC2FF" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#4CC2FF" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#444"
-                  opacity={0.3}
-                />
-                <XAxis
-                  dataKey="label"
-                  stroke="#CFCFCF"
-                  fontSize={12}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#CFCFCF" }}
-                />
-                <YAxis
-                  stroke="#CFCFCF"
-                  allowDecimals={false}
-                  fontSize={12}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#CFCFCF" }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#4CC2FF"
-                  strokeWidth={3}
-                  fill="url(#userGradient)"
-                  name="New Users"
-                />
+          <div className="w-full h-[500px] bg-[#373737] py-4 rounded-lg flex flex-col items-center justify-center">
+            {userGrowthLoading ? (
+              <div className="h-full">
+                <LoadingSpinner size="medium" />
+              </div>
+            ) : userGrowthPeriod &&
+              userGrowthPeriod.current.breakdown.length > 0 ? (
+              <>
                 <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#4CC2FF"
-                  strokeWidth={3}
-                  dot={{
-                    r: 6,
-                    fill: "#4CC2FF",
-                    strokeWidth: 2,
-                    stroke: "#fff",
+                  style={{ width: "100%", height: "100%" }}
+                  data={{
+                    labels: userGrowthPeriod.current.breakdown.map(
+                      (d: any) => d.Date
+                    ),
+                    datasets: [
+                      {
+                        label: "New Users",
+                        data: userGrowthPeriod.current.breakdown.map(
+                          (d: any) => d.newUsers
+                        ),
+                        borderColor: "#4CC2FF",
+                        backgroundColor: "rgba(76,194,255,0.2)",
+                        tension: 0.4,
+                      },
+                    ],
                   }}
-                  activeDot={{
-                    r: 8,
-                    fill: "#4CC2FF",
-                    strokeWidth: 2,
-                    stroke: "#fff",
+                  options={{
+                    responsive: true,
+                    plugins: {
+                      legend: { display: false },
+                      title: { display: false },
+                    },
+                    scales: {
+                      x: { ticks: { color: "#CFCFCF" } },
+                      y: { ticks: { color: "#CFCFCF" } },
+                    },
                   }}
                 />
-              </AreaChart>
-            </ResponsiveContainer>
+                <div className="mt-2 text-[#CFCFCF] text-sm">
+                  <span>
+                    Current: <b>{userGrowthPeriod.current.total}</b>
+                  </span>
+                  <span className="ml-4">
+                    Previous: <b>{userGrowthPeriod.previous.total}</b>
+                  </span>
+                  <span className="ml-4">
+                    Growth:{" "}
+                    <b>
+                      {userGrowthPercent !== null
+                        ? userGrowthPercent.toFixed(1) + "%"
+                        : "-"}
+                    </b>
+                  </span>
+                </div>
+              </>
+            ) : (
+              <p className="text-[#CFCFCF]">No data available</p>
+            )}
           </div>
         </div>
-
-        {/* Revenue Chart */}
-        <div className="bg-gradient-to-br from-[#242424] to-[#1e1e1e] border border-[#333] rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-6">
-            <h4 className="text-xl font-semibold text-white">Revenue Trends</h4>
-            <div className="flex gap-3">
+        {/* Revenue Chart with Filters */}
+        <div className="bg-[#202020] border border-[#1D1D1D] rounded-lg shadow p-5">
+          <h4 className="text-lg font-semibold text-white mb-3">
+            Revenue Trends
+          </h4>
+          <div className="flex gap-2 mb-4">
+            {/* Select List A */}
+            <select
+              value={revenueType}
+              onChange={(e) =>
+                setRevenueType(e.target.value as "year" | "month")
+              }
+              className="bg-[#232323] text-white rounded px-2 py-1"
+            >
+              <option value="year">Year</option>
+              <option value="month">Month</option>
+            </select>
+            {/* If year is selected, show Select List B and C */}
+            {revenueType === "year" && (
+              <>
+                <select
+                  value={revenueYear}
+                  onChange={(e) => setRevenueYear(Number(e.target.value))}
+                  className="bg-[#232323] text-white rounded px-2 py-1"
+                >
+                  {getYearsList().map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={revenueMonth}
+                  onChange={(e) => setRevenueMonth(Number(e.target.value))}
+                  className="bg-[#232323] text-white rounded px-2 py-1"
+                >
+                  {months.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            {/* If month is selected, show only Select List C */}
+            {revenueType === "month" && (
               <select
-                value={revenueFilter.time}
-                onChange={(e) => {
-                  const newTime = e.target.value;
-                  setRevenueFilter((f) => ({
-                    time: newTime,
-                    value:
-                      newTime === "month"
-                        ? new Date().getMonth() + 1
-                        : currentYear,
-                  }));
-                }}
-                className="bg-[#333] text-white rounded-lg px-3 py-2 text-sm border border-[#444] hover:border-[#4CC2FF]/50 transition-colors"
+                value={revenueMonth}
+                onChange={(e) => setRevenueMonth(Number(e.target.value))}
+                className="bg-[#232323] text-white rounded px-2 py-1"
               >
-                <option value="month">Month</option>
-                <option value="year">Year</option>
+                {months.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.label}
+                  </option>
+                ))}
               </select>
-              {revenueFilter.time === "month" ? (
-                <select
-                  value={revenueFilter.value}
-                  onChange={(e) =>
-                    setRevenueFilter((f) => ({
-                      ...f,
-                      value: Number(e.target.value),
-                    }))
-                  }
-                  className="bg-[#333] text-white rounded-lg px-3 py-2 text-sm border border-[#444] hover:border-[#4CC2FF]/50 transition-colors"
-                >
-                  {monthOptions.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <select
-                  value={revenueFilter.value}
-                  onChange={(e) =>
-                    setRevenueFilter((f) => ({
-                      ...f,
-                      value: Number(e.target.value),
-                    }))
-                  }
-                  className="bg-[#333] text-white rounded-lg px-3 py-2 text-sm border border-[#444] hover:border-[#4CC2FF]/50 transition-colors"
-                >
-                  {yearOptions.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
+            )}
           </div>
-          <div className="w-full h-80 bg-gradient-to-br from-[#2a2a2a] to-[#1e1e1e] rounded-lg p-4 border border-[#333]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={revenueData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
-                <defs>
-                  <linearGradient
-                    id="revenueGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#66D9FF" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#66D9FF" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#444"
-                  opacity={0.3}
-                />
-                <XAxis
-                  dataKey="label"
-                  stroke="#CFCFCF"
-                  fontSize={12}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#CFCFCF" }}
-                />
-                <YAxis
-                  stroke="#CFCFCF"
-                  allowDecimals={false}
-                  fontSize={12}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#CFCFCF" }}
-                  tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
-                />
-                <Tooltip
-                  content={
-                    <CustomTooltip
-                      formatter={(value: number) =>
-                        `${value.toLocaleString()} VND`
-                      }
-                    />
-                  }
-                />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#66D9FF"
-                  strokeWidth={3}
-                  fill="url(#revenueGradient)"
-                  name="Revenue"
-                />
+          <div className="w-full min-w-0 h-[500px] bg-[#373737] rounded-lg flex flex-col items-center justify-center p-4">
+            {revenueLoading ? (
+              <LoadingSpinner />
+            ) : revenuePeriod && revenuePeriod.current.breakdown.length > 0 ? (
+              <>
                 <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#66D9FF"
-                  strokeWidth={3}
-                  dot={{
-                    r: 6,
-                    fill: "#66D9FF",
-                    strokeWidth: 2,
-                    stroke: "#fff",
+                  style={{ width: "100%", height: "100%" }}
+                  data={{
+                    labels: revenuePeriod.current.breakdown.map(
+                      (d: any) => d.Date
+                    ),
+                    datasets: [
+                      {
+                        label: "Revenue",
+                        data: revenuePeriod.current.breakdown.map(
+                          (d: any) => d.Revenue
+                        ),
+                        borderColor: "#4CC2FF",
+                        backgroundColor: "rgba(76,194,255,0.2)",
+                        tension: 0.4,
+                      },
+                    ],
                   }}
-                  activeDot={{
-                    r: 8,
-                    fill: "#66D9FF",
-                    strokeWidth: 2,
-                    stroke: "#fff",
+                  options={{
+                    responsive: true,
+                    plugins: {
+                      legend: { display: false },
+                      title: { display: false },
+                    },
+                    scales: {
+                      x: { ticks: { color: "#CFCFCF" } },
+                      y: { ticks: { color: "#CFCFCF" } },
+                    },
                   }}
                 />
-              </AreaChart>
-            </ResponsiveContainer>
+                <div className="mt-2 text-[#CFCFCF] text-sm">
+                  <span>
+                    Current:{" "}
+                    <b>${revenuePeriod.current.total.toLocaleString()}</b>
+                  </span>
+                  <span className="ml-4">
+                    Previous:{" "}
+                    <b>${revenuePeriod.previous.total.toLocaleString()}</b>
+                  </span>
+                  <span className="ml-4">
+                    Growth:{" "}
+                    <b>
+                      {revenuePercent !== null
+                        ? revenuePercent.toFixed(1) + "%"
+                        : "-"}
+                    </b>
+                  </span>
+                </div>
+              </>
+            ) : (
+              <p className="text-[#CFCFCF]">No data available</p>
+            )}
           </div>
         </div>
       </div>

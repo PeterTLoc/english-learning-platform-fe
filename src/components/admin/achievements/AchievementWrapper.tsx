@@ -5,7 +5,7 @@ import AchievementService from "@/services/achievementService";
 import { IAchievement } from "@/types/models/IAchievement";
 import { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useToast } from "@/context/ToastContext";
 import AchievementList from "./AchievementList";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import DeleteConfirmModal from "@/components/common/DeleteModal";
@@ -32,6 +32,7 @@ export default function AchievementWrapper({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -89,10 +90,11 @@ export default function AchievementWrapper({
       setTotalPages(response.totalPages);
       setLoading(false);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error?.response?.data?.message
-          : "Failed to fetch achievements"
+          : "Failed to fetch achievements",
+        "error"
       );
       setLoading(false);
     }
@@ -106,7 +108,7 @@ export default function AchievementWrapper({
   ) => {
     try {
       if (!name || !description || !type || !goal) {
-        toast.warn("All fields are required");
+        showToast("All fields are required", "warning");
       }
       const response = await achievementService.createAchievement(
         name,
@@ -122,12 +124,13 @@ export default function AchievementWrapper({
         ]);
       }
 
-      toast.success("Achievement created successfully");
+      showToast("Achievement created successfully", "success");
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error?.response?.data?.message
-          : "Failed to create achievements"
+          : "Failed to create achievements",
+        "error"
       );
     }
   };
@@ -157,12 +160,13 @@ export default function AchievementWrapper({
         );
       }
 
-      toast.success("Achievement updated successfully");
+      showToast("Achievement updated successfully", "success");
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error?.response?.data?.message
-          : "Failed to update achievements"
+          : "Failed to update achievements",
+        "error"
       );
     }
   };
@@ -179,13 +183,14 @@ export default function AchievementWrapper({
           achievements.filter((a) => a._id !== deleted._id)
         );
       }
-      toast.success("Achievement deleted successfully");
+      showToast("Achievement deleted successfully", "success");
       setDeleteTarget(null);
     } catch (error) {
-      toast.error(
+      showToast(
         error instanceof AxiosError
           ? error?.response?.data?.message
-          : "Failed to delete achievements"
+          : "Failed to delete achievements",
+        "error"
       );
     }
   };
