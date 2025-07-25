@@ -65,16 +65,16 @@ input[type="text"]:focus {
   outline: none !important;
   box-shadow: none !important;
   border-color: #4CC2FF !important;
-  background-color: #2B2B2B !important;
+  background-color: #1F1F1F !important;
+}
+
+input[type="text"]:focus::placeholder {
+  color: #969696 !important;
 }
 
 .input {
-  @apply min-w-[280px] min-h-[32px] pt-[5px] pb-[3px] px-3 rounded-[5px] text-[13px] bg-[#2D2D2D] border border-b-2 border-b-[#999999] border-t-[#2D2D2D] border-l-[#2D2D2D] border-r-[#2D2D2D];
+  @apply min-w-[280px] min-h-[34px] px-[10px] pt-0 pb-[2px] bg-[#2D2D2D] border border-[#303030] border-b-[#9A9A9A] rounded-[5px] text-[13px];
   transition: var(--transition-default);
-}
-
-.input:focus {
-  @apply outline-none border-b-[#4CC2FF] bg-[#1F1F1F];
 }
 
 input:-webkit-autofill {
@@ -301,3 +301,37 @@ input[type="number"]::-webkit-inner-spin-button {
     transform: scaleY(1);
   }
 }
+
+/* ---------------------------------- Blog ---------------------------------- */
+.blog-shine figure {
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-shine figure::before {
+  position: absolute;
+  top: 0;
+  left: -75%;
+  z-index: 2;
+  display: block;
+  content: '';
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  transform: skewX(-25deg);
+}
+
+.blog-shine figure:hover::before {
+  animation: blog-shine-effect 0.75s;
+}
+
+@keyframes blog-shine-effect {
+  100% {
+    left: 125%;
+  }
+}
+/* ---------------------------------- End Blog ---------------------------------- */
