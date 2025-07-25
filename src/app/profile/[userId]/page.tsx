@@ -77,6 +77,8 @@ export default function UserProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
   const currentPwRef = useRef<HTMLInputElement>(null);
   const newPwRef = useRef<HTMLInputElement>(null);
   const confirmPwRef = useRef<HTMLInputElement>(null);
@@ -230,6 +232,29 @@ export default function UserProfilePage() {
       setAvatarFile(file);
       setEditAvatar(URL.createObjectURL(file));
       setHasChanges(true);
+    }
+  };
+
+  // Password requirement check functions
+  const checkPasswordRequirements = (password: string) => {
+    return {
+      length: password.length >= 8 && password.length <= 50,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      symbol: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    };
+  };
+
+  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewPassword(value);
+    
+    // Show password requirements when user starts typing
+    if (value.length > 0) {
+      setShowPasswordRequirements(true);
+    } else {
+      setShowPasswordRequirements(false);
     }
   };
 
@@ -830,6 +855,9 @@ export default function UserProfilePage() {
                     type={showNewPassword ? "text" : "password"}
                     placeholder="New Password"
                     className="bg-[#232323] border border-gray-600 rounded px-4 py-2 text-white w-full pr-10"
+                    value={newPassword}
+                    onChange={handleNewPasswordChange}
+                    onFocus={() => newPassword.length > 0 && setShowPasswordRequirements(true)}
                     required
                   />
                   <button
@@ -844,6 +872,62 @@ export default function UserProfilePage() {
                     )}
                   </button>
                 </div>
+
+                {/* Password Requirements */}
+                {showPasswordRequirements && (
+                  <div className="bg-[#1D1D1D] border border-[#333] rounded-md p-4 space-y-2">
+                    <h4 className="text-sm font-semibold text-gray-300 mb-3">
+                      Password Requirements
+                    </h4>
+                    {(() => {
+                      const requirements = checkPasswordRequirements(newPassword);
+                      return (
+                        <>
+                          <div className={`flex items-center gap-2 text-xs ${
+                            requirements.length ? 'text-green-400' : 'text-gray-500'
+                          }`}>
+                            <span className={requirements.length ? 'text-green-400' : 'text-gray-500'}>
+                              {requirements.length ? '✓' : '○'}
+                            </span>
+                            <span>Between 8-50 characters long</span>
+                          </div>
+                          <div className={`flex items-center gap-2 text-xs ${
+                            requirements.lowercase ? 'text-green-400' : 'text-gray-500'
+                          }`}>
+                            <span className={requirements.lowercase ? 'text-green-400' : 'text-gray-500'}>
+                              {requirements.lowercase ? '✓' : '○'}
+                            </span>
+                            <span>At least 1 lowercase letter</span>
+                          </div>
+                          <div className={`flex items-center gap-2 text-xs ${
+                            requirements.uppercase ? 'text-green-400' : 'text-gray-500'
+                          }`}>
+                            <span className={requirements.uppercase ? 'text-green-400' : 'text-gray-500'}>
+                              {requirements.uppercase ? '✓' : '○'}
+                            </span>
+                            <span>At least 1 uppercase letter</span>
+                          </div>
+                          <div className={`flex items-center gap-2 text-xs ${
+                            requirements.number ? 'text-green-400' : 'text-gray-500'
+                          }`}>
+                            <span className={requirements.number ? 'text-green-400' : 'text-gray-500'}>
+                              {requirements.number ? '✓' : '○'}
+                            </span>
+                            <span>At least 1 number</span>
+                          </div>
+                          <div className={`flex items-center gap-2 text-xs ${
+                            requirements.symbol ? 'text-green-400' : 'text-gray-500'
+                          }`}>
+                            <span className={requirements.symbol ? 'text-green-400' : 'text-gray-500'}>
+                              {requirements.symbol ? '✓' : '○'}
+                            </span>
+                            <span>At least 1 symbol (!@#$%^&*...)</span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
                 <div className="relative">
                   <input
                     ref={confirmPwRef}

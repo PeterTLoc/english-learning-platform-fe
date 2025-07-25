@@ -30,14 +30,14 @@ const LoginForm = ({
   return (
     <div>
       <form
-        className="flex flex-col bg-black/70 p-5 pb-[26px] border border-[#1D1D1D] rounded-md gap-2"
+        className="flex flex-col bg-[#2b2b2b] p-5 pb-[26px] border border-[#1D1D1D] rounded-md gap-2"
         onSubmit={onSubmit}
       >
-        <h1 className="text-[28px] font-bold self-center">Sign in</h1>
+        <h1 className="text-[28px] font-bold self-center mb-6">Sign in</h1>
 
         {/* Google Login Button */}
         {onGoogleLogin && (
-          <div className="mb-4">
+          <div>
             <button
               type="button"
               onClick={onGoogleLogin}

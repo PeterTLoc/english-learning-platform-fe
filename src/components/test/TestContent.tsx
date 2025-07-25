@@ -24,6 +24,8 @@ import LessonCompletionWarning from "./LessonCompletionWarning";
 import TestTaking from "./TestTaking";
 import { useToast } from "@/context/ToastContext";
 import { AxiosError } from "axios";
+import { parseAxiosError } from "@/utils/apiErrors"
+
 interface TestContentProps {
   courseId: string;
   lessonId: string; // this is testId
@@ -315,11 +317,8 @@ export default function TestContent({
     } catch (error: any) {
       console.error("Failed to submit test", error);
       console.error("Error details:", error.response?.data);
-      alert(
-        `Failed to submit test: ${
-          error.response?.data?.message || error.message
-        }`
-      );
+      const parsedError = parseAxiosError(error);
+      alert(`Failed to submit test: ${parsedError.message}`);
     } finally {
       setIsSubmitting(false);
     }

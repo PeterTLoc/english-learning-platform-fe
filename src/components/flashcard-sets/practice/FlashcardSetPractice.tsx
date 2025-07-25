@@ -7,9 +7,9 @@ import FlashcardService from "@/services/flashcardService";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useRouter } from "next/navigation";
 import FlashcardSetService from "@/services/flashcardSetService";
-import Image from "next/image";
 import { IFlashcardSet } from "@/types/models/IFlashcardSet";
 import Link from "next/link";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 const flashcardService = new FlashcardService();
 const flashcardSetService = new FlashcardSetService();
@@ -31,6 +31,7 @@ export default function FlashcardSetPractice({
   const [flipped, setFlipped] = useState(false);
   const [cardVisible, setCardVisible] = useState(true);
   const [flashcardSet, setFlashcardSet] = useState<IFlashcardSet | null>(null);
+  const [showTips, setShowTips] = useState(false);
 
   useEffect(() => {
     const fetchFlashcards = async () => {
@@ -123,13 +124,11 @@ export default function FlashcardSetPractice({
               </span>
               <Link href={`/flashcard-sets?userId=${flashcardSet?.userId}`}>
                 <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-[#232526]/70 border border-blue-400/30 shadow hover:shadow-lg transition-all duration-300 hover:scale-105">
-                  <Image
-                    src={flashcardSet?.user?.avatar || ""}
-                    alt="avatar"
-                    width={32}
-                    height={32}
-                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-blue-400/50 shadow"
-                    unoptimized
+                  <UserAvatar
+                    username={flashcardSet?.user?.username}
+                    avatarUrl={flashcardSet?.user?.avatar}
+                    size="sm"
+                    className="border border-blue-400/50 shadow"
                   />
                   <span className="text-blue-300 font-semibold text-sm sm:text-lg hover:text-pink-300 transition-colors">
                     {flashcardSet?.user?.username}
@@ -209,6 +208,49 @@ export default function FlashcardSetPractice({
                 <span>Flip</span>
               </div>
             </div>
+          </div>
+
+          {/* Flashcard Tips */}
+          <div className="mt-4 sm:mt-6 text-center">
+            <button
+              onClick={() => setShowTips(!showTips)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-lg text-blue-300 text-sm font-medium transition-all duration-200 hover:scale-105"
+            >
+              <span>💡</span>
+              <span>{showTips ? 'Hide Tips' : 'Show Learning Tips'}</span>
+            </button>
+            
+            {showTips && (
+              <div className="mt-4 p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-500/30 rounded-lg backdrop-blur-sm">
+                <h4 className="text-blue-300 font-semibold mb-3 text-sm">💡 Learning Tips</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300">
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>Try to guess the answer before flipping the card</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>Use spaced repetition - review cards regularly</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>Practice pronunciation by saying the words aloud</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>Create mental images to remember better</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>Use keyboard shortcuts for faster navigation</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>Focus on difficult cards more frequently</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Progress Bar */}

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Dropdown from "../ui/Dropdown";
 import UserAvatar from "../ui/UserAvatar";
 import { UserRole } from "../guards";
+import { parseAxiosError } from "@/utils/apiErrors";
 
 const UserDropdown = () => {
   const { user, logout } = useAuth();
@@ -20,12 +21,8 @@ const UserDropdown = () => {
       showToast("Logged out successfully", "success");
       router.push("/login");
     } catch (error) {
-      showToast(
-        error instanceof Error
-          ? error.message
-          : "Logout failed. Please try again.",
-        "error"
-      );
+      const parsedError = parseAxiosError(error);
+      showToast(parsedError.message, "error");
     }
   };
 

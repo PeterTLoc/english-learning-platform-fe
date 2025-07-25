@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { IMembership } from "@/types/membership/membership";
 import { useToast } from "@/context/ToastContext";
+import { parseAxiosError } from "@/utils/apiErrors";
 
 interface MembershipModalProps {
   membership?: IMembership;
@@ -38,10 +39,8 @@ export default function MembershipModal({
       await onSubmit(formData);
       onClose();
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : "An error occurred",
-        "error"
-      );
+      const parsedError = parseAxiosError(error);
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }

@@ -10,6 +10,7 @@ import { UserRole } from "@/components/guards";
 import UserDetailsModal from "@/components/admin/UserDetailsModal";
 import { useToast } from "@/context/ToastContext";
 import { useConfirmation } from "@/context/ConfirmationContext";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 const UserManagementPage = () => {
   const router = useRouter();
@@ -248,17 +249,12 @@ const UserManagementPage = () => {
                   >
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center">
-                        {user.avatar ? (
-                          <img
-                            src={user.avatar}
-                            alt={user.username}
-                            className="w-8 h-8 rounded-full mr-2"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 bg-[#373737] rounded-full mr-2 flex items-center justify-center">
-                            {user.username.charAt(0).toUpperCase()}
-                          </div>
-                        )}
+                        <UserAvatar
+                          username={user.username}
+                          avatarUrl={user.avatar}
+                          size="sm"
+                          className="mr-2"
+                        />
                         {user.username}
                       </div>
                     </td>

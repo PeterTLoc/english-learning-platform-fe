@@ -6,6 +6,7 @@ import { useConfirmation } from "@/context/ConfirmationContext";
 import { useToast } from "@/context/ToastContext";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface UserDetailsModalProps {
   user: User | null;
@@ -94,17 +95,12 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
             
             {/* User Header */}
             <div className="flex items-center gap-4 mb-6 p-4 bg-[#2B2B2B] rounded-lg">
-              {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.username}
-                  className="w-20 h-20 rounded-full"
-                />
-              ) : (
-                <div className="w-20 h-20 bg-[#373737] rounded-full flex items-center justify-center text-2xl text-white">
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <UserAvatar
+                username={user.username}
+                avatarUrl={user.avatar}
+                size="lg"
+                className="w-20 h-20"
+              />
               <div>
                 <h3 className="text-xl font-semibold text-white">{user.username}</h3>
                 <p className="text-[#CFCFCF] mb-2">{user.email}</p>

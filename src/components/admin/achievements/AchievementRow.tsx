@@ -1,6 +1,7 @@
 import React from "react";
 import { IAchievement } from "@/types/models/IAchievement";
 import { ObjectId } from "mongoose";
+import { formatAchievementType } from "@/utils/formatUtils";
 
 export default function AchievementRow({
   achievement,
@@ -17,7 +18,7 @@ export default function AchievementRow({
         {achievement.name}
       </td>
       <td className="px-6 py-4 text-left">{achievement.description}</td>
-      <td className="px-6 py-4 text-center">{achievement.type}</td>
+      <td className="px-6 py-4 text-center">{formatAchievementType(achievement.type)}</td>
       <td className="px-6 py-4 text-center">{achievement.goal}</td>
       <td className="px-6 py-4 text-center">
         <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">

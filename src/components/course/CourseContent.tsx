@@ -21,6 +21,7 @@ import {
 import { useSidebarRefresh } from "@/context/SidebarRefreshContext"
 import { useCourse } from "@/context/CourseContext"
 import { useRouter } from "next/navigation"
+import { parseAxiosError } from "@/utils/apiErrors"
 
 
 interface LessonOverviewProps {
@@ -110,7 +111,8 @@ export default function LessonOverview({
       setIsLessonCompleted(true)
       refreshSidebar() // <-- trigger sidebar refresh
     } catch (error) {
-      showToast("Failed to mark lesson as completed", "error")
+      const parsedError = parseAxiosError(error)
+      showToast(parsedError.message, "error")
     } finally {
       setMarking(false)
     }

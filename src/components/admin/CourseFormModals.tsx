@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { LessonLength } from "@/types/lesson/LessonLength";
 import { useToast } from "@/context/ToastContext";
+import { parseAxiosError } from "@/utils/apiErrors";
 
 // Define the enums directly since they're simple objects
 const ExerciseTypeEnum = {
@@ -360,10 +361,8 @@ export default function CourseFormModal({
         await onSubmit(formState);
       }
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : "An error occurred",
-        "error"
-      );
+      const parsedError = parseAxiosError(error);
+      showToast(parsedError.message, "error");
     } finally {
       setLoading(false);
     }
