@@ -140,7 +140,7 @@ const Page = () => {
         <h1 className="text-[26px] font-bold self-center mb-8">Enter PIN</h1>
         
         <p className="text-gray-300 text-sm text-center mb-6">
-          We've sent a 6-digit PIN to <span className="text-[#4CC2FF] font-medium">{email}</span>
+          We&apos;ve sent a 6-digit PIN to <span className="text-[#4CC2FF] font-medium">{email}</span>
         </p>
 
         {/* PIN Input */}
@@ -181,7 +181,7 @@ const Page = () => {
         {/* Resend Section */}
         <div className="mt-6 text-center">
           <p className="text-gray-400 text-sm mb-3">
-            Didn't receive the PIN?
+            Didn&apos;t receive the PIN?
           </p>
           <button
             type="button"
