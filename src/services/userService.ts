@@ -118,16 +118,13 @@ class UserService {
    * Get detailed user information including stats, flashcards, courses, lessons, tests, and achievements
    */
   async getUserDetailById(userId: string): Promise<UserDetail> {
-    // First get the basic user information
     const userResponse = await api.get(`/api/users/${userId}`);
     const user = userResponse.data.user;
 
-    // Initialize the detailed user object
     const userDetail: UserDetail = {
       ...user,
     };
 
-    // Use Promise.allSettled to handle potentially unimplemented endpoints
     const [
       statsResponse,
       coursesResponse,
@@ -148,7 +145,6 @@ class UserService {
         .catch(() => ({ data: null })),
     ]);
 
-    // Safely add data if the endpoint was successful
     if (statsResponse.status === "fulfilled" && statsResponse.value?.data) {
       userDetail.stats = statsResponse.value.data;
     }
@@ -214,7 +210,6 @@ class UserService {
       userDetail.flashcards = flashcardsResponse.value.data;
     }
 
-    // Return user detail with whatever data was successfully fetched
     return userDetail;
   }
 
