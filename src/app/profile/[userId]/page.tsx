@@ -22,6 +22,7 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  ReceiptText,
   Trophy,
   Flame,
   Target,
@@ -44,6 +45,7 @@ import { Lesson } from "@/types/course/lesson";
 import { Test } from "@/types/course/test";
 import { capitalizeStatus } from "@/enums/UserCourseStatusEnum";
 import { useAuth } from "@/context/AuthContext";
+import ReceiptList from "@/components/receipts/ReceiptList";
 
 const userService = new UserService();
 const flashcardSetService = new FlashcardSetService();
@@ -55,6 +57,7 @@ const SIDEBAR_LINKS = [
   { label: "Flashcards", icon: BookOpen },
   { label: "Achievements", icon: Star },
   { label: "Change Password", icon: KeyRound },
+  { label: "Receipts", icon: ReceiptText },
 ];
 
 export default function UserProfilePage() {
@@ -85,7 +88,8 @@ export default function UserProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [showPasswordRequirements, setShowPasswordRequirements] =
+    useState(false);
   const [newPassword, setNewPassword] = useState("");
   const currentPwRef = useRef<HTMLInputElement>(null);
   const newPwRef = useRef<HTMLInputElement>(null);
@@ -153,13 +157,16 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     const fetchLessonsAndTests = async () => {
-      if (selectedSection === "Overview" || selectedSection === "Tests & Lessons") {
+      if (
+        selectedSection === "Overview" ||
+        selectedSection === "Tests & Lessons"
+      ) {
         setLoadingLessons(true);
         setLoadingTests(true);
         try {
           const [lessonsData, testsData] = await Promise.all([
             getUserLessons(userId),
-            getUserTests(userId)
+            getUserTests(userId),
           ]);
           setUserLessons(lessonsData.data || lessonsData);
           setUserTests(testsData.data || testsData);
@@ -209,20 +216,25 @@ export default function UserProfilePage() {
   // Helper function to get latest attempt of each unique test
   const getLatestTestAttempts = (tests: any[]) => {
     if (!tests || tests.length === 0) return [];
-    
+
     const testGroups: { [key: string]: any } = {};
-    tests.forEach(test => {
-      if (!testGroups[test.testId] || test.attemptNo > testGroups[test.testId].attemptNo) {
+    tests.forEach((test) => {
+      if (
+        !testGroups[test.testId] ||
+        test.attemptNo > testGroups[test.testId].attemptNo
+      ) {
         testGroups[test.testId] = test;
       }
     });
-    
+
     return Object.values(testGroups);
   };
 
   // Get filtered test data for calculations
   const latestTests = getLatestTestAttempts(userTests);
-  const completedTests = latestTests.filter(test => test.status === "passed" || test.status === "failed");
+  const completedTests = latestTests.filter(
+    (test) => test.status === "passed" || test.status === "failed"
+  );
 
   const handleSaveProfile = async () => {
     setSaveProfileLoading(true);
@@ -298,7 +310,7 @@ export default function UserProfilePage() {
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewPassword(value);
-    
+
     // Show password requirements when user starts typing
     if (value.length > 0) {
       setShowPasswordRequirements(true);
@@ -559,7 +571,7 @@ export default function UserProfilePage() {
                     <BarChart3 className="w-6 h-6 text-[#4CC2FF]" />
                     Your Progress Overview
                   </h2>
-                  
+
                   {/* Main Stats Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
@@ -571,7 +583,7 @@ export default function UserProfilePage() {
                       </div>
                       <div className="text-xs text-gray-400">Points</div>
                     </div>
-                    
+
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
                       <div className="flex justify-center mb-2">
                         <Flame className="w-6 h-6 text-orange-500" />
@@ -581,7 +593,7 @@ export default function UserProfilePage() {
                       </div>
                       <div className="text-xs text-gray-400">Day Streak</div>
                     </div>
-                    
+
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
                       <div className="flex justify-center mb-2">
                         <GraduationCap className="w-6 h-6 text-[#4CC2FF]" />
@@ -589,19 +601,22 @@ export default function UserProfilePage() {
                       <div className="text-2xl font-bold text-white mb-1">
                         {userDetail?.courses?.completed || 0}
                       </div>
-                      <div className="text-xs text-gray-400">Courses Completed</div>
+                      <div className="text-xs text-gray-400">
+                        Courses Completed
+                      </div>
                     </div>
-                    
+
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
                       <div className="flex justify-center mb-2">
                         <CheckCircle className="w-6 h-6 text-green-500" />
                       </div>
                       <div className="text-2xl font-bold text-white mb-1">
-                        {latestTests?.filter(test => test.status === "passed")?.length || 0}
+                        {latestTests?.filter((test) => test.status === "passed")
+                          ?.length || 0}
                       </div>
                       <div className="text-xs text-gray-400">Tests Passed</div>
                     </div>
-                    
+
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
                       <div className="flex justify-center mb-2">
                         <Trophy className="w-6 h-6 text-yellow-500" />
@@ -620,26 +635,34 @@ export default function UserProfilePage() {
                       <div className="bg-[#2a2a2a] rounded-lg p-4 border border-[#333]">
                         <div className="flex items-center gap-3 mb-4">
                           <GraduationCap className="w-5 h-5 text-[#4CC2FF]" />
-                          <h3 className="text-lg font-semibold text-white">Course Progress</h3>
+                          <h3 className="text-lg font-semibold text-white">
+                            Course Progress
+                          </h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           <div className="text-center">
                             <div className="text-2xl font-bold text-white">
                               {userDetail.courses?.total || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Total Enrolled</div>
+                            <div className="text-sm text-gray-400">
+                              Total Enrolled
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-400">
                               {userDetail.courses?.completed || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Completed</div>
+                            <div className="text-sm text-gray-400">
+                              Completed
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-yellow-400">
                               {userDetail.courses?.inProgress || 0}
                             </div>
-                            <div className="text-sm text-gray-400">In Progress</div>
+                            <div className="text-sm text-gray-400">
+                              In Progress
+                            </div>
                           </div>
                         </div>
                         {userDetail.courses?.total > 0 && (
@@ -647,14 +670,23 @@ export default function UserProfilePage() {
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">Progress</span>
                               <span className="text-white font-semibold">
-                                {Math.round(((userDetail.courses?.completed || 0) / userDetail.courses?.total) * 100)}%
+                                {Math.round(
+                                  ((userDetail.courses?.completed || 0) /
+                                    userDetail.courses?.total) *
+                                    100
+                                )}
+                                %
                               </span>
                             </div>
                             <div className="w-full bg-[#444] rounded-full h-2">
-                              <div 
+                              <div
                                 className="bg-[#4CC2FF] h-2 rounded-full transition-all duration-300"
-                                style={{ 
-                                  width: `${((userDetail.courses?.completed || 0) / userDetail.courses?.total) * 100}%` 
+                                style={{
+                                  width: `${
+                                    ((userDetail.courses?.completed || 0) /
+                                      userDetail.courses?.total) *
+                                    100
+                                  }%`,
                                 }}
                               ></div>
                             </div>
@@ -666,28 +698,42 @@ export default function UserProfilePage() {
                       <div className="bg-[#2a2a2a] rounded-lg p-4 border border-[#333]">
                         <div className="flex items-center gap-3 mb-4">
                           <Target className="w-5 h-5 text-green-500" />
-                          <h3 className="text-lg font-semibold text-white">Test Performance</h3>
+                          <h3 className="text-lg font-semibold text-white">
+                            Test Performance
+                          </h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           <div className="text-center">
                             <div className="text-2xl font-bold text-white">
                               {latestTests?.length || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Total Tests</div>
+                            <div className="text-sm text-gray-400">
+                              Total Tests
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-400">
-                              {latestTests?.filter(test => test.status === "passed")?.length || 0}
+                              {latestTests?.filter(
+                                (test) => test.status === "passed"
+                              )?.length || 0}
                             </div>
                             <div className="text-sm text-gray-400">Passed</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-blue-400">
-                              {completedTests?.length > 0 
-                                ? (completedTests.reduce((sum, test) => sum + (test.score || 0), 0) / completedTests.length).toFixed(1)
-                                : 0}%
+                              {completedTests?.length > 0
+                                ? (
+                                    completedTests.reduce(
+                                      (sum, test) => sum + (test.score || 0),
+                                      0
+                                    ) / completedTests.length
+                                  ).toFixed(1)
+                                : 0}
+                              %
                             </div>
-                            <div className="text-sm text-gray-400">Average Score</div>
+                            <div className="text-sm text-gray-400">
+                              Average Score
+                            </div>
                           </div>
                         </div>
                         {latestTests?.length > 0 && (
@@ -695,14 +741,27 @@ export default function UserProfilePage() {
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">Pass Rate</span>
                               <span className="text-white font-semibold">
-                                {Math.round(((latestTests.filter(test => test.status === "passed").length) / latestTests.length) * 100)}%
+                                {Math.round(
+                                  (latestTests.filter(
+                                    (test) => test.status === "passed"
+                                  ).length /
+                                    latestTests.length) *
+                                    100
+                                )}
+                                %
                               </span>
                             </div>
                             <div className="w-full bg-[#444] rounded-full h-2">
-                              <div 
+                              <div
                                 className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                                style={{ 
-                                  width: `${((latestTests.filter(test => test.status === "passed").length) / latestTests.length) * 100}%` 
+                                style={{
+                                  width: `${
+                                    (latestTests.filter(
+                                      (test) => test.status === "passed"
+                                    ).length /
+                                      latestTests.length) *
+                                    100
+                                  }%`,
                                 }}
                               ></div>
                             </div>
@@ -714,41 +773,66 @@ export default function UserProfilePage() {
                       <div className="bg-[#2a2a2a] rounded-lg p-4 border border-[#333]">
                         <div className="flex items-center gap-3 mb-4">
                           <BookOpen className="w-5 h-5 text-purple-500" />
-                          <h3 className="text-lg font-semibold text-white">Lesson Progress</h3>
+                          <h3 className="text-lg font-semibold text-white">
+                            Lesson Progress
+                          </h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           <div className="text-center">
                             <div className="text-2xl font-bold text-white">
                               {userLessons?.length || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Total Lessons</div>
+                            <div className="text-sm text-gray-400">
+                              Total Lessons
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-400">
-                              {userLessons?.filter(lesson => lesson.status === "completed")?.length || 0}
+                              {userLessons?.filter(
+                                (lesson) => lesson.status === "completed"
+                              )?.length || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Completed</div>
+                            <div className="text-sm text-gray-400">
+                              Completed
+                            </div>
                           </div>
-                                                      <div className="text-center">
-                              <div className="text-2xl font-bold text-yellow-400">
-                                {userLessons?.filter(lesson => lesson.status === "in-progress")?.length || 0}
-                              </div>
-                              <div className="text-sm text-gray-400">In Progress</div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-yellow-400">
+                              {userLessons?.filter(
+                                (lesson) => lesson.status === "in-progress"
+                              )?.length || 0}
                             </div>
+                            <div className="text-sm text-gray-400">
+                              In Progress
+                            </div>
+                          </div>
                         </div>
                         {userLessons?.length > 0 && (
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-400">Progress</span>
                               <span className="text-white font-semibold">
-                                {Math.round(((userLessons.filter(lesson => lesson.status === "completed").length) / userLessons.length) * 100)}%
+                                {Math.round(
+                                  (userLessons.filter(
+                                    (lesson) => lesson.status === "completed"
+                                  ).length /
+                                    userLessons.length) *
+                                    100
+                                )}
+                                %
                               </span>
                             </div>
                             <div className="w-full bg-[#444] rounded-full h-2">
-                              <div 
+                              <div
                                 className="bg-purple-500 h-2 rounded-full transition-all duration-300"
-                                style={{ 
-                                  width: `${((userLessons.filter(lesson => lesson.status === "completed").length) / userLessons.length) * 100}%` 
+                                style={{
+                                  width: `${
+                                    (userLessons.filter(
+                                      (lesson) => lesson.status === "completed"
+                                    ).length /
+                                      userLessons.length) *
+                                    100
+                                  }%`,
                                 }}
                               ></div>
                             </div>
@@ -1114,7 +1198,10 @@ export default function UserProfilePage() {
                     className="bg-[#232323] border border-gray-600 rounded px-4 py-2 text-white w-full pr-10"
                     value={newPassword}
                     onChange={handleNewPasswordChange}
-                    onFocus={() => newPassword.length > 0 && setShowPasswordRequirements(true)}
+                    onFocus={() =>
+                      newPassword.length > 0 &&
+                      setShowPasswordRequirements(true)
+                    }
                     required
                   />
                   <button
@@ -1137,46 +1224,97 @@ export default function UserProfilePage() {
                       Password Requirements
                     </h4>
                     {(() => {
-                      const requirements = checkPasswordRequirements(newPassword);
+                      const requirements =
+                        checkPasswordRequirements(newPassword);
                       return (
                         <>
-                          <div className={`flex items-center gap-2 text-xs ${
-                            requirements.length ? 'text-green-400' : 'text-gray-500'
-                          }`}>
-                            <span className={requirements.length ? 'text-green-400' : 'text-gray-500'}>
-                              {requirements.length ? '✓' : '○'}
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.length
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.length
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.length ? "✓" : "○"}
                             </span>
                             <span>Between 8-50 characters long</span>
                           </div>
-                          <div className={`flex items-center gap-2 text-xs ${
-                            requirements.lowercase ? 'text-green-400' : 'text-gray-500'
-                          }`}>
-                            <span className={requirements.lowercase ? 'text-green-400' : 'text-gray-500'}>
-                              {requirements.lowercase ? '✓' : '○'}
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.lowercase
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.lowercase
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.lowercase ? "✓" : "○"}
                             </span>
                             <span>At least 1 lowercase letter</span>
                           </div>
-                          <div className={`flex items-center gap-2 text-xs ${
-                            requirements.uppercase ? 'text-green-400' : 'text-gray-500'
-                          }`}>
-                            <span className={requirements.uppercase ? 'text-green-400' : 'text-gray-500'}>
-                              {requirements.uppercase ? '✓' : '○'}
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.uppercase
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.uppercase
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.uppercase ? "✓" : "○"}
                             </span>
                             <span>At least 1 uppercase letter</span>
                           </div>
-                          <div className={`flex items-center gap-2 text-xs ${
-                            requirements.number ? 'text-green-400' : 'text-gray-500'
-                          }`}>
-                            <span className={requirements.number ? 'text-green-400' : 'text-gray-500'}>
-                              {requirements.number ? '✓' : '○'}
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.number
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.number
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.number ? "✓" : "○"}
                             </span>
                             <span>At least 1 number</span>
                           </div>
-                          <div className={`flex items-center gap-2 text-xs ${
-                            requirements.symbol ? 'text-green-400' : 'text-gray-500'
-                          }`}>
-                            <span className={requirements.symbol ? 'text-green-400' : 'text-gray-500'}>
-                              {requirements.symbol ? '✓' : '○'}
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.symbol
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.symbol
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.symbol ? "✓" : "○"}
                             </span>
                             <span>At least 1 symbol (!@#$%^&*...)</span>
                           </div>
@@ -1214,6 +1352,11 @@ export default function UserProfilePage() {
                 </button>
               </form>
             </div>
+          )}
+          {selectedSection === "Receipts" && (
+            <>
+              <ReceiptList />
+            </>
           )}
         </main>
       </div>

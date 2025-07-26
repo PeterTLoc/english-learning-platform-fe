@@ -19,6 +19,8 @@ import {
   ArrowLeft,
   ArrowRight,
   Volume2,
+  Trash2,
+  MoreVertical,
 } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import FlashcardManagementModal from "./FlashcardManagementModal";
@@ -40,6 +42,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
   const [loading, setLoading] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
   const { showConfirmation } = useConfirmation();
@@ -51,9 +54,13 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       try {
         const response = await flashcardSetService.getFlashcardSetById(id);
         setFlashcardSet(response.flashcardSet);
-        
+
         // Fetch flashcards for this set
-        const flashcardsResponse = await flashcardService.getFlashcards(id, 1, 100);
+        const flashcardsResponse = await flashcardService.getFlashcards(
+          id,
+          1,
+          100
+        );
         setFlashcards(flashcardsResponse.data);
         setLoading(false);
       } catch (error) {
@@ -75,7 +82,10 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       if (e.code === "ArrowLeft" && currentCardIndex > 0) {
         setCurrentCardIndex(currentCardIndex - 1);
         setFlipped(false);
-      } else if (e.code === "ArrowRight" && currentCardIndex < flashcards.length - 1) {
+      } else if (
+        e.code === "ArrowRight" &&
+        currentCardIndex < flashcards.length - 1
+      ) {
         setCurrentCardIndex(currentCardIndex + 1);
         setFlipped(false);
       } else if (e.code === "Space") {
@@ -88,11 +98,20 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentCardIndex, flashcards.length]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShowDropdown(false);
+    if (showDropdown) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [showDropdown]);
+
   const handleDeleteFlashcardSet = async (id: string) => {
     const confirmed = await showConfirmation({
       title: "Delete Flashcard Set",
       message:
-        "Are you sure you want to delete this flashcard set? This action cannot be undone.",
+        "Are you sure you want to delete this flashcard set? This action cannot be undone and will delete all flashcards in this set.",
       confirmText: "Delete",
       cancelText: "Cancel",
       variant: "danger",
@@ -122,6 +141,13 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
     }
   };
 
+  // Check if user can manage this flashcard set
+  const canManageSet =
+    user &&
+    flashcardSet &&
+    (user._id?.toString() === flashcardSet.userId?.toString() ||
+      user.role === 1);
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4 justify-center items-center min-h-[100vh]">
@@ -147,27 +173,62 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
             <div className="bg-[#2b2b2b] rounded-lg shadow-lg p-8 mt-4 mb-6">
               {/* Header with Edit/Delete Buttons */}
               <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
-                <div className="flex justify-between items-start flex-1">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold mb-4 break-words text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                      {flashcardSet.name}
-                    </h1>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h1 className="text-3xl md:text-4xl font-extrabold mb-4 break-words text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                        {flashcardSet.name}
+                      </h1>
 
-                    {/* Creation date */}
-                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
-                      <Calendar className="w-4 h-4" />
-                      <span>Created at {formatDate(flashcardSet.createdAt)}</span>
+                      {/* Creation date */}
+                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          Created at {formatDate(flashcardSet.createdAt)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {user?._id?.toString() === flashcardSet.userId?.toString() && (
-                    <button
-                      className="mt-2 px-4 py-2 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-slate-700"
-                      onClick={() => setIsFlashcardModalOpen(true)}
-                    >
-                      Manage Flashcards
-                    </button>
-                  )}
+                    {/* Management buttons for owners/admins */}
+                    {canManageSet && (
+                      <div className="flex flex-col sm:flex-row gap-2 ml-4">
+                        <button
+                          className="px-4 py-2 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-slate-700"
+                          onClick={() => setIsFlashcardModalOpen(true)}
+                        >
+                          Manage Flashcards
+                        </button>
+
+                        {/* More actions dropdown */}
+                        <div className="relative">
+                          <button
+                            className="p-2 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 hover:bg-slate-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowDropdown(!showDropdown);
+                            }}
+                          >
+                            <MoreVertical className="w-5 h-5" />
+                          </button>
+
+                          {showDropdown && (
+                            <div className="absolute right-0 mt-2 w-48 bg-[#2b2b2b] border border-slate-600 rounded-lg shadow-xl z-50">
+                              <button
+                                className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 flex items-center gap-2 rounded-lg transition-colors"
+                                onClick={() => {
+                                  setShowDropdown(false);
+                                  handleDeleteFlashcardSet(id);
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete Set
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -188,12 +249,28 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                   href={`/profile/${flashcardSet.userId}`}
                   className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity"
                 >
+<<<<<<< HEAD
+                  {flashcardSet.user?.avatar ? (
+                    <Image
+                      src={flashcardSet.user.avatar}
+                      alt={flashcardSet.user.username}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-lg border-2 border-white shadow"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg border-2 border-white shadow bg-white flex items-center justify-center">
+                      <User className="w-6 h-6 text-gray-800" />
+                    </div>
+                  )}
+=======
                   <UserAvatar
                     username={flashcardSet.user?.username}
                     avatarUrl={flashcardSet.user?.avatar}
                     size="lg"
                     className="w-12 h-12 rounded-lg border-2 border-white shadow"
                   />
+>>>>>>> 791b495fa68d4ae0b756b53ef81dcbb17411368d
                   <div className="flex flex-col">
                     <span className="text-lg text-white font-semibold">
                       {flashcardSet.user?.username || "Unknown User"}
@@ -207,7 +284,8 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
               <div className="bg-[#414a4c] rounded-lg p-4 flex items-center justify-center gap-3">
                 <BookOpen className="w-6 h-6 text-white" />
                 <div className="font-bold text-xl">
-                  {flashcards.length} {flashcards.length === 1 ? "flashcard" : "flashcards"}
+                  {flashcards.length}{" "}
+                  {flashcards.length === 1 ? "flashcard" : "flashcards"}
                 </div>
               </div>
             </div>
@@ -215,14 +293,18 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
             {/* Section 2: Flashcard Practice Animation */}
             {flashcards.length > 0 && (
               <div className="bg-[#2b2b2b] rounded-lg shadow-lg p-8 mb-6">
-                <h2 className="text-2xl font-bold text-white mb-6 text-center">Practice Flashcard</h2>
-                
+                <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                  Practice Flashcard
+                </h2>
+
                 {/* Interactive Flashcard */}
                 <div className="flex flex-col items-center">
                   <div className="flex items-center justify-center gap-4 mb-4 w-[90%]">
                     <button
                       className={`w-12 h-12 flex items-center justify-center text-white bg-[#373737] rounded-lg shadow-md disabled:opacity-50 transition-all hover:bg-[#505050] ${
-                        currentCardIndex <= 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                        currentCardIndex <= 0
+                          ? "opacity-50 cursor-not-allowed"
+                          : "cursor-pointer"
                       }`}
                       onClick={() => {
                         setCurrentCardIndex(currentCardIndex - 1);
@@ -245,7 +327,14 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                       >
                         <div className="flashcard-front text-3xl text-white font-extrabold select-none flex items-center justify-center h-full p-6 text-center relative">
                           <button
-                            onClick={e => { e.stopPropagation(); speak(flashcards[currentCardIndex]?.englishContent || '', 'en-US'); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              speak(
+                                flashcards[currentCardIndex]?.englishContent ||
+                                  "",
+                                "en-US"
+                              );
+                            }}
                             className="absolute top-3 right-3 p-1 rounded hover:bg-white/10 z-10"
                             title="Listen to English"
                             type="button"
@@ -258,7 +347,14 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                         </div>
                         <div className="flashcard-back text-3xl text-white font-extrabold select-none flex items-center justify-center h-full p-6 text-center relative">
                           <button
-                            onClick={e => { e.stopPropagation(); speak(flashcards[currentCardIndex]?.vietnameseContent || '', 'vi-VN'); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              speak(
+                                flashcards[currentCardIndex]
+                                  ?.vietnameseContent || "",
+                                "vi-VN"
+                              );
+                            }}
                             className="absolute top-3 right-3 p-1 rounded hover:bg-white/10 z-10"
                             title="Listen to Vietnamese"
                             type="button"
@@ -274,7 +370,9 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
                     <button
                       className={`w-12 h-12 flex items-center justify-center text-white bg-[#373737] rounded-lg shadow-md disabled:opacity-50 transition-all hover:bg-[#505050] ${
-                        currentCardIndex >= flashcards.length - 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                        currentCardIndex >= flashcards.length - 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "cursor-pointer"
                       }`}
                       onClick={() => {
                         setCurrentCardIndex(currentCardIndex + 1);
@@ -293,15 +391,21 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                     </div>
                     <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
                       <div className="flex items-center gap-1">
-                        <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">←</kbd>
+                        <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">
+                          ←
+                        </kbd>
                         <span>Previous</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">→</kbd>
+                        <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">
+                          →
+                        </kbd>
                         <span>Next</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">Space</kbd>
+                        <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">
+                          Space
+                        </kbd>
                         <span>Flip</span>
                       </div>
                     </div>
@@ -312,11 +416,15 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
             {/* Section 3: All Flashcards List */}
             <div className="bg-[#2b2b2b] rounded-lg shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">All Flashcards</h2>
-              
+              <h2 className="text-2xl font-bold text-white mb-6">
+                All Flashcards
+              </h2>
+
               {flashcards.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-400 text-lg">No flashcards in this set yet.</p>
+                  <p className="text-gray-400 text-lg">
+                    No flashcards in this set yet.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -324,16 +432,24 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                     <div
                       key={card._id?.toString()}
                       className={`bg-[#414a4c] rounded-lg p-6 border transition-all duration-200 ${
-                        index === currentCardIndex ? "border-white shadow-lg" : "border-transparent"
+                        index === currentCardIndex
+                          ? "border-white shadow-lg"
+                          : "border-transparent"
                       }`}
                     >
                       <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-3">English</h3>
+                          <h3 className="text-lg font-semibold text-white mb-3">
+                            English
+                          </h3>
                           <div className="flex items-center gap-2">
-                            <span className="text-white text-xl leading-relaxed">{card.englishContent}</span>
+                            <span className="text-white text-xl leading-relaxed">
+                              {card.englishContent}
+                            </span>
                             <button
-                              onClick={() => speak(card.englishContent, 'en-US')}
+                              onClick={() =>
+                                speak(card.englishContent, "en-US")
+                              }
                               className="p-1 rounded hover:bg-white/10"
                               title="Listen to English"
                               type="button"
@@ -344,11 +460,17 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                         </div>
                         <div className="hidden md:block w-px bg-white/30"></div>
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-3">Vietnamese</h3>
+                          <h3 className="text-lg font-semibold text-white mb-3">
+                            Vietnamese
+                          </h3>
                           <div className="flex items-center gap-2">
-                            <span className="text-white text-xl leading-relaxed">{card.vietnameseContent}</span>
+                            <span className="text-white text-xl leading-relaxed">
+                              {card.vietnameseContent}
+                            </span>
                             <button
-                              onClick={() => speak(card.vietnameseContent, 'vi-VN')}
+                              onClick={() =>
+                                speak(card.vietnameseContent, "vi-VN")
+                              }
                               className="p-1 rounded hover:bg-white/10"
                               title="Listen to Vietnamese"
                               type="button"
