@@ -15,13 +15,13 @@ export default async function Page({
     search: searchParam,
   } = await searchParams
   const page = Number(pageParam) || 1
-  const size = Number(sizeParam) || 3
+  const size = Number(sizeParam) || 20
   const search = searchParam
   const fetchedData = await blogService.getBlogs(page, size, search)
   const blogs = fetchedData.data
 
   return (
-    <div className="px-5 mt-8 flex justify-center">
+    <div className="px-5 pt-5 flex justify-center">
       <div className="w-[1625px]">
         <h1 className="title">Blogs</h1>
         <BlogSearch search={searchParam || ""} />
