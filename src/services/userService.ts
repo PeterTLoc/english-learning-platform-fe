@@ -26,12 +26,6 @@ export interface UserDetail extends User {
     averageScore: number;
     flashcardsMastered: number;
   };
-  flashcards?: {
-    total: number;
-    mastered: number;
-    learning: number;
-    studying: number;
-  };
   courses?: {
     total: number;
     completed: number;
@@ -131,7 +125,6 @@ class UserService {
       lessonsResponse,
       testsResponse,
       achievementsResponse,
-      flashcardsResponse,
     ] = await Promise.allSettled([
       api.get(`/api/statistics/user/${userId}`).catch(() => ({ data: null })),
       getUserCourses(userId).catch(() => null),
@@ -139,9 +132,6 @@ class UserService {
       getUserTests(userId).catch(() => null),
       api
         .get(`/api/user-achievements/${userId}/users`)
-        .catch(() => ({ data: null })),
-      api
-        .get(`/api/flashcard-sets/${userId}/user`)
         .catch(() => ({ data: null })),
     ]);
 
@@ -201,13 +191,6 @@ class UserService {
           dateAwarded: a.createdAt,
         })),
       };
-    }
-
-    if (
-      flashcardsResponse.status === "fulfilled" &&
-      flashcardsResponse.value?.data
-    ) {
-      userDetail.flashcards = flashcardsResponse.value.data;
     }
 
     return userDetail;

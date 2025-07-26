@@ -26,6 +26,11 @@ export const getUserLessons = async (userId: string) => {
   return response.data;
 };
 
+export const getUserLessonsByCourseId = async (userId: string, courseId: string) => {
+  const response = await api.get(`/api/user-lessons/${userId}/course/${courseId}`);
+  return response.data;
+};
+
 export const getUserLessonByLessonId = async (lessonId: string) => {
   const response = await api.get(`/api/user-lessons/${lessonId}/lesson`);
   return response.data;
