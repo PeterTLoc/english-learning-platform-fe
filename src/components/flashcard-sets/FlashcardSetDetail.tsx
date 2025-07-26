@@ -249,28 +249,12 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                   href={`/profile/${flashcardSet.userId}`}
                   className="inline-flex items-center gap-3 hover:opacity-80 transition-opacity"
                 >
-<<<<<<< HEAD
-                  {flashcardSet.user?.avatar ? (
-                    <Image
-                      src={flashcardSet.user.avatar}
-                      alt={flashcardSet.user.username}
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-lg border-2 border-white shadow"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg border-2 border-white shadow bg-white flex items-center justify-center">
-                      <User className="w-6 h-6 text-gray-800" />
-                    </div>
-                  )}
-=======
                   <UserAvatar
                     username={flashcardSet.user?.username}
                     avatarUrl={flashcardSet.user?.avatar}
                     size="lg"
                     className="w-12 h-12 rounded-lg border-2 border-white shadow"
                   />
->>>>>>> 791b495fa68d4ae0b756b53ef81dcbb17411368d
                   <div className="flex flex-col">
                     <span className="text-lg text-white font-semibold">
                       {flashcardSet.user?.username || "Unknown User"}
