@@ -35,15 +35,15 @@ export default function Page() {
         </div>
 
         {/* Main Content Area */}
-          <div className="p-4 sm:p-6 lg:p-8">
-            <FlashcardList
-              id={id}
-              page={page}
-              size={size}
-              order={order}
-              sort={sort}
-              search={search}
-            />
+        <div className="p-4 sm:p-6 lg:p-8">
+          <FlashcardList
+            id={id}
+            page={page}
+            size={size}
+            order={order}
+            sort={sort}
+            search={search}
+          />
         </div>
 
         {/* Create Modal */}
@@ -52,7 +52,7 @@ export default function Page() {
           onClose={() => setIsCreateModalOpen(false)}
           onCreate={() => {}}
         />
-        </div>
+      </div>
     </div>
   );
 }

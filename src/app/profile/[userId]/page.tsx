@@ -23,6 +23,7 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  ReceiptText,
 } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import FlashcardSetCard from "@/components/flashcard-sets/FlashcardSetCard";
@@ -36,6 +37,7 @@ import { Lesson } from "@/types/course/lesson";
 import { Test } from "@/types/course/test";
 import { capitalizeStatus } from "@/enums/UserCourseStatusEnum";
 import { useAuth } from "@/context/AuthContext";
+import ReceiptList from "@/components/receipts/ReceiptList";
 
 const userService = new UserService();
 const flashcardSetService = new FlashcardSetService();
@@ -44,9 +46,11 @@ const SIDEBAR_LINKS = [
   { label: "Overview", icon: User },
   { label: "Courses", icon: GraduationCap },
   { label: "Tests & Lessons", icon: Layers },
+
   { label: "Flashcards", icon: BookOpen },
   { label: "Achievements", icon: Star },
   { label: "Change Password", icon: KeyRound },
+  { label: "Receipts", icon: ReceiptText },
 ];
 
 export default function UserProfilePage() {
@@ -873,6 +877,11 @@ export default function UserProfilePage() {
                 </button>
               </form>
             </div>
+          )}
+          {selectedSection === "Receipts" && (
+            <>
+              <ReceiptList />
+            </>
           )}
         </main>
       </div>

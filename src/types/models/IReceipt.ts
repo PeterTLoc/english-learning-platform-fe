@@ -1,4 +1,6 @@
 import mongoose, { Document } from "mongoose";
+import { IUser } from "./IUser";
+import { IMembership } from "./IMembership";
 
 export interface IReceipt extends Document {
   amount: number;
@@ -10,4 +12,6 @@ export interface IReceipt extends Document {
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  user?: IUser;
+  membership?: IMembership;
 }
