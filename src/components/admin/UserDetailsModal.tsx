@@ -34,6 +34,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         setLoading(true);
         try {
           const detail = await userService.getUserDetailById(user._id);
+          console.log(detail)
           setUserDetail(detail);
         } catch (error) {
           console.error("Failed to fetch user details:", error);
