@@ -18,12 +18,20 @@ import {
   Edit2,
   Save,
   GraduationCap,
-  Layers,
   Star,
   KeyRound,
   Eye,
   EyeOff,
   ReceiptText,
+  Trophy,
+  Flame,
+  Target,
+  Award,
+  TrendingUp,
+  CheckCircle,
+  Clock,
+  BarChart3,
+  FileText,
 } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import FlashcardSetCard from "@/components/flashcard-sets/FlashcardSetCard";
@@ -45,8 +53,7 @@ const flashcardSetService = new FlashcardSetService();
 const SIDEBAR_LINKS = [
   { label: "Overview", icon: User },
   { label: "Courses", icon: GraduationCap },
-  { label: "Tests & Lessons", icon: Layers },
-
+  { label: "Tests & Lessons", icon: FileText },
   { label: "Flashcards", icon: BookOpen },
   { label: "Achievements", icon: Star },
   { label: "Change Password", icon: KeyRound },
@@ -81,6 +88,9 @@ export default function UserProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordRequirements, setShowPasswordRequirements] =
+    useState(false);
+  const [newPassword, setNewPassword] = useState("");
   const currentPwRef = useRef<HTMLInputElement>(null);
   const newPwRef = useRef<HTMLInputElement>(null);
   const confirmPwRef = useRef<HTMLInputElement>(null);
@@ -129,42 +139,68 @@ export default function UserProfilePage() {
   }, [user]);
 
   useEffect(() => {
-    if (selectedSection === "Courses") {
-      setLoadingCourses(true);
-      getAllUserCourses(userId)
-        .then((data) => setUserCourses(data))
-        .catch(() => setUserCourses([]))
-        .finally(() => setLoadingCourses(false));
-    }
+    const fetchCourses = async () => {
+      if (selectedSection === "Overview" || selectedSection === "Courses") {
+        setLoadingCourses(true);
+        try {
+          const data = await getAllUserCourses(userId);
+          setUserCourses(data);
+        } catch {
+          setUserCourses([]);
+        } finally {
+          setLoadingCourses(false);
+        }
+      }
+    };
+    fetchCourses();
   }, [selectedSection, userId]);
 
   useEffect(() => {
-    if (selectedSection === "Tests & Lessons") {
-      setLoadingLessons(true);
-      setLoadingTests(true);
-      getUserLessons(userId)
-        .then((data) => setUserLessons(data.data || data))
-        .catch(() => setUserLessons([]))
-        .finally(() => setLoadingLessons(false));
-      getUserTests(userId)
-        .then((data) => setUserTests(data.data || data))
-        .catch(() => setUserTests([]))
-        .finally(() => setLoadingTests(false));
-    }
+    const fetchLessonsAndTests = async () => {
+      if (
+        selectedSection === "Overview" ||
+        selectedSection === "Tests & Lessons"
+      ) {
+        setLoadingLessons(true);
+        setLoadingTests(true);
+        try {
+          const [lessonsData, testsData] = await Promise.all([
+            getUserLessons(userId),
+            getUserTests(userId),
+          ]);
+          setUserLessons(lessonsData.data || lessonsData);
+          setUserTests(testsData.data || testsData);
+        } catch {
+          setUserLessons([]);
+          setUserTests([]);
+        } finally {
+          setLoadingLessons(false);
+          setLoadingTests(false);
+        }
+      }
+    };
+    fetchLessonsAndTests();
   }, [selectedSection, userId]);
 
   useEffect(() => {
-    if (
-      selectedSection === "Flashcards" ||
-      selectedSection === "Achievements"
-    ) {
-      setLoadingUserDetail(true);
-      userService
-        .getUserDetailById(userId)
-        .then((data) => setUserDetail(data))
-        .catch(() => setUserDetail(null))
-        .finally(() => setLoadingUserDetail(false));
-    }
+    const fetchUserDetail = async () => {
+      if (
+        selectedSection === "Overview" ||
+        selectedSection === "Flashcards" ||
+        selectedSection === "Achievements"
+      ) {
+        setLoadingUserDetail(true);
+        try {
+          const data = await userService.getUserDetailById(userId);
+          setUserDetail(data);
+        } catch {
+          setUserDetail(null);
+        } finally {
+          setLoadingUserDetail(false);
+        }
+      }
+    };
+    fetchUserDetail();
   }, [selectedSection, userId]);
 
   const formatDate = (dateString: string | Date | undefined) => {
@@ -176,6 +212,29 @@ export default function UserProfilePage() {
       return "Unknown";
     }
   };
+
+  // Helper function to get latest attempt of each unique test
+  const getLatestTestAttempts = (tests: any[]) => {
+    if (!tests || tests.length === 0) return [];
+
+    const testGroups: { [key: string]: any } = {};
+    tests.forEach((test) => {
+      if (
+        !testGroups[test.testId] ||
+        test.attemptNo > testGroups[test.testId].attemptNo
+      ) {
+        testGroups[test.testId] = test;
+      }
+    });
+
+    return Object.values(testGroups);
+  };
+
+  // Get filtered test data for calculations
+  const latestTests = getLatestTestAttempts(userTests);
+  const completedTests = latestTests.filter(
+    (test) => test.status === "passed" || test.status === "failed"
+  );
 
   const handleSaveProfile = async () => {
     setSaveProfileLoading(true);
@@ -234,6 +293,29 @@ export default function UserProfilePage() {
       setAvatarFile(file);
       setEditAvatar(URL.createObjectURL(file));
       setHasChanges(true);
+    }
+  };
+
+  // Password requirement check functions
+  const checkPasswordRequirements = (password: string) => {
+    return {
+      length: password.length >= 8 && password.length <= 50,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      symbol: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    };
+  };
+
+  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewPassword(value);
+
+    // Show password requirements when user starts typing
+    if (value.length > 0) {
+      setShowPasswordRequirements(true);
+    } else {
+      setShowPasswordRequirements(false);
     }
   };
 
@@ -482,6 +564,286 @@ export default function UserProfilePage() {
                 </div>
               </div>
 
+              {/* Overall Stats Section */}
+              <div className="mt-8">
+                <div className="bg-gradient-to-br from-[#232b3b] to-[#1a1a1a] border border-[#333] rounded-xl p-6">
+                  <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                    <BarChart3 className="w-6 h-6 text-[#4CC2FF]" />
+                    Your Progress Overview
+                  </h2>
+
+                  {/* Main Stats Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
+                      <div className="flex justify-center mb-2">
+                        <Star className="w-6 h-6 text-yellow-400" />
+                      </div>
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {user.points || 0}
+                      </div>
+                      <div className="text-xs text-gray-400">Points</div>
+                    </div>
+
+                    <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
+                      <div className="flex justify-center mb-2">
+                        <Flame className="w-6 h-6 text-orange-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {user.onlineStreak || 0}
+                      </div>
+                      <div className="text-xs text-gray-400">Day Streak</div>
+                    </div>
+
+                    <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
+                      <div className="flex justify-center mb-2">
+                        <GraduationCap className="w-6 h-6 text-[#4CC2FF]" />
+                      </div>
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {userDetail?.courses?.completed || 0}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Courses Completed
+                      </div>
+                    </div>
+
+                    <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
+                      <div className="flex justify-center mb-2">
+                        <CheckCircle className="w-6 h-6 text-green-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {latestTests?.filter((test) => test.status === "passed")
+                          ?.length || 0}
+                      </div>
+                      <div className="text-xs text-gray-400">Tests Passed</div>
+                    </div>
+
+                    <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
+                      <div className="flex justify-center mb-2">
+                        <Trophy className="w-6 h-6 text-yellow-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {userDetail?.achievements?.total || 0}
+                      </div>
+                      <div className="text-xs text-gray-400">Achievements</div>
+                    </div>
+                  </div>
+
+                  {/* Detailed Progress Section */}
+                  {userDetail && (
+                    <div className="space-y-6">
+                      {/* Course Progress */}
+                      <div className="bg-[#2a2a2a] rounded-lg p-4 border border-[#333]">
+                        <div className="flex items-center gap-3 mb-4">
+                          <GraduationCap className="w-5 h-5 text-[#4CC2FF]" />
+                          <h3 className="text-lg font-semibold text-white">
+                            Course Progress
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-white">
+                              {userDetail.courses?.total || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Total Enrolled
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-400">
+                              {userDetail.courses?.completed || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Completed
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-yellow-400">
+                              {userDetail.courses?.inProgress || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              In Progress
+                            </div>
+                          </div>
+                        </div>
+                        {userDetail.courses?.total > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Progress</span>
+                              <span className="text-white font-semibold">
+                                {Math.round(
+                                  ((userDetail.courses?.completed || 0) /
+                                    userDetail.courses?.total) *
+                                    100
+                                )}
+                                %
+                              </span>
+                            </div>
+                            <div className="w-full bg-[#444] rounded-full h-2">
+                              <div
+                                className="bg-[#4CC2FF] h-2 rounded-full transition-all duration-300"
+                                style={{
+                                  width: `${
+                                    ((userDetail.courses?.completed || 0) /
+                                      userDetail.courses?.total) *
+                                    100
+                                  }%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Test Performance */}
+                      <div className="bg-[#2a2a2a] rounded-lg p-4 border border-[#333]">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Target className="w-5 h-5 text-green-500" />
+                          <h3 className="text-lg font-semibold text-white">
+                            Test Performance
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-white">
+                              {latestTests?.length || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Total Tests
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-400">
+                              {latestTests?.filter(
+                                (test) => test.status === "passed"
+                              )?.length || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">Passed</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-400">
+                              {completedTests?.length > 0
+                                ? (
+                                    completedTests.reduce(
+                                      (sum, test) => sum + (test.score || 0),
+                                      0
+                                    ) / completedTests.length
+                                  ).toFixed(1)
+                                : 0}
+                              %
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Average Score
+                            </div>
+                          </div>
+                        </div>
+                        {latestTests?.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Pass Rate</span>
+                              <span className="text-white font-semibold">
+                                {Math.round(
+                                  (latestTests.filter(
+                                    (test) => test.status === "passed"
+                                  ).length /
+                                    latestTests.length) *
+                                    100
+                                )}
+                                %
+                              </span>
+                            </div>
+                            <div className="w-full bg-[#444] rounded-full h-2">
+                              <div
+                                className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                                style={{
+                                  width: `${
+                                    (latestTests.filter(
+                                      (test) => test.status === "passed"
+                                    ).length /
+                                      latestTests.length) *
+                                    100
+                                  }%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Lesson Progress */}
+                      <div className="bg-[#2a2a2a] rounded-lg p-4 border border-[#333]">
+                        <div className="flex items-center gap-3 mb-4">
+                          <BookOpen className="w-5 h-5 text-purple-500" />
+                          <h3 className="text-lg font-semibold text-white">
+                            Lesson Progress
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-white">
+                              {userLessons?.length || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Total Lessons
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-400">
+                              {userLessons?.filter(
+                                (lesson) => lesson.status === "completed"
+                              )?.length || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Completed
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-yellow-400">
+                              {userLessons?.filter(
+                                (lesson) => lesson.status === "in-progress"
+                              )?.length || 0}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              In Progress
+                            </div>
+                          </div>
+                        </div>
+                        {userLessons?.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Progress</span>
+                              <span className="text-white font-semibold">
+                                {Math.round(
+                                  (userLessons.filter(
+                                    (lesson) => lesson.status === "completed"
+                                  ).length /
+                                    userLessons.length) *
+                                    100
+                                )}
+                                %
+                              </span>
+                            </div>
+                            <div className="w-full bg-[#444] rounded-full h-2">
+                              <div
+                                className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                                style={{
+                                  width: `${
+                                    (userLessons.filter(
+                                      (lesson) => lesson.status === "completed"
+                                    ).length /
+                                      userLessons.length) *
+                                    100
+                                  }%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Membership Card */}
               <div className="mt-8">
                 <div className="rounded-xl shadow-lg bg-gradient-to-br from-[#232b3b] to-[#1a1a1a] border border-[#333] p-6 flex flex-col sm:flex-row items-center gap-6">
@@ -622,7 +984,7 @@ export default function UserProfilePage() {
           {selectedSection === "Tests & Lessons" && (
             <div className="mb-6 min-h-[300px]">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <Layers className="w-7 h-7 text-purple-400" /> Tests & Lessons
+                <FileText className="w-7 h-7 text-purple-400" /> Tests & Lessons
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Lessons */}
@@ -834,6 +1196,12 @@ export default function UserProfilePage() {
                     type={showNewPassword ? "text" : "password"}
                     placeholder="New Password"
                     className="bg-[#232323] border border-gray-600 rounded px-4 py-2 text-white w-full pr-10"
+                    value={newPassword}
+                    onChange={handleNewPasswordChange}
+                    onFocus={() =>
+                      newPassword.length > 0 &&
+                      setShowPasswordRequirements(true)
+                    }
                     required
                   />
                   <button
@@ -848,6 +1216,113 @@ export default function UserProfilePage() {
                     )}
                   </button>
                 </div>
+
+                {/* Password Requirements */}
+                {showPasswordRequirements && (
+                  <div className="bg-[#1D1D1D] border border-[#333] rounded-md p-4 space-y-2">
+                    <h4 className="text-sm font-semibold text-gray-300 mb-3">
+                      Password Requirements
+                    </h4>
+                    {(() => {
+                      const requirements =
+                        checkPasswordRequirements(newPassword);
+                      return (
+                        <>
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.length
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.length
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.length ? "✓" : "○"}
+                            </span>
+                            <span>Between 8-50 characters long</span>
+                          </div>
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.lowercase
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.lowercase
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.lowercase ? "✓" : "○"}
+                            </span>
+                            <span>At least 1 lowercase letter</span>
+                          </div>
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.uppercase
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.uppercase
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.uppercase ? "✓" : "○"}
+                            </span>
+                            <span>At least 1 uppercase letter</span>
+                          </div>
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.number
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.number
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.number ? "✓" : "○"}
+                            </span>
+                            <span>At least 1 number</span>
+                          </div>
+                          <div
+                            className={`flex items-center gap-2 text-xs ${
+                              requirements.symbol
+                                ? "text-green-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            <span
+                              className={
+                                requirements.symbol
+                                  ? "text-green-400"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {requirements.symbol ? "✓" : "○"}
+                            </span>
+                            <span>At least 1 symbol (!@#$%^&*...)</span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
                 <div className="relative">
                   <input
                     ref={confirmPwRef}

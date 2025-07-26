@@ -49,7 +49,6 @@ export const useExerciseContent = ({
   const fetchUserExercises = useCallback(async () => {
     if (!userId || !lessonId) return;
     try {
-      // Use the lesson-specific API
       const data = await getUserExercisesByLessonId(userId, lessonId);
       console.log('Fetched user exercises for lesson:', data);
       setState((prev) => ({ ...prev, userExercises: data }));
@@ -88,14 +87,12 @@ export const useExerciseContent = ({
     }
   }, [lessonId]);
 
-  // Filter user exercises to only include those for the current lesson
   const lessonUserExercises = useMemo(() => {
     const filtered = filterUserExercisesByLesson(state.userExercises, state.allExercises);
     console.log('lessonUserExercises:', filtered);
     return filtered;
   }, [state.allExercises, state.userExercises]);
 
-  // Create a map of completed exercises with their details
   const completedExercisesMap = useMemo(() => {
     const map: Record<
       string,
@@ -108,7 +105,6 @@ export const useExerciseContent = ({
     > = {};
     state.userExercises.forEach((userExercise: any) => {
       const exerciseId = userExercise.exerciseId;
-      // Use the completed property directly from the API
       map[exerciseId] = {
         completed: !!userExercise.completed,
         userAnswer: userExercise.userAnswer,
@@ -133,7 +129,6 @@ export const useExerciseContent = ({
     [lessonUserExercises]
   );
 
-  // Check if current page has any answers
   const currentPageHasAnswers = useMemo(() => {
     if (!state.exercises.length) return false;
 

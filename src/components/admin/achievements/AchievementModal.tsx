@@ -3,6 +3,7 @@ import {
   AchievementType,
   AchievementTypeEnum,
 } from "@/enums/AchievementTypeEnum";
+import { formatAchievementType } from "@/utils/formatUtils";
 
 interface AchievementModalProps {
   isOpen: boolean;
@@ -96,7 +97,7 @@ export default function AchievementModal({
             >
               {Object.entries(AchievementTypeEnum).map(([key, value]) => (
                 <option key={key} value={value}>
-                  {key.replace(/([A-Z])/g, " $1").trim()}
+                  {formatAchievementType(value)}
                 </option>
               ))}
             </select>

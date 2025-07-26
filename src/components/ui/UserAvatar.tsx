@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 
 interface UserAvatarProps {
   username?: string
@@ -15,6 +15,8 @@ const UserAvatar = ({
   size = 'md',
   className = ''
 }: UserAvatarProps) => {
+  const [imageError, setImageError] = useState(false)
+
   // Size classes
   const sizeClasses = {
     sm: 'w-8 h-8',
@@ -27,18 +29,22 @@ const UserAvatar = ({
   // Get first character of username for fallback
   const initial = username ? username.charAt(0).toUpperCase() : 'U'
 
-  return avatarUrl ? (
+  // Show initials if no avatar URL, avatar URL is invalid, or image failed to load
+  const shouldShowInitials = !avatarUrl || imageError
+
+  return shouldShowInitials ? (
+    <div
+      className={`rounded-full ${sizeClass} ${className} bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold`}
+    >
+      {initial}
+    </div>
+  ) : (
     <img
       src={avatarUrl}
       alt={`${username}'s avatar`}
       className={`rounded-full ${sizeClass} ${className}`}
+      onError={() => setImageError(true)}
     />
-  ) : (
-    <div
-      className={`rounded-full ${sizeClass} ${className} bg-[#373737] flex items-center justify-center text-white`}
-    >
-      {initial}
-    </div>
   )
 }
 

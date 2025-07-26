@@ -12,10 +12,11 @@ export const baseShadow = (color: string): string => {
 export const hoverShadow = (color: string): string => {
   return `0 25px 50px -12px ${color.replace("1)", "0.9)")}`;
 };
+
 export const membershipColorPalette = [
-  "rgb(247, 68, 113)", // Softened red (originally bright red)
-  "rgb(68, 175, 247)", // Muted blue (originally bright blue)
-  "rgb(69, 241, 186)", // Pastel teal (originally bright cyan)
-  "rgb(255, 216, 120)", // Creamy yellow (originally bright yellow)
-  "rgb(173, 133, 255)", // Lavender (originally medium purple)
+  "rgb(247, 68, 113)",
+  "rgb(68, 175, 247)",
+  "rgb(69, 241, 186)",
+  "rgb(255, 216, 120)",
+  "rgb(173, 133, 255)",
 ];

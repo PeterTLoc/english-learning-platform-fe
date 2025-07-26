@@ -49,6 +49,7 @@ export default function LayoutWrapper({
     const hideTutor =
       pathname === "/login" ||
       pathname === "/register" ||
+      pathname === "/forgot-password" ||
       pathname.includes("/exercise") ||
       pathname.includes("/tests");
     return { isAdminLayout, hideNav, hideTutor };

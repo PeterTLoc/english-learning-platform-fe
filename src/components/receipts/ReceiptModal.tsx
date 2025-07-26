@@ -7,6 +7,7 @@ import {
   Clock,
   Shield,
   Zap,
+  ReceiptText,
 } from "lucide-react";
 import React from "react";
 import { IReceipt } from "@/types/models/IReceipt";
@@ -185,7 +186,10 @@ export default function ReceiptModal({
 
               {/* Billing Summary */}
               <div>
-                <h4 className="subtitle-top">Billing Summary</h4>
+                <h4 className="subtitle-top flex items-center gap-2">
+                  <ReceiptText className="w-4 h-4" />
+                  Billing Summary
+                </h4>
                 <div className="bg-[#1D1D1D] rounded-[5px] p-4">
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between items-center py-2">
@@ -291,9 +295,12 @@ export default function ReceiptModal({
                 tests. The only difference is the duration of access.
               </p>
               <div className="flex items-center justify-center gap-4 text-xs text-[#666]">
-                <span>Need help? Contact support@company.com</span>
+                <span>Need help? Contact tuyensinhhcm@fpt.edu.vn</span>
                 <span>•</span>
-                <span>Download our mobile app for the best experience</span>
+                <span>
+                  Download our mobile app for the best remote learning
+                  experience
+                </span>
               </div>
             </div>
 

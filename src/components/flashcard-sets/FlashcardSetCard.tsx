@@ -1,9 +1,9 @@
 "use client";
 import { IFlashcardSet } from "@/types/models/IFlashcardSet";
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Calendar, User, BookOpen, Clock } from "lucide-react";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 export default function FlashcardSetCard({
   flashcardSet,
@@ -48,19 +48,12 @@ export default function FlashcardSetCard({
             }}
           >
             <div className="flex items-center gap-2 group-hover/user:text-purple-400 transition-colors cursor-pointer">
-              {flashcardSet.user?.avatar ? (
-                <Image
-                  src={flashcardSet.user.avatar}
-                  alt={flashcardSet.user.username}
-                  width={32}
-                  height={32}
-                  className="w-7 h-7 rounded-full border-2 border-purple-400 shadow"
-                />
-              ) : (
-                <div className="w-7 h-7 rounded-full border-2 border-purple-400 shadow bg-purple-500 flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-              )}
+              <UserAvatar
+                username={flashcardSet.user?.username}
+                avatarUrl={flashcardSet.user?.avatar}
+                size="sm"
+                className="w-7 h-7 border-2 border-purple-400 shadow"
+              />
               <div className="flex flex-col">
                 <span className="text-sm text-purple-400 font-medium truncate max-w-20">
                   {flashcardSet.user?.username || "Unknown User"}

@@ -1,10 +1,10 @@
-"use client";
-import { IMembership } from "@/types/membership/membership";
-import React, { useState } from "react";
-import MembershipCard from "./MembershipCard";
-import { baseShadow, membershipColorPalette, toRGBA } from "@/utils/colorUtils";
-import Image from "next/image";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+"use client"
+import { IMembership } from "@/types/membership/membership"
+import React, { useState } from "react"
+import MembershipCard from "./MembershipCard"
+import { baseShadow, membershipColorPalette, toRGBA } from "@/utils/colorUtils"
+import Image from "next/image"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
 
 export default function CheckoutModal({
   isOpen,
@@ -15,20 +15,20 @@ export default function CheckoutModal({
   setPaymentMethod,
   checkout,
 }: {
-  isOpen: boolean;
-  onClose: () => void;
-  membership: IMembership;
-  index: number;
-  paymentMethod: string;
-  setPaymentMethod: (value: string) => void;
-  checkout: (membershipId: string) => Promise<void> | void;
+  isOpen: boolean
+  onClose: () => void
+  membership: IMembership
+  index: number
+  paymentMethod: string
+  setPaymentMethod: (value: string) => void
+  checkout: (membershipId: string) => Promise<void> | void
 }) {
-  const { name, price } = membership;
-  const [loading, setLoading] = useState(false);
+  const { name, price } = membership
+  const [loading, setLoading] = useState(false)
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
-  const color = membershipColorPalette[index % membershipColorPalette.length];
+  const color = membershipColorPalette[index % membershipColorPalette.length]
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 max-w-[100%] max-h-[100%] w-[100%] overflow-y-auto"
@@ -55,17 +55,17 @@ export default function CheckoutModal({
         </button>
 
         {/* Left Side: Membership Card (no subscribe button) */}
-        <div className="flex-1 h-full min-w-[250px] min-h-[250px]">
+        <div className="flex-1 flex p-5 justify-center min-w-[300px]">
           <MembershipCard
             membership={membership}
             index={index}
             hideSubscribeButton={true}
-            connectedLayout={true}
           />
         </div>
+
         {/* Responsive Divider */}
         <div
-          className="hidden md:block w-px h-auto mx-2"
+          className="hidden md:block w-px h-auto"
           style={{ backgroundColor: toRGBA(color, 0.15) }}
         ></div>
         <div
@@ -74,9 +74,7 @@ export default function CheckoutModal({
         ></div>
         {/* Right Side: Payment Options */}
         <div className="flex-1 h-full bg-[#2b2b2b] p-4 md:p-8 rounded-none min-w-[250px] min-h-[250px]">
-          <h3 className="text-2xl font-bold mb-6 text-white">
-            Order Summary
-          </h3>
+          <h3 className="text-2xl font-bold mb-6 text-white">Order Summary</h3>
           <div className="space-y-3 text-[#CFCFCF]">
             <div className="flex justify-between">
               <span>Membership:</span>
@@ -136,11 +134,11 @@ export default function CheckoutModal({
           <button
             className="mt-8 w-full px-6 py-3 bg-[#4CC2FF] hover:bg-[#48B2E9] text-white rounded-lg shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#4CC2FF] focus:ring-opacity-50 font-semibold"
             onClick={async () => {
-              setLoading(true);
+              setLoading(true)
               try {
-                await checkout(membership._id as string);
+                await checkout(membership._id as string)
               } finally {
-                setLoading(false);
+                setLoading(false)
               }
             }}
             disabled={loading}
@@ -162,5 +160,5 @@ export default function CheckoutModal({
         }
       `}</style>
     </div>
-  );
+  )
 }
