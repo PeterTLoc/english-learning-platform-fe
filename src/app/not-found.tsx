@@ -21,7 +21,8 @@ export default function NotFound() {
               Page Not Found
             </h2>
             <p className="text-lg text-[#CFCFCF] max-w-2xl mx-auto">
-              Sorry, we couldn't find the page you're looking for. It might have been moved, deleted, or you entered the wrong URL.
+              Sorry, we couldn &apos; t find the page you&apos;re looking for.
+              It might have been moved, deleted, or you entered the wrong URL.
             </p>
           </div>
 
@@ -34,7 +35,8 @@ export default function NotFound() {
               </h3>
             </div>
             <p className="text-sm text-[#CFCFCF] mb-4">
-              Try searching for courses, flashcards, or blog posts using the search bar above.
+              Try searching for courses, flashcards, or blog posts using the
+              search bar above.
             </p>
           </div>
 
@@ -78,7 +80,9 @@ export default function NotFound() {
                   <Users className="w-5 h-5 text-[#4CC2FF] group-hover:scale-110 transition-transform" />
                   <div className="text-left">
                     <h4 className="font-semibold text-white">Flashcards</h4>
-                    <p className="text-sm text-[#CFCFCF]">Study with flashcards</p>
+                    <p className="text-sm text-[#CFCFCF]">
+                      Study with flashcards
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -106,4 +110,4 @@ export default function NotFound() {
       </main>
     </div>
   );
-} 
+}
