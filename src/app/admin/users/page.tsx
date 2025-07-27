@@ -8,6 +8,7 @@ import ServerPagination from "@/components/common/ServerPagination";
 import UserService, { PaginatedUsers, User } from "@/services/userService";
 import { UserRole } from "@/components/guards";
 import UserDetailsModal from "@/components/admin/UserDetailsModal";
+import UserEnum from "@/enums/UserEnum";
 import { useToast } from "@/context/ToastContext";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -117,11 +118,11 @@ const UserManagementPage = () => {
 
   const getRoleName = (role: number) => {
     switch (role) {
-      case UserRole.USER:
+      case UserEnum.USER:
         return "User";
-      case UserRole.ADMIN:
+      case UserEnum.ADMIN:
         return "Admin";
-      case UserRole.GUEST:
+      case UserEnum.GUEST:
         return "Guest";
       default:
         return "Unknown";
@@ -158,9 +159,9 @@ const UserManagementPage = () => {
               className="w-full bg-[#2D2D2D] border border-[#1D1D1D] rounded-md p-2"
             >
               <option value="">All Roles</option>
-              <option value="0">User</option>
-              <option value="1">Admin</option>
-              <option value="-1">Guest</option>
+              <option value={UserEnum.USER.toString()}>User</option>
+              <option value={UserEnum.ADMIN.toString()}>Admin</option>
+              <option value={UserEnum.GUEST.toString()}>Guest</option>
             </select>
           </div>
           
@@ -262,9 +263,9 @@ const UserManagementPage = () => {
                     <td className="px-6 py-4 text-center">
                       <span 
                         className={`px-2 py-1 rounded text-sm ${
-                          user.role === 1 
+                          user.role === UserEnum.ADMIN
                             ? "bg-[#373737] text-[#4CC2FF]" 
-                            : user.role === 0
+                            : user.role === UserEnum.USER
                             ? "bg-[#373737] text-white"
                             : "bg-[#373737] text-[#CFCFCF]"
                         }`}

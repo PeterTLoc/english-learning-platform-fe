@@ -159,7 +159,8 @@ export default function UserProfilePage() {
     const fetchLessonsAndTests = async () => {
       if (
         selectedSection === "Overview" ||
-        selectedSection === "Tests & Lessons"
+        selectedSection === "Tests & Lessons" ||
+        selectedSection === "Courses"
       ) {
         setLoadingLessons(true);
         setLoadingTests(true);
@@ -813,11 +814,14 @@ export default function UserProfilePage() {
                               <span className="text-gray-400">Progress</span>
                               <span className="text-white font-semibold">
                                 {Math.round(
-                                  (userLessons.filter(
-                                    (lesson) => lesson.status === "completed"
-                                  ).length /
-                                    userLessons.length) *
+                                  Math.min(
+                                    (userLessons.filter(
+                                      (lesson) => lesson.status === "completed"
+                                    ).length /
+                                      userLessons.length) *
+                                      100,
                                     100
+                                  )
                                 )}
                                 %
                               </span>
@@ -827,11 +831,14 @@ export default function UserProfilePage() {
                                 className="bg-purple-500 h-2 rounded-full transition-all duration-300"
                                 style={{
                                   width: `${
-                                    (userLessons.filter(
-                                      (lesson) => lesson.status === "completed"
-                                    ).length /
-                                      userLessons.length) *
-                                    100
+                                    Math.min(
+                                      (userLessons.filter(
+                                        (lesson) => lesson.status === "completed"
+                                      ).length /
+                                        userLessons.length) *
+                                        100,
+                                      100
+                                    )
                                   }%`,
                                 }}
                               ></div>
@@ -903,11 +910,11 @@ export default function UserProfilePage() {
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 <GraduationCap className="w-7 h-7 text-blue-400" /> Courses
               </h2>
-              {loadingCourses ? (
+              {loadingCourses || loadingLessons ? (
                 <div className="flex flex-col items-center gap-4 justify-center py-12">
                   <LoadingSpinner />
                   <span className="ml-2 text-[#CFCFCF]">
-                    Loading courses...
+                    Loading courses and progress...
                   </span>
                 </div>
               ) : userCourses.length === 0 ? (
@@ -956,10 +963,49 @@ export default function UserProfilePage() {
                           <div className="flex items-center gap-2 text-sm text-gray-300 mb-2">
                             <span>Progress:</span>
                             <span className="font-semibold text-white">
-                              {uc.lessonFinished} /{" "}
-                              {uc.course?.totalLessons || 0} lessons
+                              {(() => {
+                                // Calculate completed lessons for this specific course from user lessons
+                                const courseLessons = userLessons.filter(
+                                  (ul) => ul.lesson?.courseId === uc.courseId
+                                );
+                                const completedLessons = courseLessons.filter(
+                                  (ul) => ul.status === "completed"
+                                ).length;
+                                const totalLessons = uc.course?.totalLessons || 0;
+                                
+                                // Handle cases where completed lessons exceed total lessons
+                                if (completedLessons > totalLessons && totalLessons > 0) {
+                                  return `${totalLessons} / ${totalLessons} lessons (${completedLessons} completed)`;
+                                }
+                                return `${completedLessons} / ${totalLessons} lessons`;
+                              })()}
                             </span>
                           </div>
+                          {(() => {
+                            // Calculate progress percentage for progress bar
+                            const courseLessons = userLessons.filter(
+                              (ul) => ul.lesson?.courseId === uc.courseId
+                            );
+                            const completedLessons = courseLessons.filter(
+                              (ul) => ul.status === "completed"
+                            ).length;
+                            const totalLessons = uc.course?.totalLessons || 0;
+                            // Cap progress at 100% to prevent overflow
+                            const progressPercentage = totalLessons > 0 
+                              ? Math.min((completedLessons / totalLessons) * 100, 100) 
+                              : 0;
+                            
+                            return (
+                              <div className="w-full bg-[#444] rounded-full h-2 mb-2">
+                                <div
+                                  className="bg-[#4CC2FF] h-2 rounded-full transition-all duration-300"
+                                  style={{
+                                    width: `${progressPercentage}%`,
+                                  }}
+                                ></div>
+                              </div>
+                            );
+                          })()}
                           <div className="flex items-center gap-2 text-sm">
                             <span
                               className={`px-2 py-0.5 rounded-full font-semibold ${

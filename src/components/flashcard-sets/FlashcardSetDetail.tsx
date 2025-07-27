@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import FlashcardManagementModal from "./FlashcardManagementModal";
+import FlashcardSetEditModal from "./FlashcardSetEditModal";
 
 const flashcardSetService = new FlashcardSetService();
 const flashcardService = new FlashcardService();
@@ -47,6 +48,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
   const router = useRouter();
   const { showConfirmation } = useConfirmation();
   const [isFlashcardModalOpen, setIsFlashcardModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { showToast } = useToast();
   const fetchFlashcardSet = async () => {
     try {
@@ -192,6 +194,12 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                     {/* Management buttons for owners/admins */}
                     {canManageSet && (
                       <div className="flex flex-col sm:flex-row gap-2 ml-4">
+                        <button
+                          className="px-4 py-2 rounded-lg bg-[#4CC2FF] text-black border border-[#4CC2FF] focus:ring-2 focus:ring-[#4CC2FF]/50 focus:border-[#4CC2FF] transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-[#3AA0DB]"
+                          onClick={() => setIsEditModalOpen(true)}
+                        >
+                          Edit Set
+                        </button>
                         <button
                           className="px-4 py-2 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-slate-700"
                           onClick={() => setIsFlashcardModalOpen(true)}
@@ -479,6 +487,12 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
           setIsFlashcardModalOpen(false);
         }}
         setId={id}
+      />
+      <FlashcardSetEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        flashcardSet={flashcardSet}
+        onUpdate={fetchFlashcardSet}
       />
     </div>
   );
