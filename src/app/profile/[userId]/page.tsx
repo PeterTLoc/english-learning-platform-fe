@@ -799,7 +799,7 @@ export default function UserProfilePage() {
                           <div className="text-center">
                             <div className="text-2xl font-bold text-yellow-400">
                               {userLessons?.filter(
-                                (lesson) => lesson.status === "ongoing"
+                                (lesson) => lesson.status === "in-progress"
                               )?.length || 0}
                             </div>
                             <div className="text-sm text-gray-400">

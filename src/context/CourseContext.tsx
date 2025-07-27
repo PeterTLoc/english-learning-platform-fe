@@ -1,23 +1,23 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react"
 import { useAuth } from "@/context/AuthContext"
-import { getAllUserCourses } from "@/services/userCourseService"
-
-type CourseStatus = "ongoing" | "completed" | null
+import { getAllUserCourses, UserCourse } from "@/services/userCourseService"
 
 interface UserCourseMap {
-  [courseId: string]: {
-    id: string
-    status: CourseStatus
-    currentOrder: number
-  }
+  [courseId: string]: UserCourse // ✅ store full backend object
 }
 
 interface CourseContextType {
   userCourses: UserCourseMap
   fetchAllCourses: () => Promise<void>
-  setCourseStatus: (courseId: string, status: CourseStatus) => void
+  setCourseStatus: (courseId: string, status: UserCourse["status"]) => void
 }
 
 const CourseContext = createContext<CourseContextType | undefined>(undefined)
@@ -36,15 +36,11 @@ export const CourseProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user?._id) return
 
     try {
-      const userCourseList = await getAllUserCourses(user._id)
+      const userCourseList: UserCourse[] = await getAllUserCourses(user._id)
       const map: UserCourseMap = {}
 
       for (const uc of userCourseList) {
-        map[String(uc.courseId)] = {
-          id: uc.id,
-          status: uc.status,
-          currentOrder: uc.currentOrder,
-        }
+        map[String(uc.courseId)] = uc
       }
 
       setUserCourses(map)
@@ -53,21 +49,25 @@ export const CourseProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user?._id])
 
-  // Automatically fetch user courses when user is available and auth is loaded
   useEffect(() => {
     if (!loading && user?._id) {
       fetchAllCourses()
     }
   }, [user?._id, loading, fetchAllCourses])
 
-  const setCourseStatus = (courseId: string, status: CourseStatus) => {
-    setUserCourses((prev) => ({
-      ...prev,
-      [courseId]: {
-        ...prev[courseId],
-        status,
-      },
-    }))
+  const setCourseStatus = (courseId: string, status: UserCourse["status"]) => {
+    setUserCourses((prev) => {
+      const existing = prev[courseId]
+      if (!existing) return prev
+
+      return {
+        ...prev,
+        [courseId]: {
+          ...existing,
+          status,
+        },
+      }
+    })
   }
 
   return (

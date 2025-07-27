@@ -1,9 +1,9 @@
-"use client";
-import { IBlog } from "@/types/models/IBlog";
-import React, { useState, useEffect } from "react";
-import { BlogStatusEnum } from "@/enums/BlogStatusEnum";
-import { ObjectId } from "mongoose";
-import Image from "next/image";
+"use client"
+import { IBlog } from "@/types/models/IBlog"
+import React, { useState, useEffect } from "react"
+import { BlogStatusEnum } from "@/enums/BlogStatusEnum"
+import { ObjectId } from "mongoose"
+import Image from "next/image"
 
 export default function EditBlogModal({
   blog,
@@ -11,37 +11,38 @@ export default function EditBlogModal({
   onClose,
   onUpdated,
 }: {
-  blog: IBlog;
-  isOpen: boolean;
-  onClose: () => void;
+  blog: IBlog
+  isOpen: boolean
+  onClose: () => void
   onUpdated?: (
     id: string,
     title?: string,
     status?: BlogStatusEnum,
     file?: File | string
-  ) => void;
+  ) => void
+  loading?: boolean
 }) {
-  const [title, setTitle] = useState(blog.title);
-  const [status, setStatus] = useState(blog.status);
-  const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState(blog.coverImage);
+  const [title, setTitle] = useState(blog.title)
+  const [status, setStatus] = useState(blog.status)
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState(blog.coverImage)
 
   useEffect(() => {
-    setTitle(blog.title);
-    setStatus(blog.status);
-    setImagePreview(blog.coverImage);
-    setCoverImage(null);
-  }, [blog]);
+    setTitle(blog.title)
+    setStatus(blog.status)
+    setImagePreview(blog.coverImage)
+    setCoverImage(null)
+  }, [blog])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      setCoverImage(file);
-      setImagePreview(URL.createObjectURL(file));
+      setCoverImage(file)
+      setImagePreview(URL.createObjectURL(file))
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-2 sm:px-4">
       <div className="bg-[#202020] rounded-lg shadow-2xl w-full max-w-xs sm:max-w-md p-4 sm:p-8 relative">
@@ -50,13 +51,13 @@ export default function EditBlogModal({
         </h2>
         <form
           onSubmit={(e) => {
-            e.preventDefault();
+            e.preventDefault()
             onUpdated?.(
               (blog._id as ObjectId).toString(),
               title,
               status as BlogStatusEnum,
               coverImage || undefined
-            );
+            )
           }}
           className="space-y-5"
         >
@@ -129,5 +130,5 @@ export default function EditBlogModal({
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -34,7 +34,6 @@ export default function ReceiptList() {
 
   useEffect(() => {
     fetchReceipt(page, size);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, page, size]);
 
   // Handle page size change

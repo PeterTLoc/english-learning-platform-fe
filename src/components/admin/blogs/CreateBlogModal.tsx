@@ -1,35 +1,36 @@
-"use client";
-import React, { useState, useRef } from "react";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import Underline from "@tiptap/extension-underline";
-import TextAlign from "@tiptap/extension-text-align";
-import { v4 as uuidv4 } from "uuid";
-import { BlogStatusEnum } from "@/enums/BlogStatusEnum";
+"use client"
+import React, { useState, useRef } from "react"
+import { EditorContent, useEditor } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
+import Image from "@tiptap/extension-image"
+import Underline from "@tiptap/extension-underline"
+import TextAlign from "@tiptap/extension-text-align"
+import { v4 as uuidv4 } from "uuid"
+import { BlogStatusEnum } from "@/enums/BlogStatusEnum"
 
 export default function CreateBlogModal({
   isOpen,
   toggleOpen,
   onCreate,
 }: {
-  isOpen: boolean;
-  toggleOpen: () => void;
+  isOpen: boolean
+  toggleOpen: () => void
   onCreate: (
     title: string,
     content: string,
     status: BlogStatusEnum,
     image: File | null,
     attachments: File[] | []
-  ) => void;
+  ) => void
+  loading?: boolean
 }) {
-  const [title, setTitle] = useState("");
-  const [image, setImage] = useState<File | null>(null); // Thumbnail
+  const [title, setTitle] = useState("")
+  const [image, setImage] = useState<File | null>(null) // Thumbnail
   const [attachments, setAttachments] = useState<{ id: string; file: File }[]>(
     []
-  ); // Inline images/files
-  const [status, setStatus] = useState<BlogStatusEnum>(BlogStatusEnum.DRAFTING);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  ) // Inline images/files
+  const [status, setStatus] = useState<BlogStatusEnum>(BlogStatusEnum.DRAFTING)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Tiptap editor setup
   const editor = useEditor({
@@ -45,79 +46,79 @@ export default function CreateBlogModal({
     content: "",
     onUpdate: ({ editor }) => {
       // Get all image nodes and their alt attributes (which are your IDs)
-      const json = editor.getJSON();
-      const imageIds: string[] = [];
+      const json = editor.getJSON()
+      const imageIds: string[] = []
 
       type EditorNode = {
-        type?: string;
-        attrs?: { alt?: string };
-        content?: EditorNode[];
-      };
+        type?: string
+        attrs?: { alt?: string }
+        content?: EditorNode[]
+      }
       function findImages(node: EditorNode) {
         if (node.type === "image" && node.attrs?.alt) {
-          imageIds.push(node.attrs.alt);
+          imageIds.push(node.attrs.alt)
         }
         if (node.content) {
-          node.content.forEach(findImages);
+          node.content.forEach(findImages)
         }
       }
-      findImages(json);
+      findImages(json)
 
       // Remove attachments whose IDs are no longer present in the editor
-      setAttachments((prev) => prev.filter((att) => imageIds.includes(att.id)));
+      setAttachments((prev) => prev.filter((att) => imageIds.includes(att.id)))
     },
-  });
+  })
 
   // Handle thumbnail upload
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
+      setImage(e.target.files[0])
     }
-  };
+  }
 
   // Handle inline image upload in editor
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file && editor) {
-      const id = uuidv4();
-      setAttachments((prev) => [...prev, { id, file }]);
-      const reader = new FileReader();
+      const id = uuidv4()
+      setAttachments((prev) => [...prev, { id, file }])
+      const reader = new FileReader()
       reader.onload = () => {
         editor
           .chain()
           .focus()
           .setImage({ src: reader.result as string, alt: id })
-          .run();
-      };
-      reader.readAsDataURL(file);
+          .run()
+      }
+      reader.readAsDataURL(file)
     }
-  };
+  }
 
   // Trigger file input for inline image
   const addImageToEditor = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   // Prevent background scroll when modal is open
   React.useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = "hidden"
     } else {
-      document.body.style.overflow = "";
+      document.body.style.overflow = ""
     }
     return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ""
+    }
+  }, [isOpen])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   // Toolbar button helper
   interface ButtonProps {
-    onClick: () => void;
-    active?: boolean;
-    children: React.ReactNode;
-    title?: string;
+    onClick: () => void
+    active?: boolean
+    children: React.ReactNode
+    title?: string
   }
   const Button = ({ onClick, active, children, title }: ButtonProps) => (
     <button
@@ -130,7 +131,7 @@ export default function CreateBlogModal({
     >
       {children}
     </button>
-  );
+  )
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-2 sm:px-4">
@@ -152,14 +153,14 @@ export default function CreateBlogModal({
         </button>
         <form
           onSubmit={(e) => {
-            e.preventDefault();
+            e.preventDefault()
             onCreate(
               title,
               editor?.getHTML() as string,
               status,
               image,
               attachments.map((att) => att.file)
-            );
+            )
           }}
         >
           <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-white">
@@ -345,5 +346,5 @@ export default function CreateBlogModal({
         </form>
       </div>
     </div>
-  );
+  )
 }
