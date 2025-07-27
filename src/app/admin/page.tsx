@@ -174,9 +174,9 @@ export default function AdminDashboard() {
           {
             title: "Completion Rate",
             value: `${stats.completionRate.toFixed(1)}%`,
-            change: "0%",
+            change: `${stats.completionTrend.toFixed(1)}%`,
             icon: <BarChart3 className="w-8 h-8 text-[#4CC2FF]" />,
-            trend: "up",
+            trend: stats.completionTrend >= 0 ? "up" : "down",
           },
         ]);
 

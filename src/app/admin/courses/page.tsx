@@ -394,8 +394,10 @@ const CourseManagementPage = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      {course.name || "Untitled Course"}
+                    <td className="px-6 py-4 text-left">
+                      <div className="max-w-xs truncate" title={course.name || "Untitled Course"}>
+                        <span className="font-semibold text-white">{course.name || "Untitled Course"}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span

@@ -6,10 +6,12 @@ export default function AchievementList({
   achievements,
   onEdit,
   onDelete,
+  deleteLoading,
 }: {
   achievements: IAchievement[];
   onEdit: (achievement: IAchievement) => void;
   onDelete: (id: string) => void;
+  deleteLoading?: string | null;
 }) {
   if (achievements.length === 0) {
     return (
@@ -39,6 +41,7 @@ export default function AchievementList({
               achievement={achievement}
               onEdit={onEdit}
               onDelete={onDelete}
+              isDeleting={deleteLoading === String(achievement._id)}
             />
           ))}
         </tbody>

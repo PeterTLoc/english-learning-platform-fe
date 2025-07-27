@@ -45,10 +45,7 @@ export default function ReceiptList() {
 
   // Format currency function
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
+    return `đ ${new Intl.NumberFormat("vi-VN").format(amount)}`;
   };
 
   // Format date function
@@ -112,7 +109,7 @@ export default function ReceiptList() {
             <select
               value={size}
               onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-              className="appearance-none bg-[#373737] text-white border border-[#555] rounded px-3 py-2 pr-8 focus:outline-none focus:border-[#777] cursor-pointer"
+              className="appearance-none bg-[#373737] text-white border border-[#555] rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#777] cursor-pointer"
             >
               <option value={3}>3 per page</option>
               <option value={5}>5 per page</option>
@@ -138,7 +135,7 @@ export default function ReceiptList() {
           ))
         ) : (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-[#373737] rounded-[5px] flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-[#373737] rounded-lg flex items-center justify-center mx-auto mb-4">
               <Package className="w-8 h-8 text-[#AAAAAA]" />
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">
@@ -152,7 +149,7 @@ export default function ReceiptList() {
       {/* Pagination */}
       <div className="flex justify-center items-center gap-4 mt-8">
         <button
-          className="px-3 py-1 rounded bg-[#373737] text-white disabled:opacity-50 hover:bg-[#444] transition-colors"
+          className="px-3 py-1 rounded-lg bg-[#373737] text-white disabled:opacity-50 hover:bg-[#444] transition-colors"
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page <= 1}
         >
@@ -162,7 +159,7 @@ export default function ReceiptList() {
           Page {page} of {totalPage}
         </span>
         <button
-          className="px-3 py-1 rounded bg-[#373737] text-white disabled:opacity-50 hover:bg-[#444] transition-colors"
+          className="px-3 py-1 rounded-lg bg-[#373737] text-white disabled:opacity-50 hover:bg-[#444] transition-colors"
           onClick={() => setPage((p) => Math.min(totalPage, p + 1))}
           disabled={page >= totalPage}
         >

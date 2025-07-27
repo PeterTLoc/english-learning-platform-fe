@@ -9,12 +9,14 @@ interface BlogListItemProps {
   blog: IBlog;
   setEditTarget: (editTarget: IBlog | null) => void;
   setDeleteTarget: (deletedBlog: IBlog | null) => void;
+  isDeleting?: boolean;
 }
 
 export default function BlogListItem({
   blog,
   setEditTarget,
   setDeleteTarget,
+  isDeleting = false,
 }: BlogListItemProps) {
   const [preview, setPreview] = useState(false);
 
@@ -37,11 +39,15 @@ export default function BlogListItem({
           )}
         </div>
       </td>
-      <td className="px-6 py-4 text-center font-semibold text-white">
-        {blog.title}
+      <td className="px-6 py-4 text-left">
+        <div className="max-w-xs truncate" title={blog.title}>
+          <span className="font-semibold text-white">{blog.title}</span>
+        </div>
       </td>
       <td className="px-6 py-4 text-center">
-        {blog.user?.username ? blog.user.username : "Unknown author"}
+        <div className="max-w-32 truncate" title={blog.user?.username || "Unknown author"}>
+          {blog.user?.username ? blog.user.username : "Unknown author"}
+        </div>
       </td>
       <td className="px-6 py-4 text-center">
         <span
@@ -63,10 +69,11 @@ export default function BlogListItem({
       <td className="px-6 py-4 text-center">
         <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
           <button
-            className="px-3 py-1 text-sm bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors"
+            className="px-3 py-1 text-sm bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => {
               setEditTarget(blog);
             }}
+            disabled={isDeleting}
           >
             Edit
           </button>
@@ -74,13 +81,15 @@ export default function BlogListItem({
             onClick={() => {
               setDeleteTarget(blog);
             }}
-            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isDeleting}
           >
-            Delete
+            {isDeleting ? "Deleting..." : "Delete"}
           </button>
           <button
-            className="px-3 py-1 text-sm bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+            className="px-3 py-1 text-sm bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setPreview(true)}
+            disabled={isDeleting}
           >
             Preview
           </button>

@@ -21,6 +21,7 @@ interface AchievementModalProps {
     goal?: number;
   };
   mode: "create" | "update";
+  loading?: boolean;
 }
 
 export default function AchievementModal({
@@ -29,6 +30,7 @@ export default function AchievementModal({
   onSubmit,
   initialValues,
   mode,
+  loading = false,
 }: AchievementModalProps) {
   const [name, setName] = useState(initialValues?.name || "");
   const [description, setDescription] = useState(
@@ -61,6 +63,7 @@ export default function AchievementModal({
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-white"
           onClick={onClose}
+          disabled={loading}
         >
           &times;
         </button>
@@ -76,6 +79,7 @@ export default function AchievementModal({
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 rounded bg-[#2D2D2D] text-white border border-[#373737]"
               required
+              disabled={loading}
             />
           </div>
           <div>
@@ -85,6 +89,7 @@ export default function AchievementModal({
               onChange={(e) => setDescription(e.target.value)}
               className="w-full p-2 rounded bg-[#2D2D2D] text-white border border-[#373737]"
               required
+              disabled={loading}
             />
           </div>
           <div>
@@ -94,6 +99,7 @@ export default function AchievementModal({
               onChange={(e) => setType(e.target.value as AchievementType)}
               className="w-full p-2 rounded bg-[#2D2D2D] text-white border border-[#373737]"
               required
+              disabled={loading}
             >
               {Object.entries(AchievementTypeEnum).map(([key, value]) => (
                 <option key={key} value={value}>
@@ -106,26 +112,29 @@ export default function AchievementModal({
             <label className="block text-white mb-1">Goal</label>
             <input
               type="number"
-              min={1}
               value={goal}
               onChange={(e) => setGoal(Number(e.target.value))}
               className="w-full p-2 rounded bg-[#2D2D2D] text-white border border-[#373737]"
               required
+              min="1"
+              disabled={loading}
             />
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex gap-2 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+              className="flex-1 px-4 py-2 bg-[#373737] text-white rounded hover:bg-[#444] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[#4CC2FF] text-black font-semibold rounded hover:bg-[#3AA0DB]"
+              className="flex-1 px-4 py-2 bg-[#4CC2FF] text-black rounded hover:bg-[#3AA0DB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
             >
-              {mode === "create" ? "Create" : "Update"}
+              {loading ? "Saving..." : mode === "create" ? "Create" : "Update"}
             </button>
           </div>
         </form>

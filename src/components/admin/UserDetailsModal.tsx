@@ -201,6 +201,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                 {/* Overview Tab */}
                 {activeTab === "overview" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Left Column */}
                     <div className="space-y-4">
                       <div className="bg-[#2B2B2B] p-4 rounded-lg">
                         <h4 className="text-white font-medium mb-2">Basic Information</h4>
@@ -230,39 +231,6 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                         </div>
                       </div>
                       
-                      {userDetail?.stats ? (
-                        <div className="bg-[#2B2B2B] p-4 rounded-lg">
-                          <h4 className="text-white font-medium mb-2">Learning Statistics</h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center bg-[#373737] p-3 rounded-lg">
-                              <p className="text-sm text-[#CFCFCF]">Total Points</p>
-                              <p className="text-xl text-[#FFD700] font-bold">{userDetail.stats.totalPoints || 0}</p>
-                            </div>
-                            <div className="text-center bg-[#373737] p-3 rounded-lg">
-                              <p className="text-sm text-[#CFCFCF]">Lessons Completed</p>
-                              <p className="text-xl text-[#4CC2FF] font-bold">{userDetail.stats.completedLessons || 0}</p>
-                            </div>
-                            <div className="text-center bg-[#373737] p-3 rounded-lg">
-                              <p className="text-sm text-[#CFCFCF]">Courses Completed</p>
-                              <p className="text-xl text-[#4CC2FF] font-bold">{userDetail.stats.completedCourses || 0}</p>
-                            </div>
-                            <div className="text-center bg-[#373737] p-3 rounded-lg">
-                              <p className="text-sm text-[#CFCFCF]">Tests Taken</p>
-                              <p className="text-xl text-[#4CC2FF] font-bold">{userDetail.stats.completedTests || 0}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="bg-[#2B2B2B] p-4 rounded-lg">
-                          <h4 className="text-white font-medium mb-2">Learning Statistics</h4>
-                          <div className="text-center p-4 text-yellow-500">
-                            <p>Statistics API not available yet</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-4">
                       {userDetail?.courses ? (
                         <div className="bg-[#2B2B2B] p-4 rounded-lg">
                           <h4 className="text-white font-medium mb-2">Course Progress</h4>
@@ -287,7 +255,10 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                           </div>
                         </div>
                       )}
-                      
+                    </div>
+                    
+                    {/* Right Column */}
+                    <div className="space-y-4">
                       {userDetail?.achievements ? (
                         <div className="bg-[#2B2B2B] p-4 rounded-lg">
                           <h4 className="text-white font-medium mb-2">Achievements</h4>
@@ -352,29 +323,73 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                     <h3 className="text-lg font-medium text-white mb-4">Enrolled Courses</h3>
                     {userDetail?.courses?.list && userDetail.courses.list.length > 0 ? (
                       <div className="space-y-3">
-                        {userDetail.courses.list.map((course) => (
-                          <div key={course._id} className="bg-[#2B2B2B] p-3 rounded-lg flex justify-between items-center">
-                            <div>
-                              <h4 className="text-white">{course.name || "Unknown"}</h4>
-                              <span className={`px-2 py-0.5 rounded-full text-xs ${
-                                course.status === "completed" 
-                                  ? "bg-green-800 text-green-200" 
-                                  : "bg-[#373737] text-[#FFD700]"
-                              }`}>
-                                {course.status.charAt(0).toUpperCase() + course.status.slice(1) || "Unknown"}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-32 bg-[#373737] rounded-full h-2">
-                                <div 
-                                  className="bg-[#4CC2FF] h-2 rounded-full" 
-                                  style={{ width: `${course.progress}%` }}
-                                ></div>
+                        {userDetail.courses.list.map((course) => {
+                          // Calculate lesson-based progress for this course
+                          const courseLessons = userDetail.lessons?.list?.filter((l: any) => l.lesson?.courseId === course.courseId) || [];
+                          const completedLessons = courseLessons.filter((l: any) => l.status === "completed").length;
+                          const totalLessons = courseLessons.length;
+                          const lessonProgress = totalLessons > 0 ? Math.min(Math.round((completedLessons / totalLessons) * 100), 100) : 0;
+                          
+                          // Calculate overall course progress using lessonFinished and totalLessons
+                          // Add safety checks for invalid data
+                          const lessonFinished = Math.max(0, course.lessonFinished || 0);
+                          const totalLessonsFromCourse = Math.max(1, course.totalLessons || 1); // Prevent division by zero
+                          const overallProgress = Math.min(Math.round((lessonFinished / totalLessonsFromCourse) * 100), 100);
+                          
+                          return (
+                            <div key={course._id} className="bg-[#2B2B2B] p-4 rounded-lg">
+                              <div className="flex justify-between items-start mb-3">
+                                <div>
+                                  <h4 className="text-white font-medium">{course.name || "Unknown"}</h4>
+                                  <span className={`px-2 py-0.5 rounded-full text-xs ${
+                                    course.status === "completed" 
+                                      ? "bg-green-800 text-green-200" 
+                                      : course.status === "ongoing"
+                                      ? "bg-yellow-800 text-yellow-200"
+                                      : "bg-[#373737] text-[#CFCFCF]"
+                                  }`}>
+                                    {course.status.charAt(0).toUpperCase() + course.status.slice(1) || "Unknown"}
+                                  </span>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-sm text-[#CFCFCF]">Course Progress</div>
+                                  <div className="text-lg font-bold text-[#4CC2FF]">{Math.min(overallProgress, 100)}%</div>
+                                </div>
                               </div>
-                              <span className="text-[#CFCFCF] text-xs">{course.progress}%</span>
+                              
+                              {/* Lesson Progress Bar */}
+                              <div className="mb-2">
+                                <div className="flex justify-between text-xs text-[#CFCFCF] mb-1">
+                                  <span>Lesson Progress</span>
+                                  <span>{completedLessons} / {totalLessons} lessons</span>
+                                </div>
+                                <div className="w-full bg-[#373737] rounded-full h-2">
+                                  <div 
+                                    className="bg-[#4CC2FF] h-2 rounded-full transition-all duration-300" 
+                                    style={{ width: `${Math.min(lessonProgress, 100)}%` }}
+                                  ></div>
+                                </div>
+                                <div className="text-right text-xs text-[#CFCFCF] mt-1">
+                                  {Math.min(lessonProgress, 100)}% completed
+                                </div>
+                              </div>
+                              
+                              {/* Course Progress Bar */}
+                              <div>
+                                <div className="flex justify-between text-xs text-[#CFCFCF] mb-1">
+                                  <span>Overall Progress</span>
+                                  <span>{Math.min(overallProgress, 100)}%</span>
+                                </div>
+                                <div className="w-full bg-[#373737] rounded-full h-2">
+                                  <div 
+                                    className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                                    style={{ width: `${Math.min(overallProgress, 100)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="bg-[#2B2B2B] p-8 rounded-lg text-center">
@@ -406,7 +421,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                             </div>
                             <div className="flex justify-between">
                               <span className="text-[#CFCFCF]">Average Score:</span>
-                              <span className="text-[#4CC2FF]">{userDetail.tests.averageScore || 0}%</span>
+                              <span className="text-[#4CC2FF]">{userDetail.tests.averageScore?.toFixed(2) || "0.00"}%</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-[#CFCFCF]">Highest Score:</span>

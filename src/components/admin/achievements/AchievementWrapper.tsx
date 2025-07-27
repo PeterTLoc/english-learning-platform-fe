@@ -6,9 +6,9 @@ import { IAchievement } from "@/types/models/IAchievement";
 import { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/context/ToastContext";
+import { useConfirmation } from "@/context/ConfirmationContext";
 import AchievementList from "./AchievementList";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import DeleteConfirmModal from "@/components/common/DeleteModal";
 import AchievementModal from "./AchievementModal";
 import AchievementFilter from "./AchievementFilter";
 import { ObjectId } from "mongoose";
@@ -33,8 +33,12 @@ export default function AchievementWrapper({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showToast } = useToast();
+  const { showConfirmation } = useConfirmation();
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [createLoading, setCreateLoading] = useState<boolean>(false);
+  const [updateLoading, setUpdateLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
   //data
   const [achievements, setAchievements] = useState<IAchievement[]>([]);
@@ -107,8 +111,10 @@ export default function AchievementWrapper({
     goal: number
   ) => {
     try {
+      setCreateLoading(true);
       if (!name || !description || !type || !goal) {
         showToast("All fields are required", "warning");
+        return;
       }
       const response = await achievementService.createAchievement(
         name,
@@ -132,6 +138,8 @@ export default function AchievementWrapper({
           : "Failed to create achievements",
         "error"
       );
+    } finally {
+      setCreateLoading(false);
     }
   };
 
@@ -143,6 +151,7 @@ export default function AchievementWrapper({
     goal?: number
   ) => {
     try {
+      setUpdateLoading(true);
       const response = await achievementService.updateAchievement(
         id,
         name,
@@ -168,11 +177,14 @@ export default function AchievementWrapper({
           : "Failed to update achievements",
         "error"
       );
+    } finally {
+      setUpdateLoading(false);
     }
   };
 
   const deleteAchievement = async (id: string) => {
     try {
+      setDeleteLoading(id);
       const response = await achievementService.deleteAchievement(id);
       console.log(response);
 
@@ -184,7 +196,6 @@ export default function AchievementWrapper({
         );
       }
       showToast("Achievement deleted successfully", "success");
-      setDeleteTarget(null);
     } catch (error) {
       showToast(
         error instanceof AxiosError
@@ -192,6 +203,22 @@ export default function AchievementWrapper({
           : "Failed to delete achievements",
         "error"
       );
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  const handleDeleteAchievement = async (id: string) => {
+    const confirmed = await showConfirmation({
+      title: "Delete Achievement",
+      message: "Are you sure you want to delete this achievement? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      variant: "danger"
+    });
+    
+    if (confirmed) {
+      await deleteAchievement(id);
     }
   };
 
@@ -260,10 +287,11 @@ export default function AchievementWrapper({
           Achievements Management
         </h1>
         <button
-          className="bg-[#4CC2FF] text-black px-4 py-2 rounded-md"
+          className="bg-[#4CC2FF] text-black px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => setIsCreate(true)}
+          disabled={createLoading}
         >
-          Create Achievement
+          {createLoading ? "Creating..." : "Create Achievement"}
         </button>
       </div>
 
@@ -283,7 +311,8 @@ export default function AchievementWrapper({
       <AchievementList
         achievements={achievements}
         onEdit={setEditTarget}
-        onDelete={setDeleteTarget}
+        onDelete={handleDeleteAchievement}
+        deleteLoading={deleteLoading}
       />
       <AchievementModal
         isOpen={!!editTarget || isCreate}
@@ -294,16 +323,12 @@ export default function AchievementWrapper({
         onSubmit={isCreate ? handleCreate : handleUpdate}
         initialValues={isCreate ? {} : editTarget || {}}
         mode={isCreate ? "create" : "update"}
+        loading={createLoading || updateLoading}
       />
       <ServerPagination
         pageSize={size || 5}
         currentPage={page || 1}
         totalPages={totalPages}
-      />
-      <DeleteConfirmModal
-        isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onDelete={() => deleteAchievement(deleteTarget as string)}
       />
     </div>
   );

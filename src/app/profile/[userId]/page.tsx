@@ -574,13 +574,13 @@ export default function UserProfilePage() {
                   </h2>
 
                   {/* Main Stats Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
                       <div className="flex justify-center mb-2">
                         <Star className="w-6 h-6 text-yellow-400" />
                       </div>
                       <div className="text-2xl font-bold text-white mb-1">
-                        {user.points || 0}
+                        {userDetail?.stats?.totalPoints || user.points || 0}
                       </div>
                       <div className="text-xs text-gray-400">Points</div>
                     </div>
@@ -600,7 +600,7 @@ export default function UserProfilePage() {
                         <GraduationCap className="w-6 h-6 text-[#4CC2FF]" />
                       </div>
                       <div className="text-2xl font-bold text-white mb-1">
-                        {userDetail?.courses?.completed || 0}
+                        {userDetail?.stats?.completedCourses || 0}
                       </div>
                       <div className="text-xs text-gray-400">
                         Courses Completed
@@ -609,13 +609,24 @@ export default function UserProfilePage() {
 
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
                       <div className="flex justify-center mb-2">
+                        <BookOpen className="w-6 h-6 text-purple-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {userDetail?.stats?.completedLessons || 0}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Lessons Completed
+                      </div>
+                    </div>
+
+                    <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
+                      <div className="flex justify-center mb-2">
                         <CheckCircle className="w-6 h-6 text-green-500" />
                       </div>
                       <div className="text-2xl font-bold text-white mb-1">
-                        {latestTests?.filter((test) => test.status === "passed")
-                          ?.length || 0}
+                        {userDetail?.stats?.completedTests || 0}
                       </div>
-                      <div className="text-xs text-gray-400">Tests Passed</div>
+                      <div className="text-xs text-gray-400">Tests Taken</div>
                     </div>
 
                     <div className="bg-[#2a2a2a] rounded-lg p-4 text-center border border-[#333]">
@@ -714,23 +725,13 @@ export default function UserProfilePage() {
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-400">
-                              {latestTests?.filter(
-                                (test) => test.status === "passed"
-                              )?.length || 0}
+                              {userDetail?.stats?.completedTests || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Passed</div>
+                            <div className="text-sm text-gray-400">Completed</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-blue-400">
-                              {completedTests?.length > 0
-                                ? (
-                                    completedTests.reduce(
-                                      (sum, test) => sum + (test.score || 0),
-                                      0
-                                    ) / completedTests.length
-                                  ).toFixed(1)
-                                : 0}
-                              %
+                              {userDetail?.stats?.averageScore || 0}%
                             </div>
                             <div className="text-sm text-gray-400">
                               Average Score
@@ -789,9 +790,7 @@ export default function UserProfilePage() {
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-400">
-                              {userLessons?.filter(
-                                (lesson) => lesson.status === "completed"
-                              )?.length || 0}
+                              {userDetail?.stats?.completedLessons || 0}
                             </div>
                             <div className="text-sm text-gray-400">
                               Completed
@@ -800,7 +799,7 @@ export default function UserProfilePage() {
                           <div className="text-center">
                             <div className="text-2xl font-bold text-yellow-400">
                               {userLessons?.filter(
-                                (lesson) => lesson.status === "in-progress"
+                                (lesson) => lesson.status === "ongoing"
                               )?.length || 0}
                             </div>
                             <div className="text-sm text-gray-400">
@@ -815,10 +814,8 @@ export default function UserProfilePage() {
                               <span className="text-white font-semibold">
                                 {Math.round(
                                   Math.min(
-                                    (userLessons.filter(
-                                      (lesson) => lesson.status === "completed"
-                                    ).length /
-                                      userLessons.length) *
+                                    (userDetail?.stats?.completedLessons || 0) /
+                                      userLessons.length *
                                       100,
                                     100
                                   )
@@ -832,10 +829,8 @@ export default function UserProfilePage() {
                                 style={{
                                   width: `${
                                     Math.min(
-                                      (userLessons.filter(
-                                        (lesson) => lesson.status === "completed"
-                                      ).length /
-                                        userLessons.length) *
+                                      (userDetail?.stats?.completedLessons || 0) /
+                                        userLessons.length *
                                         100,
                                       100
                                     )

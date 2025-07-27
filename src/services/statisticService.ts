@@ -60,37 +60,86 @@ const statisticService = {
     return response.data.activeCourseCount;
   },
 
+  getTotalUserCount: async (): Promise<number> => {
+    const response = await api.get('/api/statistics/total-users');
+    return response.data.totalUserCount;
+  },
+
   getDashboardStats: async () => {
-    // Get last 12 months data
-    const [revenueResponse, usersResponse, completionResponse] = await Promise.all([
-      api.get(`/api/statistics/revenue?time=${TimeType.MONTH}&value=12`),
-      api.get(`/api/statistics/new-users?time=${TimeType.MONTH}&value=12`),
-      api.get<CompletionRateResponse>('/api/statistics/completion-rate')
-    ])
+    try {
+      // Get current month and last month data for comparison
+      // Backend expects 0-based months (0-11), but subtracts 1 from the value we send
+      // So we need to send currentMonth + 1 to get current month data
+      const currentMonth = new Date().getMonth(); // 0-based
+      const currentYear = new Date().getFullYear();
+      
+      // Calculate last month (0-based)
+      let lastMonth = currentMonth - 1;
+      let lastYear = currentYear;
+      if (lastMonth === -1) {
+        lastMonth = 11;
+        lastYear = currentYear - 1;
+      }
 
-    const revenue = (revenueResponse.data as { revenue: RevenuePeriod }).revenue.current.breakdown;
-    const users = (usersResponse.data as { newUserOverTime: NewUsersPeriod }).newUserOverTime.current.breakdown;
+      // Fetch current month data (this API call returns both current and previous data)
+      // Backend subtracts 1 from the value, so we send currentMonth + 1 to get current month
+      const [currentRevenueResponse, currentUsersResponse] = await Promise.all([
+        api.get(`/api/statistics/revenue?time=month&value=${currentMonth + 1}`),
+        api.get(`/api/statistics/new-users?time=month&value=${currentMonth + 1}`)
+      ]);
 
-    // Calculate trends using the current period total vs previous period total
-    const currentRevenue = (revenueResponse.data as { revenue: RevenuePeriod }).revenue.current.total;
-    const previousRevenue = (revenueResponse.data as { revenue: RevenuePeriod }).revenue.previous.total;
-    const revenueTrend = previousRevenue ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
+      // Get completion rate
+      const completionResponse = await api.get('/api/statistics/completion-rate');
 
-    const currentUsers = (usersResponse.data as { newUserOverTime: NewUsersPeriod }).newUserOverTime.current.total;
-    const previousUsers = (usersResponse.data as { newUserOverTime: NewUsersPeriod }).newUserOverTime.previous.total;
-    const usersTrend = previousUsers ? ((currentUsers - previousUsers) / previousUsers) * 100 : 0;
+      // Get total user count
+      const totalUsersResponse = await api.get('/api/statistics/total-users');
 
-    const totalUsers = users.reduce((acc, curr) => acc + (curr.newUsers || 0), 0)
-    const completionRate = completionResponse.data.completionRate
+      // Extract data - the API returns both current and previous data
+      const currentRevenue = Number(currentRevenueResponse.data.revenue.current.total);
+      const lastRevenue = Number(currentRevenueResponse.data.revenue.previous.total); // Use previous from same API call
+      const currentUsers = Number(currentUsersResponse.data.newUserOverTime.current.total);
+      const lastUsers = Number(currentUsersResponse.data.newUserOverTime.previous.total); // Use previous from same API call
+      const completionRate = completionResponse.data.completionRate;
+      const completionTrend = completionResponse.data.completionTrend;
+      const totalUsers = totalUsersResponse.data.totalUserCount;
 
-    return {
-      currentRevenue,
-      revenueTrend: isFinite(revenueTrend) ? revenueTrend : 0,
-      totalUsers,
-      usersTrend: isFinite(usersTrend) ? usersTrend : 0,
-      completionRate,
-      revenueHistory: revenue.map(r => r.Revenue),
-      usersHistory: users.map(u => u.newUsers)
+      // Debug logging
+      console.log('Revenue Debug:', {
+        currentRevenue,
+        lastRevenue,
+        currentMonth: currentMonth + 1,
+        requestedMonth: currentMonth + 1,
+        calculation: lastRevenue > 0 ? ((currentRevenue - lastRevenue) / lastRevenue) * 100 : 0,
+        apiUrl: `/api/statistics/revenue?time=month&value=${currentMonth + 1}`
+      });
+
+      // Calculate trends
+      const revenueTrend = lastRevenue > 0 ? ((currentRevenue - lastRevenue) / lastRevenue) * 100 : 0;
+      const usersTrend = lastUsers > 0 ? ((currentUsers - lastUsers) / lastUsers) * 100 : 0;
+
+      return {
+        currentRevenue,
+        revenueTrend: isFinite(revenueTrend) ? revenueTrend : 0,
+        totalUsers,
+        usersTrend: isFinite(usersTrend) ? usersTrend : 0,
+        completionRate,
+        completionTrend: isFinite(completionTrend) ? completionTrend : 0,
+        revenueHistory: currentRevenueResponse.data.revenue.current.breakdown.map((r: any) => r.Revenue),
+        usersHistory: currentUsersResponse.data.newUserOverTime.current.breakdown.map((u: any) => u.newUsers)
+      };
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      // Return default values if API calls fail
+      return {
+        currentRevenue: 0,
+        revenueTrend: 0,
+        totalUsers: 0,
+        usersTrend: 0,
+        completionRate: 0,
+        completionTrend: 0,
+        revenueHistory: [],
+        usersHistory: []
+      };
     }
   }
 }

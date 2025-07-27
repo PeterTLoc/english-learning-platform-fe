@@ -32,15 +32,26 @@ export interface UserDetail extends User {
     inProgress: number
     list: Array<{
       _id: string
+      courseId: string
       name: string
       progress: number
       status: string
+      lessonFinished: number
+      totalLessons: number
     }>
   }
   lessons?: {
     total: number
     completed: number
     inProgress: number
+    list: Array<{
+      _id: string
+      lesson: {
+        courseId: string
+        name: string
+      }
+      status: string
+    }>
   }
   tests?: {
     total: number
@@ -131,6 +142,7 @@ class UserService {
       lessonsResponse,
       testsResponse,
       achievementsResponse,
+      flashcardsResponse,
     ] = await Promise.allSettled([
       api.get(`/api/statistics/user/${userId}`).catch(() => ({ data: null })),
       getUserCourses(userId).catch(() => null),
@@ -139,6 +151,7 @@ class UserService {
       api
         .get(`/api/user-achievements/${userId}/users`)
         .catch(() => ({ data: null })),
+      api.get(`/api/user-flashcards/${userId}`).catch(() => ({ data: null })),
     ])
 
     if (statsResponse.status === "fulfilled" && statsResponse.value?.data) {
@@ -153,9 +166,12 @@ class UserService {
         inProgress: courses.filter((c: any) => c.status === "ongoing").length,
         list: courses.map((c: any) => ({
           _id: c._id,
+          courseId: c.courseId,
           name: c.course?.name || "Unknown Course",
           progress: c.progress || 0,
           status: c.status,
+          lessonFinished: c.lessonFinished || 0,
+          totalLessons: c.course?.totalLessons || 0,
         })),
       }
     }
@@ -165,20 +181,29 @@ class UserService {
       userDetail.lessons = {
         total: lessons.length,
         completed: lessons.filter((l: any) => l.status === "completed").length,
-        inProgress: lessons.filter((l: any) => l.status === "in-progress")
+        inProgress: lessons.filter((l: any) => l.status === "ongoing")
           .length,
+        list: lessons.map((l: any) => ({
+          _id: l._id,
+          lesson: {
+            courseId: l.lesson?.courseId || l.courseId,
+            name: l.lesson?.name || "Unknown Lesson",
+          },
+          status: l.status,
+        })),
       }
     }
 
     if (testsResponse.status === "fulfilled" && testsResponse.value) {
       const tests = testsResponse.value.data || []
       const scores = tests.map((t: any) => t.score || 0)
+      const averageScore = scores.length
+        ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length
+        : 0
       userDetail.tests = {
         total: tests.length,
-        completed: tests.filter((t: any) => t.status === "completed").length,
-        averageScore: scores.length
-          ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length
-          : 0,
+        completed: tests.filter((t: any) => t.status === "passed" || t.status === "failed").length,
+        averageScore: Number(averageScore.toFixed(2)),
         highestScore: scores.length ? Math.max(...scores) : 0,
       }
     }
@@ -196,6 +221,16 @@ class UserService {
           description: a.achievement?.description || "",
           dateAwarded: a.createdAt,
         })),
+      }
+    }
+
+    if (flashcardsResponse.status === "fulfilled" && flashcardsResponse.value?.data) {
+      const flashcards = flashcardsResponse.value.data || []
+      userDetail.flashcards = {
+        total: flashcards.length,
+        mastered: flashcards.filter((f: any) => f.status === "mastered").length,
+        learning: flashcards.filter((f: any) => f.status === "learning").length,
+        studying: flashcards.filter((f: any) => f.status === "studying").length,
       }
     }
 

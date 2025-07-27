@@ -248,7 +248,7 @@ const UserManagementPage = () => {
                       user.isDeleted ? "opacity-50" : ""
                     }`}
                   >
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-left">
                       <div className="flex items-center justify-center">
                         <UserAvatar
                           username={user.username}
@@ -256,10 +256,16 @@ const UserManagementPage = () => {
                           size="sm"
                           className="mr-2"
                         />
-                        {user.username}
+                        <div className="max-w-32 truncate" title={user.username}>
+                          {user.username}
+                        </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">{user.email}</td>
+                    <td className="px-6 py-4 text-left">
+                      <div className="max-w-48 truncate" title={user.email}>
+                        {user.email}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <span 
                         className={`px-2 py-1 rounded text-sm ${
