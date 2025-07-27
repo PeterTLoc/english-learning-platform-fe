@@ -1,56 +1,56 @@
-"use client";
-import { useEffect, useState } from "react";
-import BlogService from "@/services/blogService";
-import { IBlog } from "@/types/models/IBlog";
-import BlogListItem from "./BlogListItem";
-import ServerPagination from "@/components/common/ServerPagination";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import CreateBlogModal from "./CreateBlogModal";
-import { ObjectId } from "mongoose";
-import BlogFilter from "./BlogFilter";
-import { useToast } from "@/context/ToastContext";
-import { useConfirmation } from "@/context/ConfirmationContext";
-import { AxiosError } from "axios";
-import { BlogStatusEnum } from "@/enums/BlogStatusEnum";
-import EditBlogModal from "./EditBlogModal";
+"use client"
+import { useEffect, useState } from "react"
+import BlogService from "@/services/blogService"
+import { IBlog } from "@/types/models/IBlog"
+import BlogListItem from "./BlogListItem"
+import ServerPagination from "@/components/common/ServerPagination"
+import LoadingSpinner from "@/components/ui/LoadingSpinner"
+import CreateBlogModal from "./CreateBlogModal"
+import { ObjectId } from "mongoose"
+import BlogFilter from "./BlogFilter"
+import { useToast } from "@/context/ToastContext"
+import { useConfirmation } from "@/context/ConfirmationContext"
+import { AxiosError } from "axios"
+import { BlogStatusEnum } from "@/enums/BlogStatusEnum"
+import EditBlogModal from "./EditBlogModal"
 
-const blogService = new BlogService();
+const blogService = new BlogService()
 
 export default function BlogList({
   page,
   size,
 }: {
-  page: number;
-  size: number;
+  page: number
+  size: number
 }) {
-  const { showToast } = useToast();
-  const { showConfirmation } = useConfirmation();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<string>("date");
-  const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [editTarget, setEditTarget] = useState<IBlog | null>(null);
+  const { showToast } = useToast()
+  const { showConfirmation } = useConfirmation()
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sortBy, setSortBy] = useState<string>("date")
+  const [sortOrder, setSortOrder] = useState<string>("desc")
+  const [editTarget, setEditTarget] = useState<IBlog | null>(null)
   const [blogsData, setBlogsData] = useState<{
-    data: IBlog[];
-    totalPages: number;
-  } | null>(null);
+    data: IBlog[]
+    totalPages: number
+  } | null>(null)
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [createLoading, setCreateLoading] = useState(false);
-  const [updateLoading, setUpdateLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [createLoading, setCreateLoading] = useState(false)
+  const [updateLoading, setUpdateLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
   const handleSearch = () => {
     blogService
       .getBlogs(page, size, searchTerm, sortOrder, sortBy)
-      .then(setBlogsData);
-  };
+      .then(setBlogsData)
+  }
 
   const handleReset = () => {
-    setSearchTerm("");
-    setSortBy("date");
-    setSortOrder("desc");
-    blogService.getBlogs(page, size).then(setBlogsData);
-  };
+    setSearchTerm("")
+    setSortBy("date")
+    setSortOrder("desc")
+    blogService.getBlogs(page, size).then(setBlogsData)
+  }
 
   const handleUpdateBlog = async (
     id: string,
@@ -59,8 +59,8 @@ export default function BlogList({
     file?: string | File
   ) => {
     try {
-      setUpdateLoading(true);
-      const result = await blogService.updateBlog(id, title, status, file);
+      setUpdateLoading(true)
+      const result = await blogService.updateBlog(id, title, status, file)
 
       setBlogsData((prev) =>
         prev
@@ -74,25 +74,25 @@ export default function BlogList({
               ),
             }
           : prev
-      );
-      showToast("Blog updated successfully", "success");
-      setEditTarget(null);
+      )
+      showToast("Blog updated successfully", "success")
+      setEditTarget(null)
     } catch (err) {
       showToast(
         err instanceof AxiosError
           ? err.response?.data.message
           : "Failed to update blog",
         "error"
-      );
+      )
     } finally {
-      setUpdateLoading(false);
+      setUpdateLoading(false)
     }
-  };
+  }
 
   const handleDeleteBlog = async (id: string) => {
     try {
-      setDeleteLoading(id);
-      await blogService.deleteBlog(id);
+      setDeleteLoading(id)
+      await blogService.deleteBlog(id)
       setBlogsData((prev) =>
         prev
           ? {
@@ -100,19 +100,19 @@ export default function BlogList({
               data: prev.data.filter((blog) => blog._id !== id),
             }
           : prev
-      );
-      showToast("Blog deleted successfully", "success");
+      )
+      showToast("Blog deleted successfully", "success")
     } catch (err) {
       showToast(
         err instanceof AxiosError
           ? err.response?.data.message
           : "Failed to delete blog",
         "error"
-      );
+      )
     } finally {
-      setDeleteLoading(null);
+      setDeleteLoading(null)
     }
-  };
+  }
 
   const handleDeleteBlogWithConfirmation = async (blog: IBlog) => {
     const confirmed = await showConfirmation({
@@ -120,13 +120,13 @@ export default function BlogList({
       message: `Are you sure you want to delete "${blog.title}"? This action cannot be undone.`,
       confirmText: "Delete",
       cancelText: "Cancel",
-      variant: "danger"
-    });
-    
+      variant: "danger",
+    })
+
     if (confirmed) {
-      await handleDeleteBlog((blog._id as ObjectId).toString());
+      await handleDeleteBlog((blog._id as ObjectId).toString())
     }
-  };
+  }
 
   const handleCreateBlog = async (
     title: string,
@@ -136,14 +136,14 @@ export default function BlogList({
     attachments: File[]
   ) => {
     try {
-      setCreateLoading(true);
+      setCreateLoading(true)
       const result = await blogService.createBlog(
         title,
         content,
         status,
         image as File,
         attachments
-      );
+      )
       setBlogsData((prev) =>
         prev
           ? {
@@ -151,36 +151,36 @@ export default function BlogList({
               data: [result.blog, ...prev.data], // or refetch, or append as needed
             }
           : prev
-      );
-      showToast("Blog created successfully", "success");
-      setCreateModalOpen(false);
+      )
+      showToast("Blog created successfully", "success")
+      setCreateModalOpen(false)
     } catch (error) {
       showToast(
         error instanceof AxiosError
           ? error.response?.data?.message
           : "An error occurred",
         "error"
-      );
+      )
     } finally {
-      setCreateLoading(false);
+      setCreateLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     //had to call api here
     const fetchBlogs = async () => {
-      const data = await blogService.getBlogs(page, size);
-      setBlogsData(data);
-    };
-    fetchBlogs();
-  }, [page, size]);
+      const data = await blogService.getBlogs(page, size)
+      setBlogsData(data)
+    }
+    fetchBlogs()
+  }, [page, size])
 
   if (!blogsData)
     return (
       <div>
         <LoadingSpinner></LoadingSpinner>
       </div>
-    );
+    )
 
   return (
     <div className="flex flex-col w-full mx-auto rounded-md py-2">
@@ -250,5 +250,5 @@ export default function BlogList({
         />
       )}
     </div>
-  );
+  )
 }
