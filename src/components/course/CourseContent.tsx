@@ -23,7 +23,6 @@ import { useCourse } from "@/context/CourseContext"
 import { useRouter } from "next/navigation"
 import { parseAxiosError } from "@/utils/apiErrors"
 
-
 interface LessonOverviewProps {
   courseId: string
   lessonId: string
@@ -45,7 +44,7 @@ export default function LessonOverview({
   const [isLessonCompleted, setIsLessonCompleted] = useState(false)
   const [marking, setMarking] = useState(false)
   const { refreshSidebar } = useSidebarRefresh()
-  const { showToast } = useToast();
+  const { showToast } = useToast()
 
   // Check if user is enrolled in this course
   useEffect(() => {
@@ -142,7 +141,18 @@ export default function LessonOverview({
   //Content
   return (
     <div>
-      <h2 className="title">{lesson.name}</h2>
+      <div className="flex items-center gap-2 title subtext">
+        {course && (
+          <>
+            <Link href={`/courses/${courseId}/enroll`} className="hover:text-white">
+              {course.name}
+            </Link>
+            <ChevronRight size={16} />
+          </>
+        )}
+        <span className="text-gray-200">{lesson?.name}</span>
+      </div>
+
       <div className="flex justify-between items-center mb-[27px]">
         <button
           onClick={() => setIsInfoModalOpen(true)}
@@ -166,12 +176,12 @@ export default function LessonOverview({
           disabled={isLessonCompleted || marking}
         >
           <span className="text-md font-medium p-2">
-          {isLessonCompleted
-            ? "Lesson already completed"
-            : marking
-            ? "Marking..."
-            : "Mark as Completed"}
-            </span>
+            {isLessonCompleted
+              ? "Lesson already completed"
+              : marking
+              ? "Marking..."
+              : "Mark as Completed"}
+          </span>
         </button>
       </div>
       <CourseInfoModal

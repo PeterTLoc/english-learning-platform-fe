@@ -28,7 +28,7 @@ export default function CourseCompletionStatus({
   }
 
   return (
-    <div className="container flex items-center gap-5 h-[69px]">
+    <div className="container flex items-center gap-5 h-[69px] max-w-[1000px]">
       <CheckCircle size={20} className="text-green-500" />
 
       <div className="flex flex-col">

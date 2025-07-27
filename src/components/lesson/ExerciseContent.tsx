@@ -257,13 +257,7 @@ export default function ExerciseContent({
       </ContentSlideIn>
     );
   const isAllCompleted = allExercisesCompleted();
-
-  // Debug logs for progress bar
-  console.log('allExercises:', allExercises);
-  console.log('completedExercisesMap:', completedExercisesMap);
-  console.log('completed:', completed, 'total:', total, 'percent:', percent);
-  console.log('isAllCompleted:', isAllCompleted);
-
+  
   return (
     <>
       <div className="title flex items-center gap-5 mb-4">

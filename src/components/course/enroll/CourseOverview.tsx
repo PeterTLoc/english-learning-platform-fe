@@ -14,15 +14,13 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner"
 import { Lesson } from "@/types/lesson/lesson"
 import { useCourse } from "@/context/CourseContext"
 import { useRouter } from "next/navigation"
+import { updateUserCourse } from "@/services/userCourseService"
 
-interface CourseContentProps {
-  courseId: string
-}
-
-export default function CourseContent({ courseId }: CourseContentProps) {
+export default function CourseContent({ courseId }: { courseId: string }) {
   const { user } = useAuth()
-  const { userCourses } = useCourse()
+  const { userCourses, setCourseStatus } = useCourse()
   const router = useRouter()
+
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [tests, setTests] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -39,83 +37,90 @@ export default function CourseContent({ courseId }: CourseContentProps) {
   const isEnrolled = ["ongoing", "completed"].includes(status)
 
   useEffect(() => {
-    // Enrollment check and redirect
+    // Enrollment check
     if (userCourses && Object.keys(userCourses).length > 0) {
-      const status = userCourses[courseId]?.status || ""
-      const isEnrolled = ["ongoing", "completed"].includes(status)
-      if (!isEnrolled) {
+      const s = userCourses[courseId]?.status || ""
+      if (!["ongoing", "completed"].includes(s)) {
         router.push(`/courses/${courseId}/enroll`)
         return
       }
     }
+
     setLoading(true)
     let isMounted = true
+
     const fetchData = async () => {
       try {
-        // Fetch lessons
         const allLessons = await getAllLessonsByCourseId(courseId)
-        // Calculate lesson completion
+
+        // ✅ Compute lesson completion
         const lessonCompletionStatus: Record<string, boolean> = {}
         for (const lesson of allLessons) {
           const allExercises = await getAllExercisesByLessonId(lesson._id)
           if (allExercises.length === 0) {
             lessonCompletionStatus[lesson._id] = false
+          } else if (user?._id) {
+            const userExercises = await getUserExercisesByLessonId(
+              user._id,
+              lesson._id
+            )
+            const completedExercises = userExercises.filter(
+              (e: any) => e.completed
+            )
+            lessonCompletionStatus[lesson._id] =
+              completedExercises.length === allExercises.length
           } else {
-            if (user && user._id) {
-              const userExercises = await getUserExercisesByLessonId(
-                user._id,
-                lesson._id
-              )
-              const completedExercises = userExercises.filter(
-                (e: any) => e.completed
-              )
-              lessonCompletionStatus[lesson._id] =
-                completedExercises.length === allExercises.length
-            } else {
-              lessonCompletionStatus[lesson._id] = false
-            }
+            lessonCompletionStatus[lesson._id] = false
           }
         }
+
         setLessonCompletion(lessonCompletionStatus)
-        // Fetch all tests for all lessons
+
+        // ✅ Collect all tests
         let allTests: any[] = []
         for (const lesson of allLessons) {
           const lessonTests = await getTestsByLessonId(lesson._id)
-          if (Array.isArray(lessonTests)) {
+          if (Array.isArray(lessonTests))
             allTests = allTests.concat(lessonTests)
-          }
         }
-        // Deduplicate by _id
         const uniqueTests = Array.from(
-          new Map(allTests.map((test) => [test._id, test])).values()
+          new Map(allTests.map((t) => [t._id, t])).values()
         )
+
         if (isMounted) {
           setLessons(allLessons)
           setTests(uniqueTests)
         }
-        // Fetch user test completion
-        setTestCompletionLoading(true)
-        if (user && user._id && uniqueTests.length > 0) {
+
+        // ✅ Fetch user test completion
+        let testCompletionStatus: Record<string, boolean> = {}
+        if (user?._id && uniqueTests.length > 0) {
           try {
             const response = await getUserTests(user._id)
             const userTests = response.data || []
-            const completion: Record<string, boolean> = {}
             uniqueTests.forEach((test) => {
               const userTest = userTests.find(
                 (ut: any) => ut.testId === test._id && ut.status === "passed"
               )
-              completion[test._id] = !!userTest
+              testCompletionStatus[test._id] = !!userTest
             })
-            setTestCompletion(completion)
           } catch {
-            setTestCompletion({})
-          } finally {
-            setTestCompletionLoading(false)
+            testCompletionStatus = {}
           }
-        } else {
-          setTestCompletion({})
-          setTestCompletionLoading(false)
         }
+        setTestCompletion(testCompletionStatus)
+        setTestCompletionLoading(false)
+
+        // ✅ Check completion
+        const allLessonsDone = allLessons.every(
+          (l) => lessonCompletionStatus[l._id]
+        )
+        const allTestsDone =
+          uniqueTests.length === 0 ||
+          uniqueTests.every((t) => testCompletionStatus[t._id])
+        const done = allLessonsDone && allTestsDone
+
+        if (isMounted) setIsCourseCompleted(done)
       } catch (error) {
         if (isMounted) {
           setLessons([])
@@ -128,13 +133,38 @@ export default function CourseContent({ courseId }: CourseContentProps) {
         if (isMounted) setLoading(false)
       }
     }
+
     fetchData()
     return () => {
       isMounted = false
     }
   }, [user?._id, courseId, userCourses, router])
 
-  // Only render null after all hooks
+  // ✅ Separate effect: mark course as completed in backend if not yet
+  useEffect(() => {
+    if (!isCourseCompleted) return
+
+    const uc = userCourses[courseId]
+
+    // ✅ Guard: only update if we have a valid backend _id
+    if (!uc || !uc._id || uc.status === "completed") return
+    ;(async () => {
+      try {
+        console.log("✅ Marking course completed in backend...", uc._id)
+        await updateUserCourse(uc._id, { status: "completed" })
+        setCourseStatus(courseId, "completed")
+      } catch (err: any) {
+        if (err?.response?.status === 404) {
+          // 🔹 Silently skip if backend doesn't recognize this record
+          console.warn("⚠️ Skipping backend update, course not found.")
+        } else {
+          // Only log real errors
+          console.error("❌ Failed to mark course completed:", err)
+        }
+      }
+    })()
+  }, [isCourseCompleted, userCourses, courseId, setCourseStatus])
+
   if (!isEnrolled) return null
 
   if (loading) {

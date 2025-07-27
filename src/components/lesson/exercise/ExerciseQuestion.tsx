@@ -85,9 +85,17 @@ export default function ExerciseQuestion({
 
         {exercise.image && (
           <img
-            src={exercise.image}
+            src={
+              exercise.image ||
+              "https://cloudinary-marketing-res.cloudinary.com/images/w_1000,c_scale/v1699909962/fallback_image_header/fallback_image_header-png?_i=AA"
+            }
             alt="Exercise"
             className="mb-5 rounded-[5px] object-contain max-h-48"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              target.src =
+                "https://cloudinary-marketing-res.cloudinary.com/images/w_1000,c_scale/v1699909962/fallback_image_header/fallback_image_header-png?_i=AA"
+            }}
           />
         )}
 
