@@ -1,5 +1,6 @@
 "use client";
 import AiService from "@/services/aiService";
+import { AxiosError } from "axios";
 import React, { useRef, useState, useEffect } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -59,15 +60,24 @@ export default function TutorModal({
 
       setIsTyping(false);
     } catch (error) {
-      console.error(error);
-      setMessages((msgs) => [
-        ...msgs,
-        {
-          from: "tutor",
-          text: "Sorry, I'm having trouble answering your question. Please try again later.",
-          timestamp: new Date(),
-        },
-      ]);
+      if (error instanceof AxiosError && error.response.status === 402) {
+        setMessages((msgs) => [
+          ...msgs,
+          {
+            from: "tutor",
+            text: error.response.data.message,
+            timestamp: new Date(),
+          },
+        ]);
+      } else
+        setMessages((msgs) => [
+          ...msgs,
+          {
+            from: "tutor",
+            text: "Sorry, I'm having trouble answering your question. Please try again later.",
+            timestamp: new Date(),
+          },
+        ]);
     } finally {
       setIsTyping(false);
     }

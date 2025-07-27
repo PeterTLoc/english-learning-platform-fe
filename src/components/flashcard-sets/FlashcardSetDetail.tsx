@@ -48,36 +48,36 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
   const { showConfirmation } = useConfirmation();
   const [isFlashcardModalOpen, setIsFlashcardModalOpen] = useState(false);
   const { showToast } = useToast();
+  const fetchFlashcardSet = async () => {
+    try {
+      const response = await flashcardSetService.getFlashcardSetById(id);
+      setFlashcardSet(response.flashcardSet);
 
+      // Fetch flashcards for this set
+      const flashcardsResponse = await flashcardService.getFlashcards(
+        id,
+        1,
+        10000
+      );
+      setFlashcards(flashcardsResponse.data);
+      setLoading(false);
+    } catch (error) {
+      showToast(
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Failed to fetch flashcard set",
+        "error"
+      );
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchFlashcardSet = async () => {
-      try {
-        const response = await flashcardSetService.getFlashcardSetById(id);
-        setFlashcardSet(response.flashcardSet);
-
-        // Fetch flashcards for this set
-        const flashcardsResponse = await flashcardService.getFlashcards(
-          id,
-          1,
-          100
-        );
-        setFlashcards(flashcardsResponse.data);
-        setLoading(false);
-      } catch (error) {
-        showToast(
-          error instanceof AxiosError
-            ? error.response?.data.message
-            : "Failed to fetch flashcard set",
-          "error"
-        );
-        setLoading(false);
-      }
-    };
     fetchFlashcardSet();
   }, [id]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isFlashcardModalOpen) return; // Only handle keys if modal is closed
       if (e.repeat) return;
       if (e.code === "ArrowLeft" && currentCardIndex > 0) {
         setCurrentCardIndex(currentCardIndex - 1);
@@ -88,7 +88,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       ) {
         setCurrentCardIndex(currentCardIndex + 1);
         setFlipped(false);
-      } else if (e.code === "Space") {
+      } else if (e.code === "Space" || e.code === "Spacebar" || e.key === " ") {
         setFlipped((f) => !f);
         e.preventDefault();
       }
@@ -96,7 +96,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentCardIndex, flashcards.length]);
+  }, [currentCardIndex, flashcards.length, isFlashcardModalOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -474,7 +474,10 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       </div>
       <FlashcardManagementModal
         isOpen={isFlashcardModalOpen}
-        onClose={() => setIsFlashcardModalOpen(false)}
+        onClose={() => {
+          fetchFlashcardSet();
+          setIsFlashcardModalOpen(false);
+        }}
         setId={id}
       />
     </div>
