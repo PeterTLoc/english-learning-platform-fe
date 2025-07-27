@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 import { useToast } from "@/context/ToastContext";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import CreateFlashcardModal from "./edit/CreateFlashcardModal";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
 const flashcardService = new FlashcardService();
 
@@ -24,6 +25,7 @@ export default function FlashcardManagementModal({
   const [editingFlashcard, setEditingFlashcard] = useState<IFlashcard | null>(
     null
   );
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -63,9 +65,9 @@ export default function FlashcardManagementModal({
         vietnameseContent,
         flashcardSetId: setId,
       });
+      showToast("Flashcard created successfully", "success");
       setFlashcards([...flashcards, response.flashcard]);
       setIsCreateModalOpen(false);
-      showToast("Flashcard created successfully", "success");
     } catch (error) {
       showToast(
         error instanceof AxiosError
@@ -204,7 +206,7 @@ export default function FlashcardManagementModal({
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDeleteFlashcard(card._id as string)}
+                      onClick={() => setDeleteTarget(card._id as string)}
                       className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                     >
                       Delete
@@ -247,6 +249,21 @@ export default function FlashcardManagementModal({
           mode="create"
         />
       </div>
+      <ConfirmationModal
+        isOpen={!!deleteTarget}
+        title="Delete Flashcard"
+        message="Are you sure you want to delete this flashcard? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        onConfirm={async () => {
+          if (deleteTarget) {
+            await handleDeleteFlashcard(deleteTarget);
+            setDeleteTarget(null);
+          }
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

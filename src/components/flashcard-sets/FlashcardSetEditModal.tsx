@@ -26,7 +26,10 @@ export default function FlashcardSetEditModal({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [originalData, setOriginalData] = useState({ name: "", description: "" });
+  const [originalData, setOriginalData] = useState({
+    name: "",
+    description: "",
+  });
 
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -56,7 +59,10 @@ export default function FlashcardSetEditModal({
     }
 
     // Check if there are any changes
-    if (name.trim() === originalData.name && description.trim() === originalData.description) {
+    if (
+      name.trim() === originalData.name &&
+      description.trim() === originalData.description
+    ) {
       showToast("No changes detected", "error");
       return;
     }
@@ -64,8 +70,8 @@ export default function FlashcardSetEditModal({
     setSubmitting(true);
     try {
       await flashcardSetService.updateFlashcardSet(
-        flashcardSet._id as string, 
-        name.trim(), 
+        flashcardSet._id as string,
+        name.trim(),
         description.trim()
       );
       showToast("Flashcard set updated successfully!", "success");
@@ -73,9 +79,10 @@ export default function FlashcardSetEditModal({
       onClose();
     } catch (error) {
       console.error("Error updating flashcard set:", error);
-      const errorMessage = error instanceof AxiosError 
-        ? error.response?.data?.message || "Failed to update flashcard set"
-        : "Failed to update flashcard set";
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || "Failed to update flashcard set"
+          : "Failed to update flashcard set";
       showToast(errorMessage, "error");
     } finally {
       setSubmitting(false);
@@ -83,8 +90,10 @@ export default function FlashcardSetEditModal({
   };
 
   const handleCancel = () => {
-    const hasChanges = name.trim() !== originalData.name || description.trim() !== originalData.description;
-    
+    const hasChanges =
+      name.trim() !== originalData.name ||
+      description.trim() !== originalData.description;
+
     if (hasChanges) {
       if (confirm("Are you sure you want to discard your changes?")) {
         onClose();
@@ -95,7 +104,10 @@ export default function FlashcardSetEditModal({
   };
 
   const hasChanges = () => {
-    return name.trim() !== originalData.name || description.trim() !== originalData.description;
+    return (
+      name.trim() !== originalData.name ||
+      description.trim() !== originalData.description
+    );
   };
 
   if (!isOpen) return null;
@@ -115,7 +127,13 @@ export default function FlashcardSetEditModal({
           </button>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdate();
+          }}
+          className="space-y-4"
+        >
           {/* Name Input */}
           <div>
             <label className="block text-sm font-medium text-[#CFCFCF] mb-2">
@@ -134,9 +152,7 @@ export default function FlashcardSetEditModal({
               <span className="text-xs text-[#CFCFCF]">
                 Maximum 100 characters
               </span>
-              <span className="text-xs text-[#CFCFCF]">
-                {name.length}/100
-              </span>
+              <span className="text-xs text-[#CFCFCF]">{name.length}/100</span>
             </div>
           </div>
 
@@ -167,8 +183,18 @@ export default function FlashcardSetEditModal({
           <div className="bg-[#2D2D2D] border border-[#1D1D1D] rounded-lg p-4">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-[#4CC2FF] flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 text-black"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div>
@@ -176,7 +202,9 @@ export default function FlashcardSetEditModal({
                   Edit Information
                 </h3>
                 <p className="text-sm text-[#CFCFCF]">
-                  Update your flashcard set name and description. The changes will be saved immediately when you click "Update Set".
+                  Update your flashcard set name and description. The changes
+                  will be saved immediately when you click &quot;Update
+                  Set&quot;.
                 </p>
               </div>
             </div>
@@ -214,4 +242,4 @@ export default function FlashcardSetEditModal({
       </div>
     </div>
   );
-} 
+}

@@ -50,9 +50,6 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
   const [isFlashcardModalOpen, setIsFlashcardModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { showToast } = useToast();
-
-
-
   const fetchFlashcardSet = async () => {
     try {
       const response = await flashcardSetService.getFlashcardSetById(id);
@@ -62,7 +59,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       const flashcardsResponse = await flashcardService.getFlashcards(
         id,
         1,
-        100
+        10000
       );
       setFlashcards(flashcardsResponse.data);
       setLoading(false);
@@ -76,15 +73,13 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchFlashcardSet();
   }, [id]);
 
-
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isFlashcardModalOpen) return; // Only handle keys if modal is closed
       if (e.repeat) return;
       if (e.code === "ArrowLeft" && currentCardIndex > 0) {
         setCurrentCardIndex(currentCardIndex - 1);
@@ -95,7 +90,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       ) {
         setCurrentCardIndex(currentCardIndex + 1);
         setFlipped(false);
-      } else if (e.code === "Space") {
+      } else if (e.code === "Space" || e.code === "Spacebar" || e.key === " ") {
         setFlipped((f) => !f);
         e.preventDefault();
       }
@@ -103,7 +98,7 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentCardIndex, flashcards.length]);
+  }, [currentCardIndex, flashcards.length, isFlashcardModalOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -226,18 +221,6 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
                           {showDropdown && (
                             <div className="absolute right-0 mt-2 w-48 bg-[#2b2b2b] border border-slate-600 rounded-lg shadow-xl z-50">
-                              <button
-                                className="w-full text-left px-4 py-3 text-[#4CC2FF] hover:bg-[#4CC2FF]/10 flex items-center gap-2 rounded-lg transition-colors"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  setIsEditModalOpen(true);
-                                }}
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                                Edit Set
-                              </button>
                               <button
                                 className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 flex items-center gap-2 rounded-lg transition-colors"
                                 onClick={() => {
@@ -499,7 +482,10 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
       </div>
       <FlashcardManagementModal
         isOpen={isFlashcardModalOpen}
-        onClose={() => setIsFlashcardModalOpen(false)}
+        onClose={() => {
+          fetchFlashcardSet();
+          setIsFlashcardModalOpen(false);
+        }}
         setId={id}
       />
       <FlashcardSetEditModal
