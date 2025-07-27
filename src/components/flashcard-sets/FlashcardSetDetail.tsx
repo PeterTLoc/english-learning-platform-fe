@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import FlashcardManagementModal from "./FlashcardManagementModal";
+import FlashcardSetEditModal from "./FlashcardSetEditModal";
 
 const flashcardSetService = new FlashcardSetService();
 const flashcardService = new FlashcardService();
@@ -47,34 +48,40 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
   const router = useRouter();
   const { showConfirmation } = useConfirmation();
   const [isFlashcardModalOpen, setIsFlashcardModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { showToast } = useToast();
 
-  useEffect(() => {
-    const fetchFlashcardSet = async () => {
-      try {
-        const response = await flashcardSetService.getFlashcardSetById(id);
-        setFlashcardSet(response.flashcardSet);
 
-        // Fetch flashcards for this set
-        const flashcardsResponse = await flashcardService.getFlashcards(
-          id,
-          1,
-          100
-        );
-        setFlashcards(flashcardsResponse.data);
-        setLoading(false);
-      } catch (error) {
-        showToast(
-          error instanceof AxiosError
-            ? error.response?.data.message
-            : "Failed to fetch flashcard set",
-          "error"
-        );
-        setLoading(false);
-      }
-    };
+
+  const fetchFlashcardSet = async () => {
+    try {
+      const response = await flashcardSetService.getFlashcardSetById(id);
+      setFlashcardSet(response.flashcardSet);
+
+      // Fetch flashcards for this set
+      const flashcardsResponse = await flashcardService.getFlashcards(
+        id,
+        1,
+        100
+      );
+      setFlashcards(flashcardsResponse.data);
+      setLoading(false);
+    } catch (error) {
+      showToast(
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Failed to fetch flashcard set",
+        "error"
+      );
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchFlashcardSet();
   }, [id]);
+
+
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -193,6 +200,12 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
                     {canManageSet && (
                       <div className="flex flex-col sm:flex-row gap-2 ml-4">
                         <button
+                          className="px-4 py-2 rounded-lg bg-[#4CC2FF] text-black border border-[#4CC2FF] focus:ring-2 focus:ring-[#4CC2FF]/50 focus:border-[#4CC2FF] transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-[#3AA0DB]"
+                          onClick={() => setIsEditModalOpen(true)}
+                        >
+                          Edit Set
+                        </button>
+                        <button
                           className="px-4 py-2 rounded-lg bg-slate-800/50 text-white border border-slate-600 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm sm:text-base font-semibold hover:bg-slate-700"
                           onClick={() => setIsFlashcardModalOpen(true)}
                         >
@@ -213,6 +226,18 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
 
                           {showDropdown && (
                             <div className="absolute right-0 mt-2 w-48 bg-[#2b2b2b] border border-slate-600 rounded-lg shadow-xl z-50">
+                              <button
+                                className="w-full text-left px-4 py-3 text-[#4CC2FF] hover:bg-[#4CC2FF]/10 flex items-center gap-2 rounded-lg transition-colors"
+                                onClick={() => {
+                                  setShowDropdown(false);
+                                  setIsEditModalOpen(true);
+                                }}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit Set
+                              </button>
                               <button
                                 className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 flex items-center gap-2 rounded-lg transition-colors"
                                 onClick={() => {
@@ -476,6 +501,12 @@ export default function FlashcardSetDetail({ id }: { id: string }) {
         isOpen={isFlashcardModalOpen}
         onClose={() => setIsFlashcardModalOpen(false)}
         setId={id}
+      />
+      <FlashcardSetEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        flashcardSet={flashcardSet}
+        onUpdate={fetchFlashcardSet}
       />
     </div>
   );

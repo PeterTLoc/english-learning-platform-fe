@@ -8,6 +8,8 @@ import ServerPagination from "@/components/common/ServerPagination";
 import * as courseService from "@/services/courseService";
 import { PaginatedCourses } from "@/services/courseService";
 import { Course, CourseLevelEnum, CourseTypeEnum } from "@/types/course/course";
+import { CourseLevelEnum as CourseLevelValues } from "@/enums/CourseLevelEnum";
+import { CourseTypeEnum as CourseTypeValues } from "@/enums/CourseTypeEnum";
 import { useToast } from "@/context/ToastContext";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import CourseModal from "@/components/admin/CourseModal";
@@ -42,54 +44,54 @@ const CourseManagementPage = () => {
 
   // Level options
   const levelOptions = [
-    { value: "A1", label: "Beginner (A1)" },
-    { value: "A2", label: "Elementary (A2)" },
-    { value: "B1", label: "Intermediate (B1)" },
-    { value: "B2", label: "Upper Intermediate (B2)" },
-    { value: "C1", label: "Advanced (C1)" },
-    { value: "C2", label: "Mastery (C2)" },
+    { value: CourseLevelValues.BEGINNER_1, label: "Beginner (A1)" },
+    { value: CourseLevelValues.BEGINNER_2, label: "Elementary (A2)" },
+    { value: CourseLevelValues.INTERMEDIATE_1, label: "Intermediate (B1)" },
+    { value: CourseLevelValues.INTERMEDIATE_2, label: "Upper Intermediate (B2)" },
+    { value: CourseLevelValues.ADVANCED_1, label: "Advanced (C1)" },
+    { value: CourseLevelValues.ADVANCED_2, label: "Mastery (C2)" },
   ] as const;
 
   // Type options
   const typeOptions = [
-    { value: "free", label: "Free Course" },
-    { value: "membership", label: "Premium Course" },
+    { value: CourseTypeValues.FREE, label: "Free Course" },
+    { value: CourseTypeValues.MEMBERSHIP, label: "Premium Course" },
   ] as const;
 
   const getLevelLabel = (level: CourseLevelEnum) => {
     const labels = {
-      A1: "Beginner (A1)",
-      A2: "Elementary (A2)",
-      B1: "Intermediate (B1)",
-      B2: "Upper Intermediate (B2)",
-      C1: "Advanced (C1)",
-      C2: "Mastery (C2)",
+      [CourseLevelValues.BEGINNER_1]: "Beginner (A1)",
+      [CourseLevelValues.BEGINNER_2]: "Elementary (A2)",
+      [CourseLevelValues.INTERMEDIATE_1]: "Intermediate (B1)",
+      [CourseLevelValues.INTERMEDIATE_2]: "Upper Intermediate (B2)",
+      [CourseLevelValues.ADVANCED_1]: "Advanced (C1)",
+      [CourseLevelValues.ADVANCED_2]: "Mastery (C2)",
     };
     return labels[level];
   };
 
   const getTypeLabel = (type: CourseTypeEnum) => {
     const labels = {
-      free: "Free Course",
-      membership: "Premium Course",
+      [CourseTypeValues.FREE]: "Free Course",
+      [CourseTypeValues.MEMBERSHIP]: "Premium Course",
     };
     return labels[type];
   };
 
   const getLevelColor = (level: CourseLevelEnum) => {
     const colors = {
-      A1: "bg-green-900 text-green-300",
-      A2: "bg-emerald-900 text-emerald-300",
-      B1: "bg-yellow-900 text-yellow-300",
-      B2: "bg-orange-900 text-orange-300",
-      C1: "bg-red-900 text-red-300",
-      C2: "bg-purple-900 text-purple-300",
+      [CourseLevelValues.BEGINNER_1]: "bg-green-900 text-green-300",
+      [CourseLevelValues.BEGINNER_2]: "bg-emerald-900 text-emerald-300",
+      [CourseLevelValues.INTERMEDIATE_1]: "bg-yellow-900 text-yellow-300",
+      [CourseLevelValues.INTERMEDIATE_2]: "bg-orange-900 text-orange-300",
+      [CourseLevelValues.ADVANCED_1]: "bg-red-900 text-red-300",
+      [CourseLevelValues.ADVANCED_2]: "bg-purple-900 text-purple-300",
     };
     return colors[level];
   };
 
   const getTypeColor = (type: CourseTypeEnum) => {
-    return type === "free"
+    return type === CourseTypeValues.FREE
       ? "bg-[#373737] text-[#4CC2FF]"
       : "bg-[#373737] text-yellow-300";
   };

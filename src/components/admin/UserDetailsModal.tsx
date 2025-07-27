@@ -2,6 +2,7 @@
 
 import UserService, { User, UserDetail } from "@/services/userService";
 import { UserRole } from "@/components/guards";
+import UserEnum from "@/enums/UserEnum";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import { useToast } from "@/context/ToastContext";
 import React, { useEffect, useState } from "react";
@@ -54,11 +55,11 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
 
   const getRoleName = (role: number) => {
     switch (role) {
-      case UserRole.USER:
+      case UserEnum.USER:
         return "User";
-      case UserRole.ADMIN:
+      case UserEnum.ADMIN:
         return "Admin";
-      case UserRole.GUEST:
+      case UserEnum.GUEST:
         return "Guest";
       default:
         return "Unknown";
@@ -107,9 +108,9 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                 <p className="text-[#CFCFCF] mb-2">{user.email}</p>
                 <div className="flex flex-wrap gap-2">
                   <span className={`px-2 py-1 rounded-full text-xs ${
-                    user.role === UserRole.ADMIN 
+                    user.role === UserEnum.ADMIN 
                       ? "bg-[#373737] text-[#4CC2FF]" 
-                      : user.role === UserRole.USER
+                      : user.role === UserEnum.USER
                       ? "bg-[#373737] text-white"
                       : "bg-[#373737] text-[#CFCFCF]"
                   }`}>

@@ -10,6 +10,7 @@ import LoginForm from "@/components/login/LoginForm";
 import { validateLoginForm } from "@/utils/auth";
 import { initialLoginFormData } from "@/constants/forms";
 import { UserRole } from "@/components/guards/RoleGuard";
+import UserEnum from "@/enums/UserEnum";
 import Link from "next/link";
 
 const Page = () => {
@@ -23,7 +24,7 @@ const Page = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      router.push(user.role === UserRole.ADMIN ? "/admin" : "/");
+      router.push(user.role === UserEnum.ADMIN ? "/admin" : "/");
     }
   }, [user, authLoading, router]);
 

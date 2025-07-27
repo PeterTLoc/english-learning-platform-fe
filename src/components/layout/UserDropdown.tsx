@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Dropdown from "../ui/Dropdown";
 import UserAvatar from "../ui/UserAvatar";
 import { UserRole } from "../guards";
+import UserEnum from "@/enums/UserEnum";
 import { parseAxiosError } from "@/utils/apiErrors";
 
 const UserDropdown = () => {
@@ -27,11 +28,11 @@ const UserDropdown = () => {
   };
 
   const dropdownItems = [
-    ...(user.role === UserRole.ADMIN
+    ...(user.role === UserEnum.ADMIN
       ? [{ label: "Admin Dashboard", href: "/admin" }]
       : []),
     { label: "Profile", href: `/profile/${user._id}` },
-    ...(user.role === UserRole.USER
+    ...(user.role === UserEnum.USER
       ? [{ label: "Recommendations", href: "/recommendations" }]
       : []),
     { label: "Logout", onClick: handleLogout },

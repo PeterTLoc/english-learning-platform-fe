@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import RoleGuard, { UserRole } from "../guards/RoleGuard";
+import UserEnum from "@/enums/UserEnum";
 import Header from "./Header";
 import Footer from "./Footer";
 import TutorTrigger from "./TutorTrigger";
@@ -88,7 +89,7 @@ export default function LayoutWrapper({
   // Admin layout
   if (layoutConfig.isAdminLayout) {
     return (
-      <RoleGuard allowedRoles={[UserRole.ADMIN]} fallbackPath="/">
+      <RoleGuard allowedRoles={[UserEnum.ADMIN]} fallbackPath="/">
         <div className="min-h-screen bg-[#2b2b2b] dark:bg-[#2b2b2b]">
           <AdminHeader />
           <AdminSidebar />

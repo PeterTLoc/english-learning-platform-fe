@@ -52,9 +52,9 @@ export default function AchievementFilter({
             <option value={AchievementTypeEnum.LoginStreak}>
               Login Streak
             </option>
-            <option value={AchievementTypeEnum.CouseCompletion}>
-              Course Completion
-            </option>
+                          <option value={AchievementTypeEnum.CourseCompletion}>
+                Course Completion
+              </option>
             <option value={AchievementTypeEnum.LessonCompletion}>
               Lesson Completion
             </option>
