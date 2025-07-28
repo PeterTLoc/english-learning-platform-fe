@@ -44,7 +44,7 @@ export default function ReceiptList() {
 
   // Format currency function
   const formatCurrency = (amount: number) => {
-    return `đ ${new Intl.NumberFormat("vi-VN").format(amount)}`;
+    return `${new Intl.NumberFormat("vi-VN").format(amount)}đ`;
   };
 
   // Format date function
