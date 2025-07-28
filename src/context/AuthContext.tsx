@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     try {
       const user = await authService.register(formData);
-      setUser(user);
+      // setUser(user);
     } catch (error) {
       const parsed = parseAxiosError(error);
       throw new Error(parsed.message);
