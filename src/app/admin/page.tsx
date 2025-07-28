@@ -102,11 +102,11 @@ export default function AdminDashboard() {
   const [usersHistory, setUsersHistory] = useState<number[]>([]);
   const [userGrowthFilter, setUserGrowthFilter] = useState({
     time: "month",
-    value: 12,
+    value: new Date().getMonth(),
   });
   const [revenueFilter, setRevenueFilter] = useState({
     time: "month",
-    value: 12,
+    value: new Date().getMonth(),
   });
   const [userGrowthData, setUserGrowthData] = useState<
     { label: string; value: number }[]
@@ -148,7 +148,7 @@ export default function AdminDashboard() {
         const stats = await statisticService.getDashboardStats();
         const activeCourses = await statisticService.getActiveCourseCount();
         if (!mounted) return;
-
+        console.log(stats);
         setStatsCards([
           {
             title: "Users",
@@ -556,8 +556,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }

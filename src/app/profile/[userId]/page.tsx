@@ -727,7 +727,9 @@ export default function UserProfilePage() {
                             <div className="text-2xl font-bold text-green-400">
                               {userDetail?.stats?.completedTests || 0}
                             </div>
-                            <div className="text-sm text-gray-400">Completed</div>
+                            <div className="text-sm text-gray-400">
+                              Completed
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-blue-400">
@@ -799,7 +801,7 @@ export default function UserProfilePage() {
                           <div className="text-center">
                             <div className="text-2xl font-bold text-yellow-400">
                               {userLessons?.filter(
-                                (lesson) => lesson.status === "in-progress"
+                                (lesson) => lesson.status === "ongoing"
                               )?.length || 0}
                             </div>
                             <div className="text-sm text-gray-400">
@@ -814,8 +816,9 @@ export default function UserProfilePage() {
                               <span className="text-white font-semibold">
                                 {Math.round(
                                   Math.min(
-                                    (userDetail?.stats?.completedLessons || 0) /
-                                      userLessons.length *
+                                    ((userDetail?.stats?.completedLessons ||
+                                      0) /
+                                      userLessons.length) *
                                       100,
                                     100
                                   )
@@ -827,14 +830,13 @@ export default function UserProfilePage() {
                               <div
                                 className="bg-purple-500 h-2 rounded-full transition-all duration-300"
                                 style={{
-                                  width: `${
-                                    Math.min(
-                                      (userDetail?.stats?.completedLessons || 0) /
-                                        userLessons.length *
-                                        100,
-                                      100
-                                    )
-                                  }%`,
+                                  width: `${Math.min(
+                                    ((userDetail?.stats?.completedLessons ||
+                                      0) /
+                                      userLessons.length) *
+                                      100,
+                                    100
+                                  )}%`,
                                 }}
                               ></div>
                             </div>
@@ -966,10 +968,14 @@ export default function UserProfilePage() {
                                 const completedLessons = courseLessons.filter(
                                   (ul) => ul.status === "completed"
                                 ).length;
-                                const totalLessons = uc.course?.totalLessons || 0;
-                                
+                                const totalLessons =
+                                  uc.course?.totalLessons || 0;
+
                                 // Handle cases where completed lessons exceed total lessons
-                                if (completedLessons > totalLessons && totalLessons > 0) {
+                                if (
+                                  completedLessons > totalLessons &&
+                                  totalLessons > 0
+                                ) {
                                   return `${totalLessons} / ${totalLessons} lessons (${completedLessons} completed)`;
                                 }
                                 return `${completedLessons} / ${totalLessons} lessons`;
@@ -986,10 +992,14 @@ export default function UserProfilePage() {
                             ).length;
                             const totalLessons = uc.course?.totalLessons || 0;
                             // Cap progress at 100% to prevent overflow
-                            const progressPercentage = totalLessons > 0 
-                              ? Math.min((completedLessons / totalLessons) * 100, 100) 
-                              : 0;
-                            
+                            const progressPercentage =
+                              totalLessons > 0
+                                ? Math.min(
+                                    (completedLessons / totalLessons) * 100,
+                                    100
+                                  )
+                                : 0;
+
                             return (
                               <div className="w-full bg-[#444] rounded-full h-2 mb-2">
                                 <div
@@ -1059,7 +1069,7 @@ export default function UserProfilePage() {
                               className={`px-2 py-0.5 rounded-full text-xs font-semibold ml-2 ${
                                 ul.status === "completed"
                                   ? "bg-green-700 text-green-200"
-                                  : ul.status === "in-progress"
+                                  : ul.status === "ongoing"
                                   ? "bg-yellow-700 text-yellow-200"
                                   : "bg-gray-700 text-gray-300"
                               }`}
@@ -1104,9 +1114,9 @@ export default function UserProfilePage() {
                             </span>
                             <span
                               className={`px-2 py-0.5 rounded-full text-xs font-semibold ml-2 ${
-                                ut.status === "completed"
+                                ut.status === "passed"
                                   ? "bg-green-700 text-green-200"
-                                  : ut.status === "in-progress"
+                                  : ut.status === "failed"
                                   ? "bg-yellow-700 text-yellow-200"
                                   : "bg-gray-700 text-gray-300"
                               }`}

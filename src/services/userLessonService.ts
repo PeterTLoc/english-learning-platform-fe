@@ -13,7 +13,7 @@ export interface UserLesson {
   userId: string;
   lessonId: string;
   currentOrder: LessonTracking[];
-  status: "not-started" | "in-progress" | "completed";
+  status: "not-started" | "ongoing" | "completed";
   isDeleted?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -26,8 +26,13 @@ export const getUserLessons = async (userId: string) => {
   return response.data;
 };
 
-export const getUserLessonsByCourseId = async (userId: string, courseId: string) => {
-  const response = await api.get(`/api/user-lessons/${userId}/course/${courseId}`);
+export const getUserLessonsByCourseId = async (
+  userId: string,
+  courseId: string
+) => {
+  const response = await api.get(
+    `/api/user-lessons/${userId}/course/${courseId}`
+  );
   return response.data;
 };
 
