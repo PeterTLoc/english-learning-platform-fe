@@ -49,6 +49,7 @@ export default function ReceiptModal({
     "Full access to every premium course",
     "Enhanced lessons covering vocabulary, grammar, and practice exercises",
     "Length of access is determined by the selected membership option",
+    "AI tutor delivers answers, tracks progress, and offers smart learning insights.",
   ];
 
   const features = getMembershipFeatures();
@@ -195,12 +196,18 @@ export default function ReceiptModal({
                     <div className="flex justify-between items-center py-2">
                       <span className="subtext">Subtotal:</span>
                       <span className="text-white">
-                        {formatCurrency(receipt.amount)}
+                        {formatCurrency(receipt.amount / 1.08)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="subtext">VAT Tax(8%)</span>
+                      <span className="text-white">
+                        {formatCurrency(receipt.amount - receipt.amount / 1.08)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2">
                       <span className="subtext">Other fees:</span>
-                      <span className="text-white">{0}</span>
+                      <span className="text-white">0đ</span>
                     </div>
 
                     <div className="border-t border-[#373737] pt-3 mt-3">
